@@ -2,9 +2,9 @@ services:
   db:
     image: mysql:latest
     environment:
-      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_ROOT_PASSWORD=MateJ4002!!
       - MYSQL_DATABASE=database
-      - MYSQL_PASSWORD=admin123
+      - MYSQL_PASSWORD=MateJ4002!!
     ports:
       - "3306:3306"
     networks:
@@ -26,7 +26,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/database
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: admin123
+      SPRING_DATASOURCE_PASSWORD: MateJ4002!!
     depends_on:
       db:
         condition: service_healthy

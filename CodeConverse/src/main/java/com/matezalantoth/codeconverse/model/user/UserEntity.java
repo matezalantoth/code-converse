@@ -13,12 +13,16 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+    @Setter
     @Getter
     private String username;
+    @Setter
     @Getter
     private String email;
+    @Setter
     @Getter
     private String password;
+    @Setter
     @Getter
     private Date createdAt;
     @ElementCollection
