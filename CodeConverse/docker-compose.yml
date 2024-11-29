@@ -1,0 +1,38 @@
+services:
+  db:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin123
+      - MYSQL_DATABASE=database
+      - MYSQL_PASSWORD=admin123
+    ports:
+      - "3306:3306"
+    networks:
+      - my_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+      start_period: 30s
+
+  app:
+    image: 'code-converse:latest'
+    build:
+      context: .
+    container_name: backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/database
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin123
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
