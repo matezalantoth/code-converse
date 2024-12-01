@@ -1,4 +1,4 @@
-package com.matezalantoth.codeconverse.model.linkEntity;
+package com.matezalantoth.codeconverse.model.questiontag;
 
 import com.matezalantoth.codeconverse.model.question.Question;
 import com.matezalantoth.codeconverse.model.tag.Tag;

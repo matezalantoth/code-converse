@@ -1,6 +1,6 @@
 package com.matezalantoth.codeconverse.repository;
 
-import com.matezalantoth.codeconverse.model.linkEntity.QuestionTag;
+import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

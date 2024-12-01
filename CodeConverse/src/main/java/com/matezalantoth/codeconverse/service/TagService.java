@@ -12,11 +12,11 @@ import java.util.HashSet;
 import java.util.UUID;
 
 @Service
-public class TagClient {
+public class TagService {
 
     private final TagRepository tagRepository;
 
-    public TagClient(TagRepository tagRepository) {
+    public TagService(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
     }
 

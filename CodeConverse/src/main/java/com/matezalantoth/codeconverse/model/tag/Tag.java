@@ -1,6 +1,6 @@
 package com.matezalantoth.codeconverse.model.tag;
 
-import com.matezalantoth.codeconverse.model.linkEntity.QuestionTag;
+import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

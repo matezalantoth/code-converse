@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@EnableMethodSecurity
 @Configuration
 public class WebSecurityConfig {
 
@@ -29,6 +31,7 @@ public class WebSecurityConfig {
     private final JwtUtils jwtUtils;
 
     @Autowired
+
     public WebSecurityConfig(UserDetailsService userDetailsService, AuthEntryPointJwt unauthorizedHandler, JwtUtils jwtUtils) {
         this.userDetailsService = userDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
@@ -64,13 +67,15 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("user/profile").hasRole("USER")
-                                .requestMatchers("tag/create").hasRole("ADMIN")
-                                .requestMatchers("question/create").hasRole("USER")
+                        auth.requestMatchers("/user/profile").hasRole("USER")
+                                .requestMatchers("/tag/create").hasRole("ADMIN")
+                                .requestMatchers("/question/create").hasRole("USER")
+                                .requestMatchers("/question/update").hasRole("USER")
+                                .requestMatchers("/question/add-tags").hasRole("USER")
                                 .requestMatchers("/answer/create").hasRole("USER")
-                                .requestMatchers("tag/**").permitAll()
-                                .requestMatchers("user/**").permitAll()
-                                .requestMatchers("question/**").permitAll()
+                                .requestMatchers("/tag/**").permitAll()
+                                .requestMatchers("/user/**").permitAll()
+                                .requestMatchers("/question/**").permitAll()
                                 .requestMatchers("/answer/**").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated()

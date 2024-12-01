@@ -20,14 +20,14 @@ import java.util.UUID;
 
 
 @Service
-public class UserClient {
+public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    public UserClient(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -55,7 +55,6 @@ public class UserClient {
         user.setAnswers(new HashSet<>());
         userRepository.save(user);
         addRoleFor(user, Role.ROLE_USER);
-        addRoleFor(user, Role.ROLE_ADMIN);
     }
 
     public String loginUser(LoginRequestDTO userDetails) throws BadRequestException {
@@ -67,6 +66,11 @@ public class UserClient {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), userDetails.password()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return jwtUtils.generateJwtToken(authentication);
+    }
+
+    public void makeAdmin(String username){
+        var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("user of username: " + username));
+        addRoleFor(user, Role.ROLE_ADMIN);
     }
 
     @Transactional

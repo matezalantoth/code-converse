@@ -14,13 +14,13 @@ import java.util.HashSet;
 import java.util.UUID;
 
 @Service
-public class AnswerClient {
+public class AnswerService {
 
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
 
-    public AnswerClient(QuestionRepository questionRepository, UserRepository userRepository, AnswerRepository answerRepository) {
+    public AnswerService(QuestionRepository questionRepository, UserRepository userRepository, AnswerRepository answerRepository) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.answerRepository = answerRepository;

@@ -7,6 +7,7 @@ import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
 import com.matezalantoth.codeconverse.model.question.NewQuestionDTO;
 import com.matezalantoth.codeconverse.model.question.QuestionDTO;
 import com.matezalantoth.codeconverse.model.user.RegisterRequestDTO;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.Collections;
 import java.util.HashSet;
 
+@Transactional
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AnswerControllerTests {

@@ -2,7 +2,7 @@ package com.matezalantoth.codeconverse.controller;
 
 import com.matezalantoth.codeconverse.model.answer.AnswerDTO;
 import com.matezalantoth.codeconverse.model.answer.NewAnswerDTO;
-import com.matezalantoth.codeconverse.service.AnswerClient;
+import com.matezalantoth.codeconverse.service.AnswerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,16 +16,16 @@ import java.util.UUID;
 @RequestMapping("/answer")
 public class AnswerController {
 
-    private final AnswerClient answerClient;
+    private final AnswerService answerService;
 
-    public AnswerController(AnswerClient answerClient) {
-        this.answerClient = answerClient;
+    public AnswerController(AnswerService answerService) {
+        this.answerService = answerService;
     }
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<AnswerDTO> createAnswer(@RequestBody NewAnswerDTO newAnswer, @RequestParam UUID questionId){
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        return ResponseEntity.status(HttpStatus.CREATED).body(answerClient.createAnswer(newAnswer, questionId, username));
+        return ResponseEntity.status(HttpStatus.CREATED).body(answerService.createAnswer(newAnswer, questionId, username));
     }
 }

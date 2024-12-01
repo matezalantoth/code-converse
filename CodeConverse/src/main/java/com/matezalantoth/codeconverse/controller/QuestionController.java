@@ -2,7 +2,9 @@ package com.matezalantoth.codeconverse.controller;
 
 import com.matezalantoth.codeconverse.model.question.NewQuestionDTO;
 import com.matezalantoth.codeconverse.model.question.QuestionDTO;
-import com.matezalantoth.codeconverse.service.QuestionClient;
+import com.matezalantoth.codeconverse.model.question.QuestionUpdatesDTO;
+import com.matezalantoth.codeconverse.model.tag.TagOfQuestionDTO;
+import com.matezalantoth.codeconverse.service.QuestionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,16 +12,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/question")
 public class QuestionController {
 
-    private final QuestionClient questionClient;
+    private final QuestionService questionService;
 
-    public QuestionController(QuestionClient questionClient) {
-        this.questionClient = questionClient;
+    public QuestionController(QuestionService questionService) {
+        this.questionService = questionService;
     }
 
     @PostMapping("/create")
@@ -27,11 +30,24 @@ public class QuestionController {
     public ResponseEntity<QuestionDTO> createQuestion(@RequestBody NewQuestionDTO newQuestion){
         var userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var username = userDetails.getUsername();
-        return ResponseEntity.status(HttpStatus.CREATED).body(questionClient.createQuestion(newQuestion, username));
+        return ResponseEntity.status(HttpStatus.CREATED).body(questionService.createQuestion(newQuestion, username));
     }
 
     @GetMapping
     public ResponseEntity<QuestionDTO> getQuestionById(@RequestParam UUID id){
-       return ResponseEntity.ok(questionClient.getQuestionById(id));
+       return ResponseEntity.ok(questionService.getQuestionById(id));
     }
+
+    @PutMapping("/update")
+    @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
+    public ResponseEntity<QuestionDTO> updateQuestionById(@RequestParam UUID id, @RequestBody QuestionUpdatesDTO updates){
+        return ResponseEntity.ok(questionService.updateQuestion(updates, id));
+    }
+
+    @PatchMapping("/add-tags")
+    @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
+    public ResponseEntity<QuestionDTO> addTagToQuestion(@RequestParam UUID id, @RequestBody Set<TagOfQuestionDTO> tags){
+        return ResponseEntity.ok(questionService.addTags(id, tags));
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.matezalantoth.codeconverse.model.question;
 
 import com.matezalantoth.codeconverse.model.answer.Answer;
-import com.matezalantoth.codeconverse.model.linkEntity.QuestionTag;
+import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import com.matezalantoth.codeconverse.model.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

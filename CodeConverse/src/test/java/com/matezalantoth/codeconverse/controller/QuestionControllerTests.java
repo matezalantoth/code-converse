@@ -7,6 +7,7 @@ import com.matezalantoth.codeconverse.model.tag.NewTagDTO;
 import com.matezalantoth.codeconverse.model.tag.TagDTO;
 import com.matezalantoth.codeconverse.model.tag.TagOfQuestionDTO;
 import com.matezalantoth.codeconverse.model.user.RegisterRequestDTO;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @ActiveProfiles("test")
+@Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class QuestionControllerTests {
 
@@ -47,6 +49,7 @@ public class QuestionControllerTests {
         assert res.getStatusCode().is2xxSuccessful();
         String jwt = res.getBody().jwt();
         setJwt(jwt);
+        restTemplate.patchForObject("http://localhost:" + port + "/user/make-admin", null, Void.class);
         var tagRes = restTemplate.postForEntity("http://localhost:" + port + "/tag/create", new NewTagDTO("test", "test desc"), TagDTO.class);
         assert tagRes.getStatusCode().is2xxSuccessful();
         var tag = tagRes.getBody();
