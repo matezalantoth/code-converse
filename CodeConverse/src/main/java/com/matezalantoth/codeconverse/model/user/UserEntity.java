@@ -1,6 +1,7 @@
 package com.matezalantoth.codeconverse.model.user;
 
-import com.matezalantoth.codeconverse.model.post.Question;
+import com.matezalantoth.codeconverse.model.answer.Answer;
+import com.matezalantoth.codeconverse.model.question.Question;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,12 +33,16 @@ public class UserEntity {
     @Setter
     @Getter
     private Date createdAt;
+    @OneToMany
+    @Getter
+    @Setter
+    private Set<Answer> answers;
     @ElementCollection
     @Setter
     @Getter
     private Set<Role> roles;
 
     public UserDTO dto(){
-        return new UserDTO(userId, username, questions.stream().map(Question::dto).collect(Collectors.toSet()));
+        return new UserDTO(userId, username, questions.stream().map(Question::dto).collect(Collectors.toSet()), answers.stream().map(Answer::dto).collect(Collectors.toSet()));
     }
 }

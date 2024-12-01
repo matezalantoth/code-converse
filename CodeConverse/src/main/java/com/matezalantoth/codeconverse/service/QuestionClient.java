@@ -1,9 +1,9 @@
 package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
-import com.matezalantoth.codeconverse.model.post.NewQuestionDTO;
-import com.matezalantoth.codeconverse.model.post.Question;
-import com.matezalantoth.codeconverse.model.post.QuestionDTO;
+import com.matezalantoth.codeconverse.model.question.NewQuestionDTO;
+import com.matezalantoth.codeconverse.model.question.Question;
+import com.matezalantoth.codeconverse.model.question.QuestionDTO;
 import com.matezalantoth.codeconverse.repository.QuestionRepository;
 import com.matezalantoth.codeconverse.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,7 @@ public class QuestionClient {
         question.setTitle(newQuestion.title());
         question.setContent(newQuestion.content());
         question.setPostedAt(new Date());
+        question.setAnswers(new HashSet<>());
         var poster = userRepository.getUserEntityByUsername(posterUsername).orElseThrow(() -> new NotFoundException("user of username: " + posterUsername));
         question.setPoster(poster);
         questionRepository.save(question);

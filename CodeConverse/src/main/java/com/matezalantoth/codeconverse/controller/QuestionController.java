@@ -1,8 +1,7 @@
 package com.matezalantoth.codeconverse.controller;
 
-import com.matezalantoth.codeconverse.model.post.NewQuestionDTO;
-import com.matezalantoth.codeconverse.model.post.Question;
-import com.matezalantoth.codeconverse.model.post.QuestionDTO;
+import com.matezalantoth.codeconverse.model.question.NewQuestionDTO;
+import com.matezalantoth.codeconverse.model.question.QuestionDTO;
 import com.matezalantoth.codeconverse.service.QuestionClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

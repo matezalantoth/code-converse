@@ -52,6 +52,7 @@ public class UserClient {
         user.setCreatedAt(new Date());
         user.setRoles(new HashSet<>());
         user.setQuestions(new HashSet<>());
+        user.setAnswers(new HashSet<>());
         userRepository.save(user);
         addRoleFor(user, Role.ROLE_USER);
     }
