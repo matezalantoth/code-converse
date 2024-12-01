@@ -55,6 +55,7 @@ public class UserClient {
         user.setAnswers(new HashSet<>());
         userRepository.save(user);
         addRoleFor(user, Role.ROLE_USER);
+        addRoleFor(user, Role.ROLE_ADMIN);
     }
 
     public String loginUser(LoginRequestDTO userDetails) throws BadRequestException {
