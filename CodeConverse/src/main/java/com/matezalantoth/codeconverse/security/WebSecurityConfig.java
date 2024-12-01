@@ -66,8 +66,10 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("user/profile").hasRole("USER")
                                 .requestMatchers("question/create").hasRole("USER")
+                                .requestMatchers("/answer/create").hasRole("USER")
                                 .requestMatchers("user/**").permitAll()
                                 .requestMatchers("question/**").permitAll()
+                                .requestMatchers("/answer/**").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated()
 

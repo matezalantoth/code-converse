@@ -1,4 +1,4 @@
-package com.matezalantoth.codeconverse.model.post;
+package com.matezalantoth.codeconverse.model.question;
 
 import java.util.Date;
 import java.util.UUID;

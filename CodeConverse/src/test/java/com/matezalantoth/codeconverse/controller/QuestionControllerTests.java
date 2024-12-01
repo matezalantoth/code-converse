@@ -1,8 +1,8 @@
 package com.matezalantoth.codeconverse.controller;
 
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
-import com.matezalantoth.codeconverse.model.post.NewQuestionDTO;
-import com.matezalantoth.codeconverse.model.post.QuestionDTO;
+import com.matezalantoth.codeconverse.model.question.NewQuestionDTO;
+import com.matezalantoth.codeconverse.model.question.QuestionDTO;
 import com.matezalantoth.codeconverse.model.user.RegisterRequestDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class QuestionControllerTests {
 
     @Test
     void createQuestion(){
-        var res = restTemplate.postForEntity("http://localhost:" + port + "/user/register", new RegisterRequestDTO("test", "test@gmail.com", "MateJ4002!!"), JwtResponse.class);
+        var res = restTemplate.postForEntity("http://localhost:" + port + "/user/register", new RegisterRequestDTO("test", "test@gmail.com", "admin123!!"), JwtResponse.class);
         assert res.getStatusCode().is2xxSuccessful();
         String jwt = res.getBody().jwt();
         setJwt(jwt);
