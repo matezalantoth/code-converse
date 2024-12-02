@@ -1,4 +1,4 @@
-package com.matezalantoth.codeconverse.model.tag;
+package com.matezalantoth.codeconverse.model.tag.dtos;
 
 import java.util.UUID;
 

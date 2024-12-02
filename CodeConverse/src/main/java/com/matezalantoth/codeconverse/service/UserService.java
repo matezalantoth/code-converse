@@ -2,6 +2,9 @@ package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
 import com.matezalantoth.codeconverse.model.user.*;
+import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
 import com.matezalantoth.codeconverse.repository.UserRepository;
 import com.matezalantoth.codeconverse.security.jwt.JwtUtils;
 import jakarta.transaction.Transactional;
@@ -18,7 +21,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
 
-
+@Transactional
 @Service
 public class UserService {
 
@@ -73,7 +76,6 @@ public class UserService {
         addRoleFor(user, Role.ROLE_ADMIN);
     }
 
-    @Transactional
     public UserDTO getUserByUsername(String username){
         var optUser = userRepository.getUserEntityWithRolesAndQuestionsByUsername(username);
         if(optUser.isEmpty()) {
@@ -85,6 +87,6 @@ public class UserService {
     }
 
     public UserDTO getUserById(UUID id){
-        return userRepository.getUserEntityByUserId(id).orElseThrow(() -> new NotFoundException("user of id: " + id)).dto();
+        return userRepository.getUserEntityById(id).orElseThrow(() -> new NotFoundException("user of id: " + id)).dto();
     }
 }

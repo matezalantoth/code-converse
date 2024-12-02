@@ -1,9 +1,10 @@
 package com.matezalantoth.codeconverse.controller;
 
-import com.matezalantoth.codeconverse.model.question.NewQuestionDTO;
-import com.matezalantoth.codeconverse.model.question.QuestionDTO;
-import com.matezalantoth.codeconverse.model.question.QuestionUpdatesDTO;
-import com.matezalantoth.codeconverse.model.tag.TagOfQuestionDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.NewQuestionDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionUpdatesDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionWithoutTagsDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
 import com.matezalantoth.codeconverse.service.QuestionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class QuestionController {
     }
 
     @GetMapping
-    public ResponseEntity<QuestionDTO> getQuestionById(@RequestParam UUID id){
+    public ResponseEntity<QuestionWithoutTagsDTO> getQuestionById(@RequestParam UUID id){
        return ResponseEntity.ok(questionService.getQuestionById(id));
     }
 
@@ -50,4 +51,10 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.addTags(id, tags));
     }
 
+    @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
+    public ResponseEntity<Void> deleteQuestion(@RequestParam UUID id){
+        questionService.deleteQuestion(id, ((UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
+    return ResponseEntity.noContent().build();
+    }
 }

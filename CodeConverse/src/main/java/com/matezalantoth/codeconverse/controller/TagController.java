@@ -1,8 +1,8 @@
 package com.matezalantoth.codeconverse.controller;
 
-import com.matezalantoth.codeconverse.model.tag.NewTagDTO;
-import com.matezalantoth.codeconverse.model.tag.TagDTO;
-import com.matezalantoth.codeconverse.model.tag.TagWithoutQuestionDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.NewTagDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagWithoutQuestionDTO;
 import com.matezalantoth.codeconverse.service.TagService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

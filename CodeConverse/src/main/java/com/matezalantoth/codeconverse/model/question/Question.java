@@ -1,11 +1,15 @@
 package com.matezalantoth.codeconverse.model.question;
 
 import com.matezalantoth.codeconverse.model.answer.Answer;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionWithoutTagsDTO;
 import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import com.matezalantoth.codeconverse.model.user.UserEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
 import java.util.Set;
@@ -14,16 +18,11 @@ import java.util.stream.Collectors;
 
 @Entity
 public class Question{
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "question_id")
     @Getter
-    private UUID questionId;
-
-    @Getter
-    @Setter
-    @ManyToOne
-    private UserEntity poster;
+    private UUID id;
 
     @Getter
     @Setter
@@ -37,21 +36,32 @@ public class Question{
     @Setter
     private String title;
 
-    @OneToMany
+
     @Getter
     @Setter
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Answer> answers;
 
-    @OneToMany
+
     @Getter
     @Setter
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<QuestionTag> questionTags;
 
+    @Getter
+    @Setter
+    @ManyToOne
+    private UserEntity poster;
+
+    public int calculateImpressions(){
+        return answers.stream().mapToInt(Answer::calculateVoteValue).sum() + (answers.size() * 10);
+    }
+
     public QuestionDTO dto(){
-        return new QuestionDTO(questionId, title, content, poster.getUsername(), postedAt, questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
+        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
     }
 
     public QuestionWithoutTagsDTO dtoNoTags(){
-        return new QuestionWithoutTagsDTO(questionId, title, content, poster.getUsername(), postedAt);
+        return new QuestionWithoutTagsDTO(id, title, content, poster.getUsername(), postedAt, answers.stream().anyMatch(Answer::isAccepted), answers.stream().map(Answer::dto).collect(Collectors.toSet()));
     }
 }

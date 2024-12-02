@@ -1,12 +1,13 @@
 package com.matezalantoth.codeconverse.controller;
 
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
-import com.matezalantoth.codeconverse.model.question.NewQuestionDTO;
-import com.matezalantoth.codeconverse.model.question.QuestionDTO;
-import com.matezalantoth.codeconverse.model.tag.NewTagDTO;
-import com.matezalantoth.codeconverse.model.tag.TagDTO;
-import com.matezalantoth.codeconverse.model.tag.TagOfQuestionDTO;
-import com.matezalantoth.codeconverse.model.user.RegisterRequestDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.NewQuestionDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.NewTagDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @ActiveProfiles("test")
 @Transactional
@@ -58,6 +56,21 @@ public class QuestionControllerTests {
         var questionRes = restTemplate.postForEntity("http://localhost:" + port + "/question/create", new NewQuestionDTO("test question", "test content", tags), QuestionDTO.class);
         assert questionRes.getStatusCode().is2xxSuccessful();
         assert questionRes.getBody().postedAt().before(new Date());
+    }
+
+    @Test
+    void deleteQuestion(){
+        var res = restTemplate.postForEntity("http://localhost:" + port + "/user/register", new RegisterRequestDTO("deleteQuestion", "deleteQuestion@gmail.com", "admin123!!"), JwtResponse.class);
+        assert res.getStatusCode().is2xxSuccessful();
+        String jwt = res.getBody().jwt();
+        setJwt(jwt);
+        var questionRes = restTemplate.postForEntity("http://localhost:" + port + "/question/create", new NewQuestionDTO("test question", "test content", new HashSet<>()), QuestionDTO.class);
+        assert questionRes.getStatusCode().is2xxSuccessful();
+        var questionId = questionRes.getBody().id();
+        restTemplate.delete("http://localhost:" + port + "/question/delete" + questionId);
+        var checkRes = restTemplate.getForEntity("http://localhost:" + port + "/user/profile", UserDTO.class);
+        assert checkRes.getStatusCode().is2xxSuccessful();
+        assert Objects.requireNonNull(checkRes.getBody()).answers().isEmpty();
     }
 
     void setJwt(String jwt){

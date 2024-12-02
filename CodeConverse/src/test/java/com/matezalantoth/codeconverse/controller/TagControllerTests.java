@@ -1,9 +1,9 @@
 package com.matezalantoth.codeconverse.controller;
 
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
-import com.matezalantoth.codeconverse.model.tag.NewTagDTO;
-import com.matezalantoth.codeconverse.model.tag.TagDTO;
-import com.matezalantoth.codeconverse.model.user.RegisterRequestDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.NewTagDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

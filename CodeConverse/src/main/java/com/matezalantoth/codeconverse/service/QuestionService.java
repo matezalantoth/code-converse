@@ -1,13 +1,14 @@
 package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
-import com.matezalantoth.codeconverse.model.question.QuestionUpdatesDTO;
+import com.matezalantoth.codeconverse.model.question.*;
+import com.matezalantoth.codeconverse.model.question.dtos.NewQuestionDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionUpdatesDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionWithoutTagsDTO;
 import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
-import com.matezalantoth.codeconverse.model.question.NewQuestionDTO;
-import com.matezalantoth.codeconverse.model.question.Question;
-import com.matezalantoth.codeconverse.model.question.QuestionDTO;
 import com.matezalantoth.codeconverse.model.tag.Tag;
-import com.matezalantoth.codeconverse.model.tag.TagOfQuestionDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
 import com.matezalantoth.codeconverse.repository.QuestionRepository;
 import com.matezalantoth.codeconverse.repository.QuestionTagRepository;
 import com.matezalantoth.codeconverse.repository.TagRepository;
@@ -21,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Transactional
 @Service
 public class QuestionService {
 
@@ -36,11 +38,10 @@ public class QuestionService {
         this.questionTagRepository = questionTagRepository;
     }
 
-    public QuestionDTO getQuestionById(UUID id){
-       return questionRepository.getQuestionByQuestionId(id).orElseThrow(() -> new NotFoundException("question of id: " + id)).dto();
+    public QuestionWithoutTagsDTO getQuestionById(UUID id){
+       return questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id)).dtoNoTags();
     }
 
-    @Transactional
     public QuestionDTO createQuestion(NewQuestionDTO newQuestion, String posterUsername){
         Question question = new Question();
         question.setTitle(newQuestion.title());
@@ -53,7 +54,7 @@ public class QuestionService {
         question.setPoster(poster);
         questionRepository.save(question);
 
-        Set<Tag> tags = newQuestion.tags().stream().map(t -> tagRepository.getTagByTagId(t.id()).orElseThrow(() -> new NotFoundException("tag of id: " + t.id()))).collect(Collectors.toSet());
+        Set<Tag> tags = newQuestion.tags().stream().map(t -> tagRepository.getTagById(t.id()).orElseThrow(() -> new NotFoundException("tag of id: " + t.id()))).collect(Collectors.toSet());
         tags.forEach(tag -> {
             QuestionTag questionTag = new QuestionTag();
             questionTag.setTag(tag);
@@ -67,7 +68,7 @@ public class QuestionService {
     }
 
     public QuestionDTO updateQuestion(QuestionUpdatesDTO updates, UUID id){
-        var question = questionRepository.getQuestionByQuestionId(id).orElseThrow(() -> new NotFoundException("question of id: " + id));
+        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id));
         question.setTitle(updates.title());
         question.setContent(updates.content());
         questionRepository.save(question);
@@ -75,14 +76,13 @@ public class QuestionService {
     }
 
     public boolean isOwner(UUID id, String username){
-        var question = questionRepository.getQuestionByQuestionId(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
+        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
         return question.getPoster().getUsername().equalsIgnoreCase(username);
     }
 
-    @Transactional
     public QuestionDTO addTags(UUID id, Set<TagOfQuestionDTO> tagIds){
-        var question = questionRepository.getQuestionByQuestionId(id).orElseThrow(() -> new NotFoundException("question of id: " + id));
-        var tags = tagIds.stream().map(t -> tagRepository.getTagByTagId(t.id()).orElseThrow(() -> new NotFoundException("tag of id: " + t.id()))).collect(Collectors.toSet());
+        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id));
+        var tags = tagIds.stream().map(t -> tagRepository.getTagById(t.id()).orElseThrow(() -> new NotFoundException("tag of id: " + t.id()))).collect(Collectors.toSet());
         tags.forEach(t -> {
             QuestionTag qt = new QuestionTag();
             qt.setQuestion(question);
@@ -93,5 +93,12 @@ public class QuestionService {
         }
         );
         return question.dto();
+    }
+
+    public void deleteQuestion(UUID id, String username){
+        var user = userRepository.getUserEntityWithRolesAndQuestionsByUsername(username).orElseThrow(() -> new NotFoundException("User of username: " + username));
+        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
+        user.getQuestions().remove(question);
+        questionRepository.delete(question);
     }
 }

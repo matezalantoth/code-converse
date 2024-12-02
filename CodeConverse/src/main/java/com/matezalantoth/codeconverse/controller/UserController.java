@@ -1,9 +1,9 @@
 package com.matezalantoth.codeconverse.controller;
 
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
-import com.matezalantoth.codeconverse.model.user.LoginRequestDTO;
-import com.matezalantoth.codeconverse.model.user.RegisterRequestDTO;
-import com.matezalantoth.codeconverse.model.user.UserDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
 import com.matezalantoth.codeconverse.service.UserService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam LoginRequestDTO req) throws BadRequestException {
+    public ResponseEntity<?> login(@RequestBody LoginRequestDTO req) throws BadRequestException {
         var jwt = userService.loginUser(req);
         return ResponseEntity.ok(new JwtResponse(jwt));
     }

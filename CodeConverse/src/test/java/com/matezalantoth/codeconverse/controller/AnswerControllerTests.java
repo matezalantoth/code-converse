@@ -1,12 +1,12 @@
 package com.matezalantoth.codeconverse.controller;
 
 
-import com.matezalantoth.codeconverse.model.answer.AnswerDTO;
-import com.matezalantoth.codeconverse.model.answer.NewAnswerDTO;
+import com.matezalantoth.codeconverse.model.answer.dtos.AnswerDTO;
+import com.matezalantoth.codeconverse.model.answer.dtos.NewAnswerDTO;
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
-import com.matezalantoth.codeconverse.model.question.NewQuestionDTO;
-import com.matezalantoth.codeconverse.model.question.QuestionDTO;
-import com.matezalantoth.codeconverse.model.user.RegisterRequestDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.NewQuestionDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

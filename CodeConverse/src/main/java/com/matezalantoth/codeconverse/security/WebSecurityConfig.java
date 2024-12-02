@@ -71,6 +71,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/tag/create").hasRole("ADMIN")
                                 .requestMatchers("/question/create").hasRole("USER")
                                 .requestMatchers("/question/update").hasRole("USER")
+                                .requestMatchers("/question/delete").hasRole("USER")
                                 .requestMatchers("/question/add-tags").hasRole("USER")
                                 .requestMatchers("/answer/create").hasRole("USER")
                                 .requestMatchers("/tag/**").permitAll()

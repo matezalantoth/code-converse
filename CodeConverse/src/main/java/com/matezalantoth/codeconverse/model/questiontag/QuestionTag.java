@@ -9,21 +9,22 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "question_tags")
 public class QuestionTag {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Getter
-    @Column(name = "question_tag_id")
     private UUID id;
 
-    @ManyToOne
     @Getter
     @Setter
+    @ManyToOne
+    @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
-    @ManyToOne
     @Getter
     @Setter
+    @ManyToOne
+    @JoinColumn(name = "tag_id", nullable = false)
     private Tag tag;
 }

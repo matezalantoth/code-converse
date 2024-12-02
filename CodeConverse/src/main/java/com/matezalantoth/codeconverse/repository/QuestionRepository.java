@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, UUID>  {
-    Optional<Question> getQuestionByQuestionId(UUID questionId);
+    Optional<Question> getQuestionsById(UUID id);
 }

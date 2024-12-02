@@ -23,7 +23,8 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             "WHERE ue.username = :username")
     Optional<UserEntity> getUserEntityWithRolesAndQuestionsByUsername(@Param("username") String username);
 
-    Optional<UserEntity> getUserEntityByUserId(UUID userId);
 
     Optional<UserEntity> getUserEntityByUsername(String username);
+
+    Optional<UserEntity> getUserEntityById(UUID id);
 }

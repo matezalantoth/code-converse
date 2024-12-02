@@ -1,4 +1,4 @@
-package com.matezalantoth.codeconverse.model.user;
+package com.matezalantoth.codeconverse.model.user.dtos;
 
 public record RegisterRequestDTO(String username, String email, String password) {
 
