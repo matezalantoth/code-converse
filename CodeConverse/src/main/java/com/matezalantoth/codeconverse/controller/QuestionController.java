@@ -1,9 +1,6 @@
 package com.matezalantoth.codeconverse.controller;
 
-import com.matezalantoth.codeconverse.model.question.dtos.NewQuestionDTO;
-import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
-import com.matezalantoth.codeconverse.model.question.dtos.QuestionUpdatesDTO;
-import com.matezalantoth.codeconverse.model.question.dtos.QuestionWithoutTagsDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.*;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
 import com.matezalantoth.codeconverse.service.QuestionService;
 import org.springframework.http.HttpStatus;
@@ -55,6 +52,11 @@ public class QuestionController {
     @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
     public ResponseEntity<Void> deleteQuestion(@RequestParam UUID id){
         questionService.deleteQuestion(id, ((UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
-    return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/main-questions")
+    public ResponseEntity<MainPageResponseDTO> getMainPageQuestions(@RequestBody MainPageRequestDTO req){
+       return ResponseEntity.ok(questionService.getMainPageQuestions(req));
     }
 }

@@ -42,6 +42,7 @@ public class AnswerService {
         answer.setAccepted(false);
         answer.setVotes(new HashSet<>());
 
+
         var question = questionRepository.getQuestionsById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
         answer.setQuestion(question);
         var poster = userRepository.getUserEntityByUsername(posterUsername).orElseThrow(() -> new NotFoundException("User of username: " + posterUsername));

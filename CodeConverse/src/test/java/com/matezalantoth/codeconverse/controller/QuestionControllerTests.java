@@ -1,6 +1,8 @@
 package com.matezalantoth.codeconverse.controller;
 
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
+import com.matezalantoth.codeconverse.model.question.dtos.MainPageRequestDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.MainPageResponseDTO;
 import com.matezalantoth.codeconverse.model.question.dtos.NewQuestionDTO;
 import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
 import com.matezalantoth.codeconverse.model.tag.dtos.NewTagDTO;
@@ -80,5 +82,21 @@ public class QuestionControllerTests {
                             .add("Authorization", "Bearer " + jwt);
                     return execution.execute(request, body);
                 }));
+    }
+
+    @Test
+    void getMainPageQuestions(){
+        var res = restTemplate.postForEntity("http://localhost:" + port + "/user/register", new RegisterRequestDTO("getMainPageQuestions", "getMainPageQuestions@gmail.com", "admin123!!"), JwtResponse.class);
+        assert res.getStatusCode().is2xxSuccessful();
+        String jwt = res.getBody().jwt();
+        setJwt(jwt);
+        for (int i = 0; i < 10; i++) {
+            var questionRes = restTemplate.postForEntity("http://localhost:" + port + "/question/create", new NewQuestionDTO("test question " + i, "test content", new HashSet<>()), QuestionDTO.class);
+            assert questionRes.getStatusCode().is2xxSuccessful();
+        }
+        var finalRes = restTemplate.postForEntity("http://localhost:" + port + "/question/main-questions",new MainPageRequestDTO(1), MainPageResponseDTO.class);
+        assert finalRes.getBody().questions() != null;
+        System.out.println(finalRes.getBody().questions().size());
+        assert finalRes.getBody().questions().size() <= 9;
     }
 }

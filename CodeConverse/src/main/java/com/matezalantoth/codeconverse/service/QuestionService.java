@@ -2,10 +2,7 @@ package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
 import com.matezalantoth.codeconverse.model.question.*;
-import com.matezalantoth.codeconverse.model.question.dtos.NewQuestionDTO;
-import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
-import com.matezalantoth.codeconverse.model.question.dtos.QuestionUpdatesDTO;
-import com.matezalantoth.codeconverse.model.question.dtos.QuestionWithoutTagsDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.*;
 import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import com.matezalantoth.codeconverse.model.tag.Tag;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
@@ -14,6 +11,7 @@ import com.matezalantoth.codeconverse.repository.QuestionTagRepository;
 import com.matezalantoth.codeconverse.repository.TagRepository;
 import com.matezalantoth.codeconverse.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -100,5 +98,12 @@ public class QuestionService {
         var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
         user.getQuestions().remove(question);
         questionRepository.delete(question);
+    }
+
+    public MainPageResponseDTO getMainPageQuestions(MainPageRequestDTO req){
+        var questions = questionRepository.findAll(Sort.by(Sort.Direction.DESC, "postedAt"));
+        var startIndex = (req.startIndex() - 1) * 10;
+        var endIndex = questions.size() < startIndex+9 ? questions.size() - 1 : startIndex+9;
+        return new MainPageResponseDTO(req.startIndex(), 1, (int) (double) (questions.size() / 10), questions.subList(startIndex, endIndex).stream().map(Question::dto).collect(Collectors.toSet()));
     }
 }

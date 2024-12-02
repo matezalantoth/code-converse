@@ -74,6 +74,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/question/delete").hasRole("USER")
                                 .requestMatchers("/question/add-tags").hasRole("USER")
                                 .requestMatchers("/answer/create").hasRole("USER")
+                                .requestMatchers("/answer/vote").hasRole("USER")
                                 .requestMatchers("/tag/**").permitAll()
                                 .requestMatchers("/user/**").permitAll()
                                 .requestMatchers("/question/**").permitAll()

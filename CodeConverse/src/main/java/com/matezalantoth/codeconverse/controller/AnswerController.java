@@ -46,7 +46,7 @@ public class AnswerController {
 
     @PutMapping("/update")
     @PreAuthorize("hasRole('ADMIN') or @answerService.isOwner(#answerId, authentication.principal.username)")
-    public ResponseEntity<AnswerDTO> updateAnswer(@RequestParam UUID answerId, AnswerUpdatesDTO updates){
+    public ResponseEntity<AnswerDTO> updateAnswer(@RequestParam UUID answerId, AnswerUpdatesDTO updates) {
        return ResponseEntity.ok(answerService.updateAnswer(answerId, updates));
     }
 
