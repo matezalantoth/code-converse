@@ -1,22 +1,24 @@
 package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
-import com.matezalantoth.codeconverse.model.tag.NewTagDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.NewTagDTO;
 import com.matezalantoth.codeconverse.model.tag.Tag;
-import com.matezalantoth.codeconverse.model.tag.TagDTO;
-import com.matezalantoth.codeconverse.model.tag.TagWithoutQuestionDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagWithoutQuestionDTO;
 import com.matezalantoth.codeconverse.repository.TagRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.UUID;
 
+@Transactional
 @Service
-public class TagClient {
+public class TagService {
 
     private final TagRepository tagRepository;
 
-    public TagClient(TagRepository tagRepository) {
+    public TagService(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
     }
 
@@ -30,7 +32,7 @@ public class TagClient {
     }
 
     public TagWithoutQuestionDTO getTag(UUID id){
-        return tagRepository.getTagByTagId(id).orElseThrow(() -> new NotFoundException("tag of id: " + id)).dtoNoQuestions();
+        return tagRepository.getTagById(id).orElseThrow(() -> new NotFoundException("tag of id: " + id)).dtoNoQuestions();
     }
 
 }

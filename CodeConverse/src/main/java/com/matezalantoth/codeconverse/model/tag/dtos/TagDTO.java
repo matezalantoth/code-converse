@@ -1,6 +1,6 @@
-package com.matezalantoth.codeconverse.model.tag;
+package com.matezalantoth.codeconverse.model.tag.dtos;
 
-import com.matezalantoth.codeconverse.model.question.QuestionDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
 
 import java.util.Set;
 import java.util.UUID;

@@ -2,6 +2,9 @@ package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
 import com.matezalantoth.codeconverse.model.user.*;
+import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
 import com.matezalantoth.codeconverse.repository.UserRepository;
 import com.matezalantoth.codeconverse.security.jwt.JwtUtils;
 import jakarta.transaction.Transactional;
@@ -18,16 +21,16 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
 
-
+@Transactional
 @Service
-public class UserClient {
+public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    public UserClient(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -55,7 +58,6 @@ public class UserClient {
         user.setAnswers(new HashSet<>());
         userRepository.save(user);
         addRoleFor(user, Role.ROLE_USER);
-        addRoleFor(user, Role.ROLE_ADMIN);
     }
 
     public String loginUser(LoginRequestDTO userDetails) throws BadRequestException {
@@ -69,7 +71,11 @@ public class UserClient {
         return jwtUtils.generateJwtToken(authentication);
     }
 
-    @Transactional
+    public void makeAdmin(String username){
+        var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("user of username: " + username));
+        addRoleFor(user, Role.ROLE_ADMIN);
+    }
+
     public UserDTO getUserByUsername(String username){
         var optUser = userRepository.getUserEntityWithRolesAndQuestionsByUsername(username);
         if(optUser.isEmpty()) {
@@ -81,6 +87,6 @@ public class UserClient {
     }
 
     public UserDTO getUserById(UUID id){
-        return userRepository.getUserEntityByUserId(id).orElseThrow(() -> new NotFoundException("user of id: " + id)).dto();
+        return userRepository.getUserEntityById(id).orElseThrow(() -> new NotFoundException("user of id: " + id)).dto();
     }
 }

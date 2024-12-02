@@ -10,6 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface TagRepository extends JpaRepository<Tag, UUID> {
-
-    Optional<Tag> getTagByTagId(UUID tagId);
+    Optional<Tag> getTagById(UUID id);
 }
