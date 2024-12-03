@@ -18,10 +18,10 @@ services:
       timeout: 5s
       start_period: 30s
 
-  app:
+  backend-server:
     image: 'code-converse:latest'
     build:
-      context: .
+      context: backend
     container_name: backend
     ports:
       - "8080:8080"
@@ -37,6 +37,18 @@ services:
         condition: service_healthy
     networks:
       - my_network
+
+  frontend-server:
+    build:
+      context: frontend
+    container_name: frontend
+    volumes:
+      - ./frontend:/usr/src/app
+    ports:
+      - "4200:4200"
+    networks:
+      - my_network
+
 
 networks:
   my_network:
