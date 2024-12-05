@@ -58,7 +58,7 @@ public class Question{
     }
 
     public QuestionDTO dto(){
-        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
+        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt,answers.stream().mapToInt(a -> a.getVotes().size()).sum() ,answers.size(), answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
     }
 
     public QuestionWithoutTagsDTO dtoNoTags(){

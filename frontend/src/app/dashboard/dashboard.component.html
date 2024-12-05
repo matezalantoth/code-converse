@@ -1,1 +1,6 @@
 <button (click)="redirectToAskQuestion()">Ask Question</button>
+<div *ngFor="let q of questions">
+  <div class="border w-2/3 m-auto">
+    {{q.title}}
+  </div>
+</div>
