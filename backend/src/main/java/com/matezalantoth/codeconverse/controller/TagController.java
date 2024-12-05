@@ -1,5 +1,6 @@
 package com.matezalantoth.codeconverse.controller;
 
+import com.matezalantoth.codeconverse.model.tag.dtos.AutocompleteResult;
 import com.matezalantoth.codeconverse.model.tag.dtos.NewTagDTO;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagDTO;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagWithoutQuestionDTO;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -30,5 +32,10 @@ public class TagController {
     @GetMapping
     public ResponseEntity<TagWithoutQuestionDTO> getTag(@RequestParam UUID id){
         return ResponseEntity.ok(tagService.getTag(id));
+    }
+
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<AutocompleteResult>> getMatchingTags(@RequestParam String substring){
+        return ResponseEntity.ok(tagService.getMatchingTags(substring.toLowerCase()));
     }
 }

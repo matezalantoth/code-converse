@@ -36,13 +36,8 @@ export class LoginComponent {
 
   login(userData: LoginData) {
     this.api.login(userData).subscribe((res) => {
-      if (!res.email) {
-        console.log('Something went wrong...')
-        return;
-      }
       this.responseData = res;
-      this.authService.setToken(this.responseData.token);
-      console.log(res.token)
+      this.authService.setToken(this.responseData.jwt);
       this.nav.redirectToDashboard();
     })
   }

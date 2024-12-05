@@ -20,4 +20,9 @@ export class NavigationService {
   redirectToDashboard() {
     this.router.navigate(['/']);
   }
+
+  redirectToAskQuestion() {
+
+    this.router.navigate(['/ask']);
+  }
 }

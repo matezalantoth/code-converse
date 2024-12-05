@@ -8,6 +8,7 @@ export class AuthService {
   private loggedIn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor() {
+    this.loggedIn.next(this.getToken() != null);
   }
 
   getToken(): string | null {

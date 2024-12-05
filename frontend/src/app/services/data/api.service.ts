@@ -22,4 +22,10 @@ export class ApiService {
   signup(data: SignupData): Observable<any> {
     return this.http.post(this.apiUrl + '/user/register', data)
   }
+
+  getDashQuestions(): Observable<any> {
+    return this.http.get(this.apiUrl + '/question/main-questions')
+  }
+
+
 }
