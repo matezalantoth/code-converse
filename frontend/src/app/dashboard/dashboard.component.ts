@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {ApiService} from "../services/data/api.service";
+import {NavigationService} from "../services/nav/nav.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -8,6 +9,10 @@ import {ApiService} from "../services/data/api.service";
 })
 export class DashboardComponent {
 
-  constructor(private api: ApiService) {
+  constructor(private api: ApiService, private nav: NavigationService) {
+  }
+
+  redirectToAskQuestion(){
+    this.nav.redirectToAskQuestion();
   }
 }

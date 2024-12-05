@@ -8,13 +8,17 @@ import {ReactiveFormsModule} from "@angular/forms";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import { NavbarComponent } from './navbar/navbar.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { SignupComponent } from './signup/signup.component';
+import { AskQuestionComponent } from './ask-question/ask-question.component';
 
 
 @NgModule({ declarations: [
     AppComponent,
     LoginComponent,
     NavbarComponent,
-    DashboardComponent
+    DashboardComponent,
+    SignupComponent,
+    AskQuestionComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
