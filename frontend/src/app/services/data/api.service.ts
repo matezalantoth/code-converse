@@ -24,7 +24,17 @@ export class ApiService {
   }
 
   getDashQuestions(): Observable<any> {
-    return this.http.get(this.apiUrl + '/question/main-questions')
+    return this.http.post(this.apiUrl + '/question/main-questions', {"startIndex": 1})
+  }
+
+  tagsAutocomplete(substring: string, existingTags: any): Observable<any>{
+    return this.http.post(this.apiUrl + '/tag/autocomplete?substring=' + substring, existingTags)
+  }
+
+  postNewQuestion(questionData: any): Observable<any>{
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    const url = this.apiUrl + '/question/create';
+    return this.http.post<any>(url, questionData, { headers });
   }
 
 
