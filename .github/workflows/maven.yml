@@ -28,5 +28,5 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build and Test with Maven
-      run: mvn -B package --file CodeConverse/pom.xml
+      run: mvn -B package --file backend/pom.xml
 
