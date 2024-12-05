@@ -22,7 +22,6 @@ services:
     image: 'code-converse:latest'
     build:
       context: backend
-    container_name: backend
     ports:
       - "8080:8080"
     environment:
@@ -40,10 +39,10 @@ services:
 
   frontend-server:
     build:
-      context: frontend
-    container_name: frontend
+      context: ./frontend
     volumes:
-      - ./frontend:/usr/src/app
+      - ./frontend:/my-app
+      - /my-app/node_modules
     ports:
       - "4200:4200"
     networks:
