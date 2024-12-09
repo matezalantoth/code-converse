@@ -36,6 +36,7 @@ public class TagService {
         return tagRepository.getTagById(id).orElseThrow(() -> new NotFoundException("tag of id: " + id)).dtoNoQuestions();
     }
 
+    //maybe filter first
     public List<AutocompleteResult> getMatchingTags(String substring, Set<AutocompleteResult> chosenTags) {
         if(substring.isEmpty()) {
             return new ArrayList<>();
@@ -48,7 +49,7 @@ public class TagService {
         var tags = tagRepository.findAll();
         var substringArray = substring.toCharArray();
 
-        return tags.stream().map(t -> {
+        return tags.stream().filter(t -> !chosenTagIds.contains(t.getId())).map(t -> {
                     int currentSubstringIndex = 0;
                     HashMap<Integer, Integer> value = new HashMap<>();
                     char[] characters = t.getName().toLowerCase().toCharArray();
@@ -78,8 +79,6 @@ public class TagService {
                                     .mapToInt(i -> i).sum() + valueAdded);
                 })
                 .sorted(Comparator.comparingInt(AutocompleteResult::score).reversed())
-                .limit(20)
-                .filter(t -> !chosenTagIds.contains(t.tag().id()))
                 .limit(8)
                 .toList();
     }

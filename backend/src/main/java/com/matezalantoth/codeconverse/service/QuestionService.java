@@ -102,6 +102,9 @@ public class QuestionService {
 
     public MainPageResponseDTO getMainPageQuestions(MainPageRequestDTO req){
         var questions = questionRepository.findAll(Sort.by(Sort.Direction.DESC, "postedAt"));
+        if(questions.isEmpty()) {
+            return new MainPageResponseDTO(req.startIndex(), 1, 1, new HashSet<>());
+        }
         var startIndex = (req.startIndex() - 1) * 10;
         var endIndex = questions.size() < startIndex+9 ? questions.size() - 1 : startIndex+9;
         return new MainPageResponseDTO(req.startIndex(), 1, (int) (double) (questions.size() / 10), questions.subList(startIndex, endIndex).stream().map(Question::dto).collect(Collectors.toSet()));

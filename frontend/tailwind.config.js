@@ -3,7 +3,14 @@ module.exports = {
     "./src/**/*.{html,ts}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        "lato": ['Lato', 'sans-serif']
+      },
+      borderWidth: {
+        '1': '1px', // Define a border width of 1px
+      },
+    },
   },
   plugins: [],
 }

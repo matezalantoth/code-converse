@@ -26,6 +26,7 @@ public class Question{
 
     @Getter
     @Setter
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Getter
