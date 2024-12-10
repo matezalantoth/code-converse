@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {ApiService} from "../services/data/api.service";
-import {AuthService} from "../services/auth/auth.service";
-import {NavigationService} from "../services/nav/nav.service";
-import {SignupData} from "../shared/models/signupData";
-import {LoginData} from "../shared/models/loginData";
+import {ApiService} from "../../services/data/api.service";
+import {AuthService} from "../../services/auth/auth.service";
+import {NavigationService} from "../../services/nav/nav.service";
+import {SignupData} from "../../shared/models/signupData";
+import {LoginData} from "../../shared/models/loginData";
 
 @Component({
   selector: 'app-signup',

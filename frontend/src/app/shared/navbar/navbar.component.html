@@ -1,0 +1,11 @@
+<nav class="fixed h-8 navbar p-4 w-screen flex justify-between items-center text-white">
+  <div class="flex items-center ml-auto">
+    <button
+      (click)="logout()"
+      class="bg-red-500 hover:bg-red-600 text-white mb-8 font-semibold py-1 px-3 rounded shadow-sm transition duration-300 ease-in-out ml-4"
+      *ngIf="isLoggedIn | async">
+      Logout
+    </button>
+  </div>
+</nav>
+<hr class="border-t border-gray-300 fixed top-16 w-full">

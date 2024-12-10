@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import {AuthService} from "../services/auth/auth.service";
-import {NavigationService} from "../services/nav/nav.service";
+import {AuthService} from "../../services/auth/auth.service";
+import {NavigationService} from "../../services/nav/nav.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {ApiService} from "../services/data/api.service";
+import {ApiService} from "../../services/data/api.service";
 
 @Component({
   selector: 'app-ask-question',

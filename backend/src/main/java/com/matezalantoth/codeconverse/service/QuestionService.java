@@ -36,8 +36,8 @@ public class QuestionService {
         this.questionTagRepository = questionTagRepository;
     }
 
-    public QuestionWithoutTagsDTO getQuestionById(UUID id){
-       return questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id)).dtoNoTags();
+    public QuestionDTO getQuestionById(UUID id){
+       return questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id)).dto();
     }
 
     public QuestionDTO createQuestion(NewQuestionDTO newQuestion, String posterUsername){
@@ -104,6 +104,9 @@ public class QuestionService {
         var questions = questionRepository.findAll(Sort.by(Sort.Direction.DESC, "postedAt"));
         if(questions.isEmpty()) {
             return new MainPageResponseDTO(req.startIndex(), 1, 1, new HashSet<>());
+        }
+        if(questions.size() == 1) {
+            return new MainPageResponseDTO(req.startIndex(), 1, 1, questions.stream().map(Question::dto).collect(Collectors.toSet()));
         }
         var startIndex = (req.startIndex() - 1) * 10;
         var endIndex = questions.size() < startIndex+9 ? questions.size() - 1 : startIndex+9;

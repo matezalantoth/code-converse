@@ -1,4 +1,4 @@
-<div class='relative flex justify-center top-24'>
+<div class='relative flex top-24'>
   <div
     class='relative w-full max-w-4xl p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 text-black'>
     <form class='space-y-6' action='#' [formGroup]="questionForm" (ngSubmit)="onSubmit($event)">
@@ -38,8 +38,8 @@
         </label>
         <div>
           <span *ngIf="tags.length > 0">
-            <p class="bg-gray-100 inline-block mr-2 max-w-fit text-xs px-0.5 py-1 mb-2 font-bold rounded-md" *ngFor="let tag of tags">{{ tag.tag.name }}
-              <button (click)="removeTag(tag)" class="font-bold ml-0.5 rounded-md text-md px-1 py-0.5 hover:bg-gray-700 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
+            <p class="bg-gray-100 px-2 inline-block mr-2 max-w-fit text-xs py-1 mb-2 font-bold rounded-md" *ngFor="let tag of tags">{{ tag.tag.name }}
+              <button (click)="removeTag(tag)" class="font-bold ml-0.5 rounded-md text-md py-0.5 hover:bg-gray-700 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
             </p>
           </span>
         </div>

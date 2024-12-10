@@ -27,6 +27,10 @@ export class ApiService {
     return this.http.post(this.apiUrl + '/question/main-questions', {"startIndex": 1})
   }
 
+  getSeparateQuestion(questionId: string): Observable<any> {
+    return this.http.get(this.apiUrl + '/question?id=' + questionId);
+  }
+
   tagsAutocomplete(substring: string, existingTags: any): Observable<any>{
     return this.http.post(this.apiUrl + '/tag/autocomplete?substring=' + substring, existingTags)
   }
@@ -36,6 +40,27 @@ export class ApiService {
     const url = this.apiUrl + '/question/create';
     return this.http.post<any>(url, questionData, { headers });
   }
+
+  calculatePostedAt(postedAt: any){
+    const now = new Date();
+    const tempPostedAt = new Date(postedAt);
+    let offset = tempPostedAt.getTimezoneOffset() * -1;
+    const postedDate = new Date(tempPostedAt.getTime() + offset * 60000);
+    // @ts-ignore
+    let differenceInSeconds = Math.floor(((now - postedDate) / 1000));
+    if (differenceInSeconds < 60) {
+      return `${differenceInSeconds} second${differenceInSeconds === 1 ? '' : 's'} ago`;
+    } else if (differenceInSeconds < 3600) {
+      const minutes = Math.floor(differenceInSeconds / 60);
+      return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+    } else if (differenceInSeconds < 86400) {
+      const hours = Math.floor(differenceInSeconds / 3600);
+      return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+    }
+    const days = Math.floor(differenceInSeconds / 86400);
+    return `${days} days ago`;
+  };
+
 
 
 }
