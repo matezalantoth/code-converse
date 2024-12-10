@@ -11,7 +11,8 @@ module.exports = {
         '1': '1px', // Define a border width of 1px
       },
       width: {
-        '78%': '78%'
+        '78%': '78%',
+        '97%': '97%'
       }
     },
   },

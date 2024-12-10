@@ -41,6 +41,12 @@ export class ApiService {
     return this.http.post<any>(url, questionData, { headers });
   }
 
+  postNewAnswer(questionId: string, answerData: any): Observable<any>{
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    const url = this.apiUrl + '/answer/create?questionId=' + questionId;
+    return this.http.post<any>(url, answerData, { headers });
+  }
+
   calculatePostedAt(postedAt: any){
     const now = new Date();
     const tempPostedAt = new Date(postedAt);

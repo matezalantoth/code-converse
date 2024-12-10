@@ -36,8 +36,8 @@ public class QuestionService {
         this.questionTagRepository = questionTagRepository;
     }
 
-    public QuestionDTO getQuestionById(UUID id){
-       return questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id)).dto();
+    public FullQuestionDTO getQuestionById(UUID id){
+       return questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id)).fullDto();
     }
 
     public QuestionDTO createQuestion(NewQuestionDTO newQuestion, String posterUsername){
