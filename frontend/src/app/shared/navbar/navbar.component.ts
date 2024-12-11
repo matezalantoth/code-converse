@@ -19,4 +19,8 @@ export class NavbarComponent {
     this.auth.logout()
     this.nav.redirectToLogin()
   }
+
+  redirectToAskQuestion(){
+    this.nav.redirectToAskQuestion();
+  }
 }
