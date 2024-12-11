@@ -5,6 +5,8 @@ import com.matezalantoth.codeconverse.model.user.*;
 import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
+import com.matezalantoth.codeconverse.model.vote.Vote;
+import com.matezalantoth.codeconverse.model.vote.dtos.UserVotesDTO;
 import com.matezalantoth.codeconverse.repository.UserRepository;
 import com.matezalantoth.codeconverse.security.jwt.JwtUtils;
 import jakarta.transaction.Transactional;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -84,6 +87,11 @@ public class UserService {
         var user = optUser.get();
         Hibernate.initialize(user.getRoles());
         return user.dto();
+    }
+
+    public UserVotesDTO getVotesByUsername(String username){
+        var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("user of username: " + username));
+        return new UserVotesDTO(user.getVotes().stream().map(Vote::slimDto).collect(Collectors.toSet()));
     }
 
     public UserDTO getUserById(UUID id){

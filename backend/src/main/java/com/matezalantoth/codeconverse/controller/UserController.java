@@ -4,6 +4,7 @@ import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
 import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
+import com.matezalantoth.codeconverse.model.vote.dtos.UserVotesDTO;
 import com.matezalantoth.codeconverse.service.UserService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -48,5 +49,12 @@ public class UserController {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         userService.makeAdmin(username);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/votes")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UserVotesDTO> getVotes(){
+        var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        return ResponseEntity.ok().body(userService.getVotesByUsername(username));
     }
 }

@@ -4,6 +4,8 @@ import {AuthService} from "../auth/auth.service";
 import {Observable} from "rxjs";
 import {LoginData} from "../../shared/models/loginData";
 import {SignupData} from "../../shared/models/signupData";
+import {Vote} from "../../shared/models/vote";
+import {VoteType} from "../../shared/models/voteType";
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +47,16 @@ export class ApiService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     const url = this.apiUrl + '/answer/create?questionId=' + questionId;
     return this.http.post<any>(url, answerData, { headers });
+  }
+
+  getUserVotes(): Observable<any>{
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.get(this.apiUrl + "/user/votes", { headers });
+  }
+
+  vote(vote: VoteType, answerId: string): Observable<any>{
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.patch(this.apiUrl + '/answer/vote?answerId='+answerId, { type: vote }, { headers });
   }
 
   calculatePostedAt(postedAt: any){

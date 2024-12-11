@@ -12,6 +12,7 @@ import { SignupComponent } from './pages/signup/signup.component';
 import { AskQuestionComponent } from './pages/ask-question/ask-question.component';
 import { QuestionPageComponent } from './pages/question-page/question-page.component';
 import { SidebarComponent } from './shared/sidebar/sidebar.component';
+import { AnswerComponent } from './pages/answer/answer.component';
 
 
 @NgModule({ declarations: [
@@ -22,7 +23,8 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
     SignupComponent,
     AskQuestionComponent,
     QuestionPageComponent,
-    SidebarComponent
+    SidebarComponent,
+    AnswerComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
