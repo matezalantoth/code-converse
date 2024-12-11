@@ -8,4 +8,6 @@ import '@fortawesome/fontawesome-free/css/all.css';
 })
 export class AppComponent {
   title = 'frontend';
+
+
 }

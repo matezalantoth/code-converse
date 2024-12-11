@@ -1,6 +1,7 @@
 package com.matezalantoth.codeconverse.model.question;
 
 import com.matezalantoth.codeconverse.model.answer.Answer;
+import com.matezalantoth.codeconverse.model.question.dtos.FullQuestionDTO;
 import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
 import com.matezalantoth.codeconverse.model.question.dtos.QuestionWithoutTagsDTO;
 import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
@@ -56,6 +57,10 @@ public class Question{
 
     public int calculateImpressions(){
         return answers.stream().mapToInt(Answer::calculateVoteValue).sum() + (answers.size() * 10);
+    }
+
+    public FullQuestionDTO fullDto(){
+        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt,answers.stream().mapToInt(a -> a.getVotes().size()).sum(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
     }
 
     public QuestionDTO dto(){

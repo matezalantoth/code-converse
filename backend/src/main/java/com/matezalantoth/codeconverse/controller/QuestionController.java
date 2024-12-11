@@ -32,7 +32,7 @@ public class QuestionController {
     }
 
     @GetMapping
-    public ResponseEntity<QuestionWithoutTagsDTO> getQuestionById(@RequestParam UUID id){
+    public ResponseEntity<FullQuestionDTO> getQuestionById(@RequestParam UUID id){
        return ResponseEntity.ok(questionService.getQuestionById(id));
     }
 

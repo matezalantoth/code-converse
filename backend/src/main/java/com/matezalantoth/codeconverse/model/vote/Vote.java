@@ -2,6 +2,7 @@ package com.matezalantoth.codeconverse.model.vote;
 
 import com.matezalantoth.codeconverse.model.answer.Answer;
 import com.matezalantoth.codeconverse.model.user.UserEntity;
+import com.matezalantoth.codeconverse.model.vote.dtos.SlimVoteDTO;
 import com.matezalantoth.codeconverse.model.vote.dtos.VoteDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -36,6 +37,10 @@ public class Vote {
 
     public VoteDTO dto(){
         return new VoteDTO(voteId, type, answer.getId(), voter.getId());
+    }
+
+    public SlimVoteDTO slimDto(){
+        return new SlimVoteDTO(answer.getId(), type);
     }
 
 }

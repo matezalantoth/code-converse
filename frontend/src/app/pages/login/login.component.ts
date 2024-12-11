@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import {LoginData} from "../shared/models/loginData";
+import {LoginData} from "../../shared/models/loginData";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "../services/auth/auth.service";
-import {NavigationService} from "../services/nav/nav.service";
-import {ApiService} from "../services/data/api.service";
+import {AuthService} from "../../services/auth/auth.service";
+import {NavigationService} from "../../services/nav/nav.service";
+import {ApiService} from "../../services/data/api.service";
 
 @Component({
   selector: 'app-login',
@@ -29,7 +29,6 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       const data: any = this.loginForm.value;
       const loginData = {email: data.email, password: data.password};
-      console.log(loginData);
       this.login(loginData);
     }
   }
