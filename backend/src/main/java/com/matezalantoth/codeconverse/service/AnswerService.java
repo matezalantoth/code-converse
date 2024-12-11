@@ -120,7 +120,7 @@ public class AnswerService {
 
     public AnswerDTO accept(UUID answerId){
         var answer = answerRepository.getAnswerById(answerId).orElseThrow(() -> new NotFoundException("Answer of id: " + answerId));
-        answer.setAccepted(true);
+        answer.setAccepted(!answer.isAccepted());
         return answer.dto();
     }
 

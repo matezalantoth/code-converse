@@ -16,7 +16,7 @@
   </div>
   <h2 class="text-lg mb-4 ml-9">{{question.answers.length}} Answer{{question.answers.length > 1 ? 's' : ''}}</h2>
   <div *ngFor="let answer of question.answers">
-    <app-answer [answer]="answer" [userVotes]="userVotes"></app-answer>
+    <app-answer [answer]="answer" [userVotes]="userVotes" [owner]="owner" [question]="question" (questionChange)="onQuestionChange($event)">></app-answer>
   </div>
   <div>
     <h2 class="text-xl mt-4">Your Answer</h2>

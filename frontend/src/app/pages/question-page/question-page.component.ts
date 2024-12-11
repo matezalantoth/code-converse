@@ -1,4 +1,4 @@
-import {Component, OnChanges,  SimpleChanges} from '@angular/core';
+import {ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {NavigationService} from "../../services/nav/nav.service";
 import {ApiService} from "../../services/data/api.service";
@@ -15,11 +15,14 @@ import {Vote} from "../../shared/models/vote";
 
 export class QuestionPageComponent {
 
+  @Input()
   protected question!: Question;
 
   protected showRequired: boolean;
 
   protected userVotes!: Vote[];
+
+  protected owner!: boolean;
 
   protected answerForm: FormGroup;
 
@@ -30,8 +33,15 @@ export class QuestionPageComponent {
     this.showRequired = false;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.question.answers.sort(a => a.votes);
+  onQuestionChange(updatedQuestion: any): void {
+    this.question = updatedQuestion;
+    this.sortAnswers();
+  }
+
+  sortAnswers(): void {
+    if (this.question?.answers) {
+      this.question.answers = [...this.question.answers.sort((a: any, b: any) => b.votes - a.votes)];
+    }
   }
 
   onSubmit(event: Event): void {
@@ -40,9 +50,7 @@ export class QuestionPageComponent {
         event.preventDefault()
         if (this.answerForm.valid){
           this.api.postNewAnswer(this.question.id, this.answerForm.value).subscribe(res => {
-            console.log(res);
             this.question.answers.push(res);
-            console.log(this.question);
           })
           return;
         }
@@ -58,10 +66,14 @@ export class QuestionPageComponent {
       if(params['questionId']){
         this.api.getSeparateQuestion(params['questionId']).subscribe(res => {
           this.question = res;
+          this.sortAnswers();
         });
         this.api.getUserVotes().subscribe(res => {
           this.userVotes = res.votes;
         });
+        this.api.isOwner(params['questionId']).subscribe(res => {
+          this.owner = res;
+        })
         return;
       }
       this.nav.redirectToDashboard();

@@ -59,6 +59,16 @@ export class ApiService {
     return this.http.patch(this.apiUrl + '/answer/vote?answerId='+answerId, { type: vote }, { headers });
   }
 
+  isOwner(questionId: string): Observable<any>{
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.get(this.apiUrl + '/question/isOwner?questionId=' + questionId, { headers })
+  }
+
+  accept(questionId: string, answerId: string){
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.patch(this.apiUrl + '/answer/accept?questionId=' + questionId + '&answerId=' + answerId, {},{ headers });
+  }
+
   calculatePostedAt(postedAt: any){
     const now = new Date();
     const tempPostedAt = new Date(postedAt);

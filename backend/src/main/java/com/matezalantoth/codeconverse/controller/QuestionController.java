@@ -36,6 +36,12 @@ public class QuestionController {
        return ResponseEntity.ok(questionService.getQuestionById(id));
     }
 
+    @GetMapping("/isOwner")
+    @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#questionId, authentication.principal.username)")
+    public ResponseEntity<Boolean> isOwner(@RequestParam UUID questionId){
+        return ResponseEntity.ok(true);
+    }
+
     @PutMapping("/update")
     @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
     public ResponseEntity<QuestionDTO> updateQuestionById(@RequestParam UUID id, @RequestBody QuestionUpdatesDTO updates){
