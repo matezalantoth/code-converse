@@ -3,6 +3,7 @@ package com.matezalantoth.codeconverse.model.user;
 import com.matezalantoth.codeconverse.model.answer.Answer;
 import com.matezalantoth.codeconverse.model.question.Question;
 import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
+import com.matezalantoth.codeconverse.model.vote.QuestionVote;
 import com.matezalantoth.codeconverse.model.vote.Vote;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -58,6 +59,11 @@ public class UserEntity {
     @Getter
     @OneToMany(mappedBy = "voter", cascade = CascadeType.REMOVE)
     private Set<Vote> votes;
+
+    @Setter
+    @Getter
+    @OneToMany(mappedBy = "voter", cascade = CascadeType.REMOVE)
+    private Set<QuestionVote> questionVotes;
 
     public UserDTO dto(){
         return new UserDTO(id, username, questions.stream().map(Question::dto).collect(Collectors.toSet()), answers.stream().map(Answer::dto).collect(Collectors.toSet()));

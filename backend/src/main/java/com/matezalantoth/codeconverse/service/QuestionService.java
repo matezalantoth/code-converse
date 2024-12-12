@@ -1,15 +1,17 @@
 package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
+import com.matezalantoth.codeconverse.model.answer.dtos.AnswerDTO;
 import com.matezalantoth.codeconverse.model.question.*;
 import com.matezalantoth.codeconverse.model.question.dtos.*;
 import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import com.matezalantoth.codeconverse.model.tag.Tag;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
-import com.matezalantoth.codeconverse.repository.QuestionRepository;
-import com.matezalantoth.codeconverse.repository.QuestionTagRepository;
-import com.matezalantoth.codeconverse.repository.TagRepository;
-import com.matezalantoth.codeconverse.repository.UserRepository;
+import com.matezalantoth.codeconverse.model.vote.QuestionVote;
+import com.matezalantoth.codeconverse.model.vote.Vote;
+import com.matezalantoth.codeconverse.model.vote.VoteType;
+import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
+import com.matezalantoth.codeconverse.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -28,12 +30,16 @@ public class QuestionService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final QuestionTagRepository questionTagRepository;
+    private final VoteRepository voteRepository;
+    private final QuestionVoteRepository questionVoteRepository;
 
-    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository) {
+    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository, VoteRepository voteRepository, QuestionVoteRepository questionVoteRepository) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.questionTagRepository = questionTagRepository;
+        this.voteRepository = voteRepository;
+        this.questionVoteRepository = questionVoteRepository;
     }
 
     public FullQuestionDTO getQuestionById(UUID id){
@@ -47,6 +53,7 @@ public class QuestionService {
         question.setPostedAt(new Date());
         question.setAnswers(new HashSet<>());
         question.setQuestionTags(new HashSet<>());
+        question.setVotes(new HashSet<>());
 
         var poster = userRepository.getUserEntityByUsername(posterUsername).orElseThrow(() -> new NotFoundException("user of username: " + posterUsername));
         question.setPoster(poster);
@@ -76,6 +83,57 @@ public class QuestionService {
     public boolean isOwner(UUID id, String username){
         var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
         return question.getPoster().getUsername().equalsIgnoreCase(username);
+    }
+
+    public QuestionDTO addVote(UUID questionId, String voterUsername, NewVoteDTO newVote){
+
+        var question = questionRepository.getQuestionsById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
+        var voter = userRepository.getUserEntityByUsername(voterUsername).orElseThrow(() -> new NotFoundException("User of username: " + voterUsername));
+
+        var existingSameTypeVote = voter
+                .getQuestionVotes()
+                .stream()
+                .filter(v ->
+                        v.getType().equals(newVote.type()) &&
+                                v.getQuestion().getId().equals(question.getId()))
+                .findFirst();
+
+        if(existingSameTypeVote.isPresent()) {
+            return removeVote(existingSameTypeVote.get(), questionId);
+        }
+
+        var existingDiffTypeVote = voter
+                .getQuestionVotes()
+                .stream()
+                .filter(v ->
+                        v.getQuestion().getId().equals(questionId))
+                .findFirst();
+
+        if(existingDiffTypeVote.isPresent()) {
+            return changeVoteType(existingDiffTypeVote.get(), questionId);
+        }
+
+        var vote = new QuestionVote();
+        vote.setType(newVote.type());
+        vote.setVoter(voter);
+        vote.setQuestion(question);
+
+        questionVoteRepository.save(vote);
+        question.getVotes().add(vote);
+        voter.getQuestionVotes().add(vote);
+        return question.dto();
+    }
+
+    private QuestionDTO removeVote(QuestionVote existingVote, UUID relevantQuestionId){
+        existingVote.getQuestion().getVotes().remove(existingVote);
+        existingVote.getVoter().getQuestionVotes().remove(existingVote);
+        questionVoteRepository.removeQuestionVoteByVoteId(existingVote.getVoteId());
+        return questionRepository.getQuestionsById(relevantQuestionId).orElseThrow(() -> new NotFoundException("Question of id: " + relevantQuestionId)).dto();
+    }
+
+    private QuestionDTO changeVoteType(QuestionVote vote, UUID relevantQuestionId){
+        vote.setType(vote.getType().equals(VoteType.UPVOTE) ? VoteType.DOWNVOTE : VoteType.UPVOTE);
+        return questionRepository.getQuestionsById(relevantQuestionId).orElseThrow(() -> new NotFoundException("Question of id: " + relevantQuestionId)).dto();
     }
 
     public QuestionDTO addTags(UUID id, Set<TagOfQuestionDTO> tagIds){
