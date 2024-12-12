@@ -5,6 +5,7 @@ import com.matezalantoth.codeconverse.model.user.*;
 import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
+import com.matezalantoth.codeconverse.model.vote.QuestionVote;
 import com.matezalantoth.codeconverse.model.vote.Vote;
 import com.matezalantoth.codeconverse.model.vote.dtos.UserVotesDTO;
 import com.matezalantoth.codeconverse.repository.UserRepository;
@@ -58,6 +59,7 @@ public class UserService {
         user.setCreatedAt(new Date());
         user.setRoles(new HashSet<>());
         user.setQuestions(new HashSet<>());
+        user.setQuestionVotes(new HashSet<>());
         user.setAnswers(new HashSet<>());
         userRepository.save(user);
         addRoleFor(user, Role.ROLE_USER);
@@ -91,7 +93,10 @@ public class UserService {
 
     public UserVotesDTO getVotesByUsername(String username){
         var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("user of username: " + username));
-        return new UserVotesDTO(user.getVotes().stream().map(Vote::slimDto).collect(Collectors.toSet()));
+        var answerVotes = user.getVotes().stream().map(Vote::slimDto).collect(Collectors.toSet());
+        var questionVotes = user.getQuestionVotes().stream().map(QuestionVote::slimDto).collect(Collectors.toSet());
+        answerVotes.addAll(questionVotes);
+        return new UserVotesDTO(answerVotes);
     }
 
     public UserDTO getUserById(UUID id){

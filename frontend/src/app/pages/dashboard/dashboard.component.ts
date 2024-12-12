@@ -17,6 +17,7 @@ export class DashboardComponent {
        this.nextPage = res.currentPage + 1;
        this.maxPage = res.maxPage;
        this.questions = res.questions;
+       console.log(this.questions);
     })
 
   }

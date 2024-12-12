@@ -4,5 +4,5 @@ import com.matezalantoth.codeconverse.model.vote.VoteType;
 
 import java.util.UUID;
 
-public record SlimVoteDTO(UUID answerId, VoteType voteType) {
+public record SlimVoteDTO(UUID id, VoteType voteType) {
 }

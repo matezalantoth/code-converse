@@ -1,7 +1,9 @@
 package com.matezalantoth.codeconverse.controller;
 
+import com.matezalantoth.codeconverse.model.answer.dtos.AnswerDTO;
 import com.matezalantoth.codeconverse.model.question.dtos.*;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
+import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
 import com.matezalantoth.codeconverse.service.QuestionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +61,13 @@ public class QuestionController {
     public ResponseEntity<Void> deleteQuestion(@RequestParam UUID id){
         questionService.deleteQuestion(id, ((UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/vote")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<QuestionDTO> voteOnAnswer(@RequestBody NewVoteDTO newVote, @RequestParam UUID questionId){
+        var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        return ResponseEntity.ok(questionService.addVote(questionId, username, newVote));
     }
 
     @PostMapping("/main-questions")
