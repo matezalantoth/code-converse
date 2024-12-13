@@ -97,6 +97,6 @@ public class QuestionControllerTests {
         var finalRes = restTemplate.postForEntity("http://localhost:" + port + "/question/main-questions",new MainPageRequestDTO(1), MainPageResponseDTO.class);
         assert finalRes.getBody().questions() != null;
         System.out.println(finalRes.getBody().questions().size());
-        assert finalRes.getBody().questions().size() <= 9;
+        assert finalRes.getBody().questions().size() == 10;
     }
 }

@@ -7,6 +7,7 @@ import com.matezalantoth.codeconverse.model.question.dtos.QuestionWithoutTagsDTO
 import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import com.matezalantoth.codeconverse.model.user.UserEntity;
 import com.matezalantoth.codeconverse.model.vote.QuestionVote;
+import com.matezalantoth.codeconverse.model.vote.VoteType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,18 +55,20 @@ public class Question{
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     private Set<QuestionVote> votes;
 
-
+    public int calculateVoteValue(){
+        return votes.stream().mapToInt(v -> v.getType().equals(VoteType.UPVOTE) ? 1 : -1).sum();
+    }
 
     public int calculateImpressions(){
         return answers.stream().mapToInt(Answer::calculateVoteValue).sum() + (answers.size() * 10);
     }
 
     public FullQuestionDTO fullDto(){
-        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, votes.size(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
+        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
     }
 
     public QuestionDTO dto(){
-        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, votes.size() ,answers.size(), answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
+        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue() ,answers.size(), answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
     }
 
     public QuestionWithoutTagsDTO dtoNoTags(){

@@ -158,16 +158,26 @@ public class QuestionService {
         questionRepository.delete(question);
     }
 
-    public MainPageResponseDTO getMainPageQuestions(MainPageRequestDTO req){
+    public MainPageResponseDTO getMainPageQuestions(MainPageRequestDTO req) {
         var questions = questionRepository.findAll(Sort.by(Sort.Direction.DESC, "postedAt"));
-        if(questions.isEmpty()) {
+        if (questions.isEmpty()) {
             return new MainPageResponseDTO(req.startIndex(), 1, 1, new HashSet<>());
         }
-        if(questions.size() == 1) {
-            return new MainPageResponseDTO(req.startIndex(), 1, 1, questions.stream().map(Question::dto).collect(Collectors.toSet()));
+        var startIndex = Math.max((req.startIndex() - 1) * 10, 0);
+        var totalPages = (int) Math.ceil((double) questions.size() / 10);
+        var endIndex = Math.min(startIndex + 10, questions.size());
+
+        if (startIndex >= questions.size()) {
+            return new MainPageResponseDTO(req.startIndex(), 1, totalPages, new HashSet<>());
         }
-        var startIndex = (req.startIndex() - 1) * 10;
-        var endIndex = questions.size() < startIndex+9 ? questions.size() - 1 : startIndex+9;
-        return new MainPageResponseDTO(req.startIndex(), 1, (int) (double) (questions.size() / 10), questions.subList(startIndex, endIndex).stream().map(Question::dto).collect(Collectors.toSet()));
+        return new MainPageResponseDTO(
+                req.startIndex(),
+                1,
+                totalPages,
+                questions.subList(startIndex, endIndex).stream()
+                        .map(Question::dto)
+                        .collect(Collectors.toSet())
+        );
     }
+
 }
