@@ -1,6 +1,6 @@
 import {VoteType} from "./voteType";
 
 export interface Vote {
-  answerId: string,
+  id: string,
   voteType: VoteType
 }

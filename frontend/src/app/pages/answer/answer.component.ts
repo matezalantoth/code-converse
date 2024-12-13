@@ -70,7 +70,7 @@ export class AnswerComponent implements OnChanges {
   }
 
   private checkAlreadyVoted(answerId: string): void {
-    const existingVote = this.userVotes.find(v => v.answerId === answerId);
+    const existingVote = this.userVotes.find(v => v.id === answerId);
     this.currentVote = existingVote ? existingVote.voteType : VoteType.NOVOTE;
   }
 

@@ -59,6 +59,11 @@ export class ApiService {
     return this.http.patch(this.apiUrl + '/answer/vote?answerId='+answerId, { type: vote }, { headers });
   }
 
+  voteQuestion(vote: VoteType, questionId: string): Observable<any>{
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.patch(this.apiUrl + '/question/vote?questionId='+questionId, { type: vote }, { headers });
+  }
+
   isOwner(questionId: string): Observable<any>{
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     return this.http.get(this.apiUrl + '/question/isOwner?questionId=' + questionId, { headers })
