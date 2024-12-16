@@ -5,6 +5,7 @@ import com.matezalantoth.codeconverse.model.answer.Answer;
 import com.matezalantoth.codeconverse.model.answer.dtos.AnswerDTO;
 import com.matezalantoth.codeconverse.model.answer.dtos.AnswerUpdatesDTO;
 import com.matezalantoth.codeconverse.model.answer.dtos.NewAnswerDTO;
+import com.matezalantoth.codeconverse.model.reputation.Reputation;
 import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
 import com.matezalantoth.codeconverse.model.vote.Vote;
 import com.matezalantoth.codeconverse.model.vote.VoteType;
@@ -27,12 +28,14 @@ public class AnswerService {
     private final UserRepository userRepository;
     private final AnswerRepository answerRepository;
     private final VoteRepository voteRepository;
+    private final ReputationService reputationService;
 
-    public AnswerService(QuestionRepository questionRepository, UserRepository userRepository, AnswerRepository answerRepository, VoteRepository voteRepository) {
+    public AnswerService(QuestionRepository questionRepository, UserRepository userRepository, AnswerRepository answerRepository, VoteRepository voteRepository, ReputationService reputationService) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.answerRepository = answerRepository;
         this.voteRepository = voteRepository;
+        this.reputationService = reputationService;
     }
 
     public AnswerDTO createAnswer(NewAnswerDTO newAnswer, UUID questionId, String posterUsername){
@@ -41,6 +44,7 @@ public class AnswerService {
         answer.setPostedAt(new Date());
         answer.setAccepted(false);
         answer.setVotes(new HashSet<>());
+        answer.setHasBeenAcceptedBefore(false);
 
 
         var question = questionRepository.getQuestionsById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
@@ -51,7 +55,7 @@ public class AnswerService {
 
         question.getAnswers().add(answer);
         poster.getAnswers().add(answer);
-
+        reputationService.handleNewAnswer(poster, question);
         return answer.dto();
     }
 
@@ -121,6 +125,10 @@ public class AnswerService {
     public AnswerDTO accept(UUID answerId){
         var answer = answerRepository.getAnswerById(answerId).orElseThrow(() -> new NotFoundException("Answer of id: " + answerId));
         answer.setAccepted(!answer.isAccepted());
+        if(answer.isAccepted() && !answer.isHasBeenAcceptedBefore()) {
+            reputationService.handleAnswerAccept(answer.getPoster(), answer.getQuestion());
+            answer.setHasBeenAcceptedBefore(true);
+        }
         return answer.dto();
     }
 

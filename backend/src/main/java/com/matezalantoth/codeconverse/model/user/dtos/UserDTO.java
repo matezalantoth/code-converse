@@ -6,5 +6,5 @@ import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
 import java.util.Set;
 import java.util.UUID;
 
-public record UserDTO(UUID id, String username, Set<QuestionDTO> questions, Set<AnswerDTO> answers) {
+public record UserDTO(UUID id, String username, Set<QuestionDTO> questions, Set<AnswerDTO> answers, int reputation, int trueReputation) {
 }

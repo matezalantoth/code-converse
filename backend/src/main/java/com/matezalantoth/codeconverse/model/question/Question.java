@@ -1,6 +1,7 @@
 package com.matezalantoth.codeconverse.model.question;
 
 import com.matezalantoth.codeconverse.model.answer.Answer;
+import com.matezalantoth.codeconverse.model.bounty.Bounty;
 import com.matezalantoth.codeconverse.model.question.dtos.FullQuestionDTO;
 import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
 import com.matezalantoth.codeconverse.model.question.dtos.QuestionWithoutTagsDTO;
@@ -8,6 +9,7 @@ import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import com.matezalantoth.codeconverse.model.user.UserEntity;
 import com.matezalantoth.codeconverse.model.vote.QuestionVote;
 import com.matezalantoth.codeconverse.model.vote.VoteType;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,6 +44,10 @@ public class Question{
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Answer> answers;
 
+    @Setter
+    @OneToOne
+    @Nullable
+    private Bounty bounty;
 
     @Setter
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -63,15 +69,43 @@ public class Question{
         return answers.stream().mapToInt(Answer::calculateVoteValue).sum() + (answers.size() * 10);
     }
 
+
+    private void resetBountyIfExpired(){
+        if(bounty != null) {
+            if(bounty.getExpiresAt().before(new Date())) {
+                if(!shouldBeCharged()){
+                    poster.refund(bounty.getId());
+                }
+                setBounty(null);
+            }
+        }
+    }
+
+    public boolean hasActiveBounty(){
+        resetBountyIfExpired();
+        return bounty != null;
+    }
+
+    public boolean shouldBeCharged(){
+        return answers.stream().filter(a -> a.getPostedAt().after(bounty.getSetAt())).count() >= 8 || hasAccepted();
+    }
+
+    public boolean hasAccepted(){
+        return answers.stream().anyMatch(Answer::isAccepted);
+    }
+
     public FullQuestionDTO fullDto(){
-        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
+        resetBountyIfExpired();
+        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
     }
 
     public QuestionDTO dto(){
-        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue() ,answers.size(), answers.stream().anyMatch(Answer::isAccepted), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
+        resetBountyIfExpired();
+        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue() ,answers.size(), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()), bounty != null ? bounty.dto() : null);
     }
 
     public QuestionWithoutTagsDTO dtoNoTags(){
-        return new QuestionWithoutTagsDTO(id, title, content, poster.getUsername(), postedAt, answers.stream().anyMatch(Answer::isAccepted), answers.stream().map(Answer::dto).collect(Collectors.toSet()));
+        resetBountyIfExpired();
+        return new QuestionWithoutTagsDTO(id, title, content, poster.getUsername(), postedAt, hasAccepted(), answers.stream().map(Answer::dto).collect(Collectors.toSet()));
     }
 }

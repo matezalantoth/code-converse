@@ -32,14 +32,16 @@ public class QuestionService {
     private final QuestionTagRepository questionTagRepository;
     private final VoteRepository voteRepository;
     private final QuestionVoteRepository questionVoteRepository;
+    private final BountyService bountyService;
 
-    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository, VoteRepository voteRepository, QuestionVoteRepository questionVoteRepository) {
+    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository, VoteRepository voteRepository, QuestionVoteRepository questionVoteRepository, BountyService bountyService) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.questionTagRepository = questionTagRepository;
         this.voteRepository = voteRepository;
         this.questionVoteRepository = questionVoteRepository;
+        this.bountyService = bountyService;
     }
 
     public FullQuestionDTO getQuestionById(UUID id){
@@ -54,7 +56,6 @@ public class QuestionService {
         question.setAnswers(new HashSet<>());
         question.setQuestionTags(new HashSet<>());
         question.setVotes(new HashSet<>());
-
         var poster = userRepository.getUserEntityByUsername(posterUsername).orElseThrow(() -> new NotFoundException("user of username: " + posterUsername));
         question.setPoster(poster);
         questionRepository.save(question);
@@ -156,6 +157,10 @@ public class QuestionService {
         var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
         user.getQuestions().remove(question);
         questionRepository.delete(question);
+    }
+
+    public boolean hasAccepted(UUID id){
+       return (questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id))).hasAccepted();
     }
 
     public MainPageResponseDTO getMainPageQuestions(MainPageRequestDTO req) {
