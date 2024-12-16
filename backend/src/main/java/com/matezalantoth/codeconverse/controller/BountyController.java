@@ -12,10 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -34,12 +31,13 @@ public class BountyController {
         this.questionService = questionService;
     }
 
-    @RequestMapping("/create")
+    @PostMapping("/create")
     @PreAuthorize("@questionService.isOwner(#questionId, authentication.principal.username)")
     public ResponseEntity<QuestionDTO> addBountyToQuestion(@RequestParam UUID questionId, @RequestBody NewBountyDTO newBountyDTO) throws BadRequestException {
         if(questionService.hasAccepted(questionId)){
             throw new BadRequestException("You cannot create a bounty when you have already accepted an answer!");
         }
+        questionService.checkAndHandleExpiredBounties();
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(userService.canUserAffordBountyByUsername(userDetails.getUsername(), newBountyDTO.value())){
             return ResponseEntity.status(HttpStatus.CREATED).body(bountyService.addBountyToQuestion(newBountyDTO, questionId));

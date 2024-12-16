@@ -1,9 +1,11 @@
 package com.matezalantoth.codeconverse.service;
 
+import com.matezalantoth.codeconverse.exception.NotFoundException;
 import com.matezalantoth.codeconverse.model.bounty.Bounty;
 import com.matezalantoth.codeconverse.model.question.Question;
 import com.matezalantoth.codeconverse.model.reputation.Reputation;
 import com.matezalantoth.codeconverse.model.user.UserEntity;
+import com.matezalantoth.codeconverse.repository.BountyRepository;
 import com.matezalantoth.codeconverse.repository.ReputationRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -16,18 +18,22 @@ import java.util.UUID;
 public class ReputationService {
 
     private final ReputationRepository reputationRepository;
+    private final BountyRepository bountyRepository;
 
-    public ReputationService(ReputationRepository reputationRepository) {
+    public ReputationService(ReputationRepository reputationRepository, BountyRepository bountyRepository) {
         this.reputationRepository = reputationRepository;
+        this.bountyRepository = bountyRepository;
     }
 
     public void handleAnswerAccept(UserEntity user, Question question){
         var message = "Your answer was accepted!";
         var repGained = 25;
-        if(question.hasActiveBounty()) {
+        var bounty = question.getActiveBounty();
+        if(bounty.isPresent()) {
             message = "Your answer was accepted on a bountied question!";
-            repGained = question.getBounty().getBountyValue();
-            question.setBounty(null);
+            repGained = bounty.get().getBountyValue();
+            var managedBounty = bountyRepository.getBountyById(bounty.get().getId()).orElseThrow(() -> new NotFoundException("Bounty of id: " + bounty.get().getId()));
+            managedBounty.setActive(false);
         }
         buildAndSaveNewReputation(message, repGained, false, user, question.getId());
     }
@@ -35,11 +41,13 @@ public class ReputationService {
     public void handleNewAnswer(UserEntity user, Question question){
         var message = "You posted an answer!";
         var repGained = 10;
-        if(question.hasActiveBounty()) {
+        var bounty = question.getActiveBounty();
+        if(bounty.isPresent()) {
             message = "You posted an answer to a bountied question!";
-            repGained +=  question.getBounty().getBountyValue() / 8;
+            repGained +=  bounty.get().getBountyValue() / 8;
             if(question.shouldBeCharged()) {
-                question.setBounty(null);
+                var managedBounty = bountyRepository.getBountyById(bounty.get().getId()).orElseThrow(() -> new NotFoundException("Bounty of id: " + bounty.get().getId()));
+                managedBounty.setActive(false);
             }
         }
         buildAndSaveNewReputation(message, repGained, false, user, question.getId());

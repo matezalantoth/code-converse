@@ -5,6 +5,7 @@ import com.matezalantoth.codeconverse.model.answer.dtos.AnswerUpdatesDTO;
 import com.matezalantoth.codeconverse.model.answer.dtos.NewAnswerDTO;
 import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
 import com.matezalantoth.codeconverse.service.AnswerService;
+import com.matezalantoth.codeconverse.service.QuestionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,15 +20,18 @@ import java.util.UUID;
 public class AnswerController {
 
     private final AnswerService answerService;
+    private final QuestionService questionService;
 
-    public AnswerController(AnswerService answerService) {
+    public AnswerController(AnswerService answerService, QuestionService questionService) {
         this.answerService = answerService;
+        this.questionService = questionService;
     }
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<AnswerDTO> createAnswer(@RequestBody NewAnswerDTO newAnswer, @RequestParam UUID questionId){
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        questionService.checkAndHandleExpiredBounties();
         return ResponseEntity.status(HttpStatus.CREATED).body(answerService.createAnswer(newAnswer, questionId, username));
     }
 
@@ -41,7 +45,8 @@ public class AnswerController {
     @PatchMapping("/accept")
     @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#questionId, authentication.principal.username)")
     public ResponseEntity<AnswerDTO> acceptAnswer(@RequestParam UUID questionId, @RequestParam UUID answerId){
-       return ResponseEntity.ok(answerService.accept(answerId));
+        questionService.checkAndHandleExpiredBounties();
+        return ResponseEntity.ok(answerService.accept(answerId));
     }
 
     @PutMapping("/update")

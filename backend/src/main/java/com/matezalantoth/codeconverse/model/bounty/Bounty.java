@@ -17,7 +17,7 @@ public class Bounty {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @OneToOne
+    @ManyToOne
     @Setter
     private Question question;
 
@@ -29,6 +29,9 @@ public class Bounty {
 
     @Setter
     private Date setAt;
+
+    @Setter
+    private boolean active;
 
     public BountyDTO dto(){
         return new BountyDTO(id, bountyValue, expiresAt);

@@ -35,7 +35,7 @@ public class UserEntity {
     private String password;
 
     @Setter
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Reputation> reputation;
 
     @Setter
@@ -70,9 +70,6 @@ public class UserEntity {
         return reputation.stream().mapToInt(Reputation::getReputationValue).sum();
     }
 
-    public void refund(UUID id){
-        setReputation(reputation.stream().filter(r -> r.getRelatedDataId() != id).collect(Collectors.toSet()));
-    }
 
     public UserDTO dto(){
         return new UserDTO(id, username, questions.stream().map(Question::dto).collect(Collectors.toSet()), answers.stream().map(Answer::dto).collect(Collectors.toSet()), calcTotalRep(), calcTrueRep());

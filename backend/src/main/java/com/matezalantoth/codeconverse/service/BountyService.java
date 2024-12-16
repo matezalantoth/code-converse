@@ -7,6 +7,7 @@ import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
 import com.matezalantoth.codeconverse.repository.BountyRepository;
 import com.matezalantoth.codeconverse.repository.QuestionRepository;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
@@ -27,15 +28,19 @@ public class BountyService {
         this.reputationService = reputationService;
     }
 
-    public QuestionDTO addBountyToQuestion(NewBountyDTO newBounty, UUID questionId){
+    public QuestionDTO addBountyToQuestion(NewBountyDTO newBounty, UUID questionId) throws BadRequestException {
         var question = questionRepository.getQuestionsById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
+        if (question.hasActiveBounty()){
+            throw new BadRequestException("This question already has an active bounty!");
+        }
         var bounty = new Bounty();
         bounty.setBountyValue(newBounty.value());
         bounty.setSetAt(new Date());
-        bounty.setExpiresAt(Date.from(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().plusHours(newBounty.hoursUntilExpiration()).atZone(ZoneId.systemDefault()).toInstant()));
+        bounty.setExpiresAt(Date.from(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().plusMinutes(newBounty.hoursUntilExpiration()).atZone(ZoneId.systemDefault()).toInstant()));
         bounty.setQuestion(question);
+        bounty.setActive(true);
         bountyRepository.save(bounty);
-        question.setBounty(bounty);
+        question.getBounties().add(bounty);
         reputationService.chargeUserForBounty(question.getPoster(), bounty);
         return question.dto();
     }

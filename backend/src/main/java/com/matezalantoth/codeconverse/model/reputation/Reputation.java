@@ -37,7 +37,7 @@ public class Reputation {
     private Date at;
 
     public ReputationDTO dto(){
-        return new ReputationDTO(message, reputationValue, at);
+        return new ReputationDTO(message, reputationValue, at, relatedDataId);
     }
 
 }
