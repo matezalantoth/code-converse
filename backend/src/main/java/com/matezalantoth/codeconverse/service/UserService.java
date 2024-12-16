@@ -1,9 +1,11 @@
 package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
+import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationDTO;
 import com.matezalantoth.codeconverse.model.user.*;
 import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
+import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationValueDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
 import com.matezalantoth.codeconverse.model.vote.QuestionVote;
 import com.matezalantoth.codeconverse.model.vote.Vote;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,11 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public boolean canUserAffordBountyByUsername(String username, int bountyValue){
+       var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("User of username: " + username));
+       return user.calcTotalRep() >= bountyValue;
+    }
+
     public void createUser(RegisterRequestDTO newUser) throws BadRequestException {
         if(userRepository.getUserEntityByUsernameIgnoreCaseOrEmail(newUser.username(), newUser.email()).isPresent()) {
             throw new BadRequestException("Invalid credentials");
@@ -61,8 +69,19 @@ public class UserService {
         user.setQuestions(new HashSet<>());
         user.setQuestionVotes(new HashSet<>());
         user.setAnswers(new HashSet<>());
+        user.setReputation(new HashSet<>());
         userRepository.save(user);
         addRoleFor(user, Role.ROLE_USER);
+    }
+
+    public ReputationValueDTO getReputationValueByUsername(String username){
+        var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("User of username: " + username));
+        return user.repValDto();
+    }
+
+    public Set<ReputationDTO> getReputationByUsername(String username){
+        var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("User of username: " + username));
+        return user.repDto();
     }
 
     public String loginUser(LoginRequestDTO userDetails) throws BadRequestException {

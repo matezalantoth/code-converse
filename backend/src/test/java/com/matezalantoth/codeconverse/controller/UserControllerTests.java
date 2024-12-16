@@ -3,6 +3,7 @@ package com.matezalantoth.codeconverse.controller;
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
 import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
 import com.matezalantoth.codeconverse.model.user.UserEntity;
+import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class UserControllerTests {
                             .add("Authorization", "Bearer " + jwt);
                     return execution.execute(request, body);
                 }));
-        var res2 = restTemplate.getForEntity("http://localhost:" + port + "/user/profile", UserEntity.class);
+        var res2 = restTemplate.getForEntity("http://localhost:" + port + "/user/profile", UserDTO.class);
         assert res2.getStatusCode().is2xxSuccessful();
     }
 }

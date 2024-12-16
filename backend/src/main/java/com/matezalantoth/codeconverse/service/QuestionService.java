@@ -32,14 +32,18 @@ public class QuestionService {
     private final QuestionTagRepository questionTagRepository;
     private final VoteRepository voteRepository;
     private final QuestionVoteRepository questionVoteRepository;
+    private final BountyService bountyService;
+    private final BountyRepository bountyRepository;
 
-    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository, VoteRepository voteRepository, QuestionVoteRepository questionVoteRepository) {
+    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository, VoteRepository voteRepository, QuestionVoteRepository questionVoteRepository, BountyService bountyService, BountyRepository bountyRepository) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.questionTagRepository = questionTagRepository;
         this.voteRepository = voteRepository;
         this.questionVoteRepository = questionVoteRepository;
+        this.bountyService = bountyService;
+        this.bountyRepository = bountyRepository;
     }
 
     public FullQuestionDTO getQuestionById(UUID id){
@@ -54,7 +58,7 @@ public class QuestionService {
         question.setAnswers(new HashSet<>());
         question.setQuestionTags(new HashSet<>());
         question.setVotes(new HashSet<>());
-
+        question.setBounties(new HashSet<>());
         var poster = userRepository.getUserEntityByUsername(posterUsername).orElseThrow(() -> new NotFoundException("user of username: " + posterUsername));
         question.setPoster(poster);
         questionRepository.save(question);
@@ -158,6 +162,10 @@ public class QuestionService {
         questionRepository.delete(question);
     }
 
+    public boolean hasAccepted(UUID id){
+       return (questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id))).hasAccepted();
+    }
+
     public MainPageResponseDTO getMainPageQuestions(MainPageRequestDTO req) {
         var questions = questionRepository.findAll(Sort.by(Sort.Direction.DESC, "postedAt"));
         if (questions.isEmpty()) {
@@ -178,6 +186,22 @@ public class QuestionService {
                         .map(Question::dto)
                         .collect(Collectors.toSet())
         );
+    }
+
+    public void checkAndHandleExpiredBounties(){
+        var questions = questionRepository.findAll();
+        for(var q: questions) {
+            var optBounty = q.getActiveBounty();
+            if(optBounty.isEmpty() || q.shouldBeCharged()){
+                continue;
+            }
+            var bounty = optBounty.get();
+            var managedUser = userRepository.getUserEntityById(q.getPoster().getId()).orElseThrow(() -> new NotFoundException("User of id: " + q.getPoster().getId()));
+            var managedBounty = bountyRepository.getBountyById(bounty.getId()).orElseThrow(() -> new NotFoundException("Bounty of id: " + bounty.getId()));
+            managedUser.getReputation().removeIf(r -> r.getRelatedDataId().equals(managedBounty.getId()));
+            managedBounty.setActive(false);
+
+        }
     }
 
 }

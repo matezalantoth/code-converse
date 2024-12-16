@@ -13,38 +13,35 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
+@Getter
 @Entity
 public class Answer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Getter
     private UUID id;
 
-    @Getter
     @Setter
     private String content;
 
-    @Getter
     @Setter
     private boolean accepted;
 
-    @Getter
+    @Setter
+    private boolean hasBeenAcceptedBefore;
+
     @Setter
     private Date postedAt;
 
-    @Getter
     @Setter
     @ManyToOne
     private UserEntity poster;
 
-    @Getter
     @Setter
     @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
-    @Getter
     @Setter
     @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Vote> votes;

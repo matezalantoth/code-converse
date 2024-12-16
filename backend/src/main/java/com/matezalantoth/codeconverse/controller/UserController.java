@@ -1,8 +1,10 @@
 package com.matezalantoth.codeconverse.controller;
 
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
+import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
+import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationValueDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
 import com.matezalantoth.codeconverse.model.vote.dtos.UserVotesDTO;
 import com.matezalantoth.codeconverse.service.UserService;
@@ -13,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
@@ -36,6 +40,20 @@ public class UserController {
     public ResponseEntity<UserDTO> getProfileInfo(){
         var user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok().body(userService.getUserByUsername(user.getUsername()));
+    }
+
+    @GetMapping("/rep-val")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ReputationValueDTO> getReputationValue(){
+        var user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok().body(userService.getReputationValueByUsername(user.getUsername()));
+    }
+
+    @GetMapping("/rep")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Set<ReputationDTO>> getReputation(){
+        var user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok().body(userService.getReputationByUsername(user.getUsername()));
     }
 
     @PostMapping("/login")
