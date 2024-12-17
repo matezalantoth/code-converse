@@ -36,7 +36,8 @@ public class BountyService {
         var bounty = new Bounty();
         bounty.setBountyValue(newBounty.value());
         bounty.setSetAt(new Date());
-        bounty.setExpiresAt(Date.from(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().plusMinutes(newBounty.hoursUntilExpiration()).atZone(ZoneId.systemDefault()).toInstant()));
+        int hours = newBounty.value() / 10;
+        bounty.setExpiresAt(Date.from(new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().plusHours(hours).atZone(ZoneId.systemDefault()).toInstant()));
         bounty.setQuestion(question);
         bounty.setActive(true);
         bountyRepository.save(bounty);

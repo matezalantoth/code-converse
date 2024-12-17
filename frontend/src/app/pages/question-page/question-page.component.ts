@@ -7,6 +7,7 @@ import {AuthService} from "../../services/auth/auth.service";
 import {Question} from "../../shared/models/question";
 import {Vote} from "../../shared/models/vote";
 import {VoteType} from "../../shared/models/voteType";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-question-page',
@@ -121,7 +122,9 @@ export class QuestionPageComponent {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if(params['questionId']){
+        this.api.logView(params['questionId']).subscribe();
         this.api.getSeparateQuestion(params['questionId']).subscribe(res => {
+          console.log(res);
           this.question = res;
           this.sortAnswers();
         });

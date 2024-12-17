@@ -8,5 +8,5 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
-public record QuestionDTO(UUID id, String title, String content, String posterName, Date postedAt, int votes, int answerCount, boolean hasAccepted, Set<TagWithoutQuestionDTO> tags, BountyDTO bounty) {
+public record QuestionDTO(UUID id, String title, String content, String posterName, Date postedAt, int votes, int answerCount, boolean hasAccepted, Set<TagWithoutQuestionDTO> tags, BountyDTO bounty, int views) {
 }

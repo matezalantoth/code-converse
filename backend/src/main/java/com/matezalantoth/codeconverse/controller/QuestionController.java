@@ -56,6 +56,12 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.addTags(id, tags));
     }
 
+    @PatchMapping("/viewed")
+    public ResponseEntity<Void> logView(@RequestParam UUID id){
+        questionService.logViewById(id);
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
     public ResponseEntity<Void> deleteQuestion(@RequestParam UUID id){

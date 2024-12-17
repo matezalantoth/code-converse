@@ -7,5 +7,5 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
-public record FullQuestionDTO(UUID id, String title, String content, String posterName, Date postedAt, int votes, Set<AnswerDTO> answers, boolean hasAccepted, Set<TagWithoutQuestionDTO> tags) {
+public record FullQuestionDTO(UUID id, String title, String content, String posterName, Date postedAt, int votes, Set<AnswerDTO> answers, boolean hasAccepted, Set<TagWithoutQuestionDTO> tags, int posterTrueRep, int posterRep) {
 }

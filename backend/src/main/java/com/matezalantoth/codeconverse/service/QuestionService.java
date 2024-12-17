@@ -59,6 +59,7 @@ public class QuestionService {
         question.setQuestionTags(new HashSet<>());
         question.setVotes(new HashSet<>());
         question.setBounties(new HashSet<>());
+        question.setViews(0);
         var poster = userRepository.getUserEntityByUsername(posterUsername).orElseThrow(() -> new NotFoundException("user of username: " + posterUsername));
         question.setPoster(poster);
         questionRepository.save(question);
@@ -186,6 +187,11 @@ public class QuestionService {
                         .map(Question::dto)
                         .collect(Collectors.toSet())
         );
+    }
+
+    public void logViewById(UUID id){
+        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
+        question.setViews(question.getViews() +1);
     }
 
     public void checkAndHandleExpiredBounties(){

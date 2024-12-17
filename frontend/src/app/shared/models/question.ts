@@ -9,5 +9,7 @@ export interface Question {
   votes: number,
   answers: Answer[]
   hasAccepted: boolean,
-  tags: any[]
+  tags: any[],
+  posterRep: number,
+  posterTrueRep: number
 }

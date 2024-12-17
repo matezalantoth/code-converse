@@ -64,9 +64,18 @@ export class ApiService {
     return this.http.patch(this.apiUrl + '/question/vote?questionId='+questionId, { type: vote }, { headers });
   }
 
+  logView(questionId: string): Observable<any> {
+    return this.http.patch(this.apiUrl + '/question/viewed?id=' + questionId, {});
+  }
+
   isOwner(questionId: string): Observable<any>{
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     return this.http.get(this.apiUrl + '/question/isOwner?questionId=' + questionId, { headers })
+  }
+
+  postBounty(questionId: string, value: number): Observable<any>{
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.post(this.apiUrl + "/bounty/create?questionId=" + questionId, { value: value }, { headers })
   }
 
   accept(questionId: string, answerId: string){
