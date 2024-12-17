@@ -29,9 +29,11 @@ export class NavigationService {
   }
 
   redirectToQuestionPage(questionId: string) {
-    this.router.navigate(['/question'], {queryParams: {questionId: questionId}}).then(() => {
-      console.log(this.router.url)
-    })
+    this.router.navigate(['/question'], {queryParams: {questionId: questionId}})
+  }
+
+  redirectToQuestionsPage() {
+    this.router.navigate(['/questions'])
   }
 
   redirectToAskQuestion() {

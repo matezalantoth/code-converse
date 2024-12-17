@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {Router} from "@angular/router";
 import {NavigationService} from "../../services/nav/nav.service";
 
@@ -9,22 +9,27 @@ import {NavigationService} from "../../services/nav/nav.service";
 })
 export class SidebarComponent {
 
-  constructor(private router: Router, private nav: NavigationService) {}
+  constructor(private router: Router, private nav: NavigationService) {
+  }
 
 
   onPage(page: string): boolean {
     const currentPage = this.router.url
-    if(page==='/'){
-      return currentPage===page;
+    if (page === '/') {
+      return currentPage === page;
     }
     return currentPage.includes(page);
   }
 
-  goHome(){
+  goHome() {
     this.nav.redirectToDashboard();
   }
 
-  goTags(){
+  goQuestions() {
+    this.nav.redirectToQuestionsPage();
+  }
+
+  goTags() {
     this.nav.redirectToTags();
   }
 }

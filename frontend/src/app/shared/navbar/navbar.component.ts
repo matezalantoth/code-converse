@@ -16,7 +16,6 @@ export class NavbarComponent {
   constructor(private nav: NavigationService, private api: ApiService, private auth: AuthService) {
     this.isLoggedIn = this.auth.isUserLoggedIn();
     this.api.navbarReputation().subscribe(res => {
-      console.log(res)
       this.navbarRep = res
     });
   }
