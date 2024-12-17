@@ -1,15 +1,36 @@
-<nav class="fixed z-10 navbar h-16 top-0 w-screen bg-white flex justify-between items-center text-white">
-  <div>
-    <button class="bg-blue-600 text-white p-2" (click)="redirectToAskQuestion()">Ask Question</button>
+<nav class="fixed z-10 h-16 top-0 w-screen bg-white flex justify-between items-center">
+  <div class="flex items-center h-full">
+    <img
+      src="assets/logo.png"
+      class="h-10 ml-4 cursor-pointer"
+      (click)="redirectToDashboard()"
+      alt="Logo"/>
   </div>
-  <div class="flex items-center ml-auto">
+
+  <div class="flex items-center h-full mr-4">
+    <!-- Ask Question Button -->
     <button
+      class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition duration-300 mr-4"
+      (click)="redirectToAskQuestion()">
+      Ask Question
+    </button>
+
+    <div
+      *ngIf="navbarRep.username !== null"
+      class="flex items-center text-gray-700 text-sm mr-4">
+      <span class="mr-2">
+        <span class="font-bold">{{ navbarRep.username }} {{ navbarRep.rep.trueReputation }}</span>
+        <span class="ml-1 text-gray-500">({{ navbarRep.rep.reputation }})</span>
+      </span>
+    </div>
+
+    <button
+      *ngIf="isLoggedIn | async"
       (click)="logout()"
-      class="bg-red-500 hover:bg-red-600 text-white mb-8 font-semibold py-1 px-3 rounded shadow-sm transition duration-300 ease-in-out ml-4"
-      *ngIf="isLoggedIn | async">
+      class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-md text-sm transition duration-300">
       Logout
     </button>
   </div>
-  <hr class="border-t border-gray-300 fixed top-16 w-full">
 </nav>
 
+<hr class="border-t border-gray-300 fixed top-16 w-full">

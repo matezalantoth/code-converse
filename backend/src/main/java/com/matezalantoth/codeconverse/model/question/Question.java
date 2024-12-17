@@ -59,6 +59,9 @@ public class Question{
     private UserEntity poster;
 
     @Setter
+    private int views;
+
+    @Setter
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     private Set<QuestionVote> votes;
 
@@ -94,7 +97,12 @@ public class Question{
     }
 
     public FullQuestionDTO fullDto(){
-        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()));
+        var optBounty = getActiveBounty();
+        BountyDTO finalBounty = null;
+        if (optBounty.isPresent()){
+            finalBounty = optBounty.get().dto();
+        }
+        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()), poster.calcTrueRep(), poster.calcTotalRep(), finalBounty);
     }
 
     public QuestionDTO dto(){
@@ -103,7 +111,7 @@ public class Question{
         if (optBounty.isPresent()){
             finalBounty = optBounty.get().dto();
         }
-        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue() ,answers.size(), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()), finalBounty);
+        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue() ,answers.size(), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()), finalBounty, views);
     }
 
     public QuestionWithoutTagsDTO dtoNoTags(){

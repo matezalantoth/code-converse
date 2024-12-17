@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {ApiService} from "../../services/data/api.service";
 import {NavigationService} from "../../services/nav/nav.service";
 
@@ -14,15 +14,14 @@ export class DashboardComponent {
 
   constructor(public api: ApiService, private nav: NavigationService) {
     api.getDashQuestions().subscribe(res => {
-       this.nextPage = res.currentPage + 1;
-       this.maxPage = res.maxPage;
-       this.questions = res.questions;
-       console.log(this.questions);
+      this.nextPage = res.currentPage + 1;
+      this.maxPage = res.maxPage;
+      this.questions = res.questions;
     })
 
   }
 
-  redirectToQuestion(id: string){
+  redirectToQuestion(id: string) {
     this.nav.redirectToQuestionPage(id);
   }
 }

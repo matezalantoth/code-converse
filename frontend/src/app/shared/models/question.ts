@@ -1,4 +1,5 @@
 import {Answer} from "./answer";
+import {Bounty} from "./bounty";
 
 export interface Question {
   id: string,
@@ -9,5 +10,8 @@ export interface Question {
   votes: number,
   answers: Answer[]
   hasAccepted: boolean,
-  tags: any[]
+  tags: any[],
+  posterRep: number,
+  posterTrueRep: number
+  bounty: Bounty | null
 }

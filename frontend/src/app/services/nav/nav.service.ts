@@ -1,10 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Router} from "@angular/router";
+import {ApiService} from "../data/api.service";
+import {AuthService} from "../auth/auth.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class NavigationService {
+
 
   constructor(private router: Router) {
   }
@@ -21,13 +24,14 @@ export class NavigationService {
     this.router.navigate(['/']);
   }
 
-  redirectToTags(){
+  redirectToTags() {
     this.router.navigate(['/tags'])
   }
 
-  redirectToQuestionPage(questionId: string){
+  redirectToQuestionPage(questionId: string) {
     this.router.navigate(['/question'], {queryParams: {questionId: questionId}}).then(() => {
-       console.log(this.router.url)})
+      console.log(this.router.url)
+    })
   }
 
   redirectToAskQuestion() {

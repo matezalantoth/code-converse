@@ -3,6 +3,7 @@ package com.matezalantoth.codeconverse.controller;
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
 import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.NavbarReputationDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
 import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationValueDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
@@ -74,5 +75,12 @@ public class UserController {
     public ResponseEntity<UserVotesDTO> getVotes(){
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         return ResponseEntity.ok().body(userService.getVotesByUsername(username));
+    }
+
+    @GetMapping("/navbar-reputation")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<NavbarReputationDTO> getReputationForNavbar(){
+        var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        return ResponseEntity.ok().body(userService.getUserReputationForNavbarByUsername(username));
     }
 }

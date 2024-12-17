@@ -1,5 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'ngx-toastr/toastr'; /* You can add global styles to this file, and also import other style files */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+.toast-custom-top-center {
+  top: 10px !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+  width: max-content;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 10px;
+  font-size: 14px;
+}

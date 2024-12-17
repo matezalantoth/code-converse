@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { Answer } from "../../shared/models/answer";
-import { VoteType } from "../../shared/models/voteType";
-import { Vote } from "../../shared/models/vote";
-import { ApiService } from "../../services/data/api.service";
-import { Question } from "../../shared/models/question";
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Answer} from "../../shared/models/answer";
+import {VoteType} from "../../shared/models/voteType";
+import {Vote} from "../../shared/models/vote";
+import {ApiService} from "../../services/data/api.service";
+import {Question} from "../../shared/models/question";
 
 @Component({
   selector: 'app-answer',
@@ -19,7 +19,8 @@ export class AnswerComponent implements OnChanges {
   @Input() public question!: Question;
   @Output() questionChange = new EventEmitter<any>();
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) {
+  }
 
   updateQuestion(): void {
     this.question.answers = [...this.question.answers.map(a => {
@@ -62,6 +63,10 @@ export class AnswerComponent implements OnChanges {
       next: (res) => {
         this.question.hasAccepted = !this.question.hasAccepted;
         this.answer.accepted = !this.answer.accepted;
+        this.api.navbarReputation();
+        if (this.answer.accepted) {
+          this.question.bounty = null;
+        }
       },
       error: (err) => {
         console.error("something went wrong accepting answer: " + err);

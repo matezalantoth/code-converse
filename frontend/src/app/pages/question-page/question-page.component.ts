@@ -7,6 +7,7 @@ import {AuthService} from "../../services/auth/auth.service";
 import {Question} from "../../shared/models/question";
 import {Vote} from "../../shared/models/vote";
 import {VoteType} from "../../shared/models/voteType";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-question-page',
@@ -29,7 +30,7 @@ export class QuestionPageComponent {
 
   protected answerForm: FormGroup;
 
-  constructor(private route: ActivatedRoute, public api: ApiService ,private nav: NavigationService, private fb: FormBuilder, private auth: AuthService) {
+  constructor(private route: ActivatedRoute, public api: ApiService, private nav: NavigationService, private fb: FormBuilder, private auth: AuthService) {
     this.answerForm = this.fb.group({
       content: ['']
     });
@@ -103,11 +104,12 @@ export class QuestionPageComponent {
 
   onSubmit(event: Event): void {
     this.auth.isUserLoggedIn().subscribe((res) => {
-      if(res){
+      if (res) {
         event.preventDefault()
-        if (this.answerForm.valid){
+        if (this.answerForm.valid) {
           this.api.postNewAnswer(this.question.id, this.answerForm.value).subscribe(res => {
             this.question.answers.push(res);
+            this.api.navbarReputation();
           })
           return;
         }
@@ -120,10 +122,17 @@ export class QuestionPageComponent {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      if(params['questionId']){
-        this.api.getSeparateQuestion(params['questionId']).subscribe(res => {
-          this.question = res;
-          this.sortAnswers();
+      if (params['questionId']) {
+        this.api.logView(params['questionId']).subscribe();
+        this.api.getSeparateQuestion(params['questionId']).subscribe({
+          next: (res) => {
+            this.question = res;
+            this.sortAnswers();
+          },
+          error: () => {
+            this.nav.redirectToDashboard();
+          }
+
         });
         this.api.getUserVotes().subscribe({
           next: (res) => {
