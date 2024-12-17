@@ -18,6 +18,8 @@ import {provideToastr, ToastrModule, ToastrService} from "ngx-toastr";
 import {BrowserAnimationsModule, NoopAnimationsModule} from "@angular/platform-browser/animations";
 import {BountyAwarenessComponent} from './components/bounty-awareness/bounty-awareness.component';
 import {NgOptimizedImage} from "@angular/common";
+import {QuestionsComponent} from "./components/questions/questions.component";
+import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
 
 
 @NgModule({
@@ -32,7 +34,9 @@ import {NgOptimizedImage} from "@angular/common";
     SidebarComponent,
     AnswerComponent,
     BountyComponent,
-    BountyAwarenessComponent
+    BountyAwarenessComponent,
+    QuestionsComponent,
+    QuestionsPageComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

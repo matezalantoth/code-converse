@@ -6,6 +6,7 @@ import {LoginData} from "../../shared/models/loginData";
 import {SignupData} from "../../shared/models/signupData";
 import {Vote} from "../../shared/models/vote";
 import {VoteType} from "../../shared/models/voteType";
+import {QuestionFilter} from "../../shared/models/questionFilter";
 
 @Injectable({
   providedIn: 'root'
@@ -28,8 +29,17 @@ export class ApiService {
   }
 
   getDashQuestions(): Observable<any> {
-    return this.http.post(this.apiUrl + '/question/main-questions', {"startIndex": 1})
+    return this.http.post(this.apiUrl + '/question/questions', {"startIndex": 1, "filter": QuestionFilter.Newest})
   }
+
+  getBountiedQuestions(): Observable<any> {
+    return this.http.post(this.apiUrl + '/question/questions', {"startIndex": 1, "filter": QuestionFilter.Bountied})
+  }
+
+  getUnansweredQuestions(): Observable<any> {
+    return this.http.post(this.apiUrl + '/question/questions', {"startIndex": 1, "filter": QuestionFilter.Unanswered})
+  }
+
 
   getSeparateQuestion(questionId: string): Observable<any> {
     return this.http.get(this.apiUrl + '/question?id=' + questionId);
@@ -89,7 +99,6 @@ export class ApiService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     this.http.get(this.apiUrl + '/user/navbar-reputation', {headers}).subscribe({
       next: (res: any) => {
-        console.log(res);
         this.navbarRep.next({username: res.username, rep: res.reputationValueDTO});
       },
       error: () => {

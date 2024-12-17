@@ -1,0 +1,35 @@
+<div class="relative ml-64 p-2 pt-8 mt-8 w-3/5">
+  <div class="block w-full">
+    <div class="max-w-screen-md">
+      <div>
+        <h2 class="text-2xl ml-8">Newest Questions</h2>
+        <div class="flex justify-between items-center mt-4 mb-4 ml-8 mr-8">
+          <span class="text-lg">
+      {{ questionsCount }} question{{ questionsCount == 1 ? '' : 's' }}
+    </span>
+          <div class="flex border-1 p-1 text-xs rounded-md border-gray-300 text-slate-700">
+            <span
+              (click)="select(QuestionFilter.Newest)"
+              [ngClass]="{'bg-gray-200 font-bold': (selected | async)===QuestionFilter.Newest, 'hover:bg-gray-100': (selected | async)!==QuestionFilter.Newest}"
+              class="p-2 rounded-md transition cursor-pointer">Newest</span>
+            <span
+              (click)="select(QuestionFilter.Unanswered)"
+              [ngClass]="{'bg-gray-200 font-bold': (selected | async)===QuestionFilter.Unanswered, 'hover:bg-gray-100': (selected | async)!==QuestionFilter.Unanswered}"
+              class="p-2  rounded-md hover:bg-gray-100 cursor-pointer transition">Unanswered</span>
+            <span
+              (click)="select(QuestionFilter.Bountied)"
+              [ngClass]="{'bg-gray-200': (selected | async)===QuestionFilter.Bountied, 'hover:bg-gray-100': (selected | async)!==QuestionFilter.Bountied}"
+              class="p-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+              <span [ngClass]="{'font-bold': (selected | async)===QuestionFilter.Bountied}">Bountied</span>
+              <span class="bg-navy text-white px-1.5 py-0.5 rounded-md ml-1">{{ bountyCount }}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-b-1 border-t-1">
+        <app-questions [_questions]="questions"></app-questions>
+      </div>
+    </div>
+  </div>
+</div>

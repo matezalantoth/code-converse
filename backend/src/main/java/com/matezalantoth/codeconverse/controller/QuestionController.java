@@ -1,10 +1,10 @@
 package com.matezalantoth.codeconverse.controller;
 
-import com.matezalantoth.codeconverse.model.answer.dtos.AnswerDTO;
 import com.matezalantoth.codeconverse.model.question.dtos.*;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
 import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
 import com.matezalantoth.codeconverse.service.QuestionService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -76,8 +76,20 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.addVote(questionId, username, newVote));
     }
 
-    @PostMapping("/main-questions")
-    public ResponseEntity<MainPageResponseDTO> getMainPageQuestions(@RequestBody MainPageRequestDTO req){
-       return ResponseEntity.ok(questionService.getMainPageQuestions(req));
+    @PostMapping("/questions")
+    public ResponseEntity<QuestionsResponseDTO> getQuestions(@RequestBody QuestionsRequestDTO req) throws BadRequestException {
+        switch (req.filter()){
+            case NEWEST -> {
+                return ResponseEntity.ok(questionService.getMainPageQuestions(req));
+            }
+            case UNANSWERED -> {
+                return ResponseEntity.ok(questionService.getUnansweredQuestions(req));
+            }
+            case BOUNTIED -> {
+                return ResponseEntity.ok(questionService.getBountiedQuestions(req));
+            }
+            default -> throw new BadRequestException("Your request is misconfigured");
+        }
     }
+
 }

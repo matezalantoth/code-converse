@@ -50,11 +50,13 @@ export class BountyComponent {
             timeOut: 1500
           })
           this.question.bounty = res.bounty;
+          this.api.navbarReputation().subscribe();
         },
         error: () => {
 
         }
       })
+
 
       return;
     }

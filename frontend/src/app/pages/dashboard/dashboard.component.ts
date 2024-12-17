@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {ApiService} from "../../services/data/api.service";
-import {NavigationService} from "../../services/nav/nav.service";
+import {MainPageQuestion} from "../../shared/models/mainPageQuestion";
+import {BehaviorSubject} from "rxjs";
 
 @Component({
   selector: 'app-dashboard',
@@ -10,18 +11,14 @@ import {NavigationService} from "../../services/nav/nav.service";
 export class DashboardComponent {
   nextPage: number = 0;
   maxPage: number = 0;
-  questions: any;
+  private _questions: BehaviorSubject<MainPageQuestion[]> = new BehaviorSubject<MainPageQuestion[]>([]);
+  public questions = this._questions.asObservable();
 
-  constructor(public api: ApiService, private nav: NavigationService) {
+  constructor(public api: ApiService) {
     api.getDashQuestions().subscribe(res => {
-      this.nextPage = res.currentPage + 1;
-      this.maxPage = res.maxPage;
-      this.questions = res.questions;
+      this.nextPage = res.pagination.currentPage + 1;
+      this.maxPage = res.pagination.maxPage;
+      this._questions.next(res.questions);
     })
-
-  }
-
-  redirectToQuestion(id: string) {
-    this.nav.redirectToQuestionPage(id);
   }
 }
