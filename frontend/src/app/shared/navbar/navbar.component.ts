@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import {Component, Injectable, OnInit} from '@angular/core';
 import {Observable} from "rxjs";
 import {AuthService} from "../../services/auth/auth.service";
 import {NavigationService} from "../../services/nav/nav.service";
+import {ApiService} from "../../services/data/api.service";
 
 @Component({
   selector: 'app-navbar',
@@ -10,9 +11,14 @@ import {NavigationService} from "../../services/nav/nav.service";
 })
 export class NavbarComponent {
   isLoggedIn: Observable<boolean>;
+  navbarRep: any
 
-  constructor(private auth: AuthService, private nav: NavigationService) {
-    this.isLoggedIn = this.auth.isUserLoggedIn()
+  constructor(private nav: NavigationService, private api: ApiService, private auth: AuthService) {
+    this.isLoggedIn = this.auth.isUserLoggedIn();
+    this.api.navbarReputation().subscribe(res => {
+      console.log(res)
+      this.navbarRep = res
+    });
   }
 
   logout() {
@@ -20,7 +26,14 @@ export class NavbarComponent {
     this.nav.redirectToLogin()
   }
 
-  redirectToAskQuestion(){
+  redirectToAskQuestion() {
     this.nav.redirectToAskQuestion();
   }
+
+  redirectToDashboard() {
+    this.nav.redirectToDashboard()
+  }
+
+
+  protected readonly localStorage = localStorage;
 }

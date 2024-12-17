@@ -109,6 +109,7 @@ export class QuestionPageComponent {
         if (this.answerForm.valid) {
           this.api.postNewAnswer(this.question.id, this.answerForm.value).subscribe(res => {
             this.question.answers.push(res);
+            this.api.navbarReputation();
           })
           return;
         }

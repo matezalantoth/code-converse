@@ -194,8 +194,18 @@ public class QuestionService {
         question.setViews(question.getViews() +1);
     }
 
+    public void removeBountyIfNoLongerEligible(UUID id){
+        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
+        var optBounty = question.getActiveBounty();
+        if(optBounty.isPresent() && question.shouldBeCharged()) {
+                var bounty = optBounty.get();
+                bounty.setActive(false);
+        }
+    }
+
     public void checkAndHandleExpiredBounties(){
         var questions = questionRepository.findAll();
+
         for(var q: questions) {
             var optBounty = q.getActiveBounty();
             if(optBounty.isEmpty()){
@@ -205,13 +215,19 @@ public class QuestionService {
             if(!bounty.hasExpired()){
                 continue;
             }
-            var managedUser = userRepository.getUserEntityById(q.getPoster().getId()).orElseThrow(() -> new NotFoundException("User of id: " + q.getPoster().getId()));
-            var managedBounty = bountyRepository.getBountyById(bounty.getId()).orElseThrow(() -> new NotFoundException("Bounty of id: " + bounty.getId()));
+
+            var managedUser = userRepository
+                    .getUserEntityById(q.getPoster().getId()).orElseThrow(() ->
+                            new NotFoundException("User of id: " + q.getPoster().getId()));
+            var managedBounty = bountyRepository
+                    .getBountyById(bounty.getId()).orElseThrow(() ->
+                            new NotFoundException("Bounty of id: " + bounty.getId()));
+
             managedBounty.setActive(false);
             if(q.shouldBeCharged()){
                 continue;
-
             }
+
             managedUser.getReputation().removeIf(r -> r.getRelatedDataId().equals(managedBounty.getId()));
         }
     }

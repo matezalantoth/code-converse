@@ -4,6 +4,7 @@ import com.matezalantoth.codeconverse.exception.NotFoundException;
 import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationDTO;
 import com.matezalantoth.codeconverse.model.user.*;
 import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
+import com.matezalantoth.codeconverse.model.user.dtos.NavbarReputationDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.RegisterRequestDTO;
 import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationValueDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
@@ -120,5 +121,10 @@ public class UserService {
 
     public UserDTO getUserById(UUID id){
         return userRepository.getUserEntityById(id).orElseThrow(() -> new NotFoundException("user of id: " + id)).dto();
+    }
+
+    public NavbarReputationDTO getUserReputationForNavbarByUsername(String username){
+        var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("user of username: " + username));
+        return new NavbarReputationDTO(user.getUsername(), user.repValDto());
     }
 }

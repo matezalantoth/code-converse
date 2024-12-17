@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {AuthService} from "../auth/auth.service";
-import {Observable} from "rxjs";
+import {BehaviorSubject, Observable, switchMap, take} from "rxjs";
 import {LoginData} from "../../shared/models/loginData";
 import {SignupData} from "../../shared/models/signupData";
 import {Vote} from "../../shared/models/vote";
@@ -12,6 +12,8 @@ import {VoteType} from "../../shared/models/voteType";
 })
 export class ApiService {
   private apiUrl: string = '/api'
+
+  navbarRep: BehaviorSubject<object> = new BehaviorSubject<object>({});
 
   constructor(private http: HttpClient, private authService: AuthService) {
   }
@@ -33,57 +35,73 @@ export class ApiService {
     return this.http.get(this.apiUrl + '/question?id=' + questionId);
   }
 
-  tagsAutocomplete(substring: string, existingTags: any): Observable<any>{
+  tagsAutocomplete(substring: string, existingTags: any): Observable<any> {
     return this.http.post(this.apiUrl + '/tag/autocomplete?substring=' + substring, existingTags)
   }
 
-  postNewQuestion(questionData: any): Observable<any>{
+  postNewQuestion(questionData: any): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     const url = this.apiUrl + '/question/create';
-    return this.http.post<any>(url, questionData, { headers });
+    return this.http.post<any>(url, questionData, {headers});
   }
 
-  postNewAnswer(questionId: string, answerData: any): Observable<any>{
+  postNewAnswer(questionId: string, answerData: any): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     const url = this.apiUrl + '/answer/create?questionId=' + questionId;
-    return this.http.post<any>(url, answerData, { headers });
+    return this.http.post<any>(url, answerData, {headers});
   }
 
-  getUserVotes(): Observable<any>{
+  getUserVotes(): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.get(this.apiUrl + "/user/votes", { headers });
+    return this.http.get(this.apiUrl + "/user/votes", {headers});
   }
 
-  vote(vote: VoteType, answerId: string): Observable<any>{
+  vote(vote: VoteType, answerId: string): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.patch(this.apiUrl + '/answer/vote?answerId='+answerId, { type: vote }, { headers });
+    return this.http.patch(this.apiUrl + '/answer/vote?answerId=' + answerId, {type: vote}, {headers});
   }
 
-  voteQuestion(vote: VoteType, questionId: string): Observable<any>{
+  voteQuestion(vote: VoteType, questionId: string): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.patch(this.apiUrl + '/question/vote?questionId='+questionId, { type: vote }, { headers });
+    return this.http.patch(this.apiUrl + '/question/vote?questionId=' + questionId, {type: vote}, {headers});
   }
 
   logView(questionId: string): Observable<any> {
     return this.http.patch(this.apiUrl + '/question/viewed?id=' + questionId, {});
   }
 
-  isOwner(questionId: string): Observable<any>{
+  isOwner(questionId: string): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.get(this.apiUrl + '/question/isOwner?questionId=' + questionId, { headers })
+    return this.http.get(this.apiUrl + '/question/isOwner?questionId=' + questionId, {headers})
   }
 
-  postBounty(questionId: string, value: number): Observable<any>{
+  postBounty(questionId: string, value: number): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.post(this.apiUrl + "/bounty/create?questionId=" + questionId, { value: value }, { headers })
+    return this.http.post(this.apiUrl + "/bounty/create?questionId=" + questionId, {value: value}, {headers})
   }
 
-  accept(questionId: string, answerId: string){
+  accept(questionId: string, answerId: string): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
-    return this.http.patch(this.apiUrl + '/answer/accept?questionId=' + questionId + '&answerId=' + answerId, {},{ headers });
+    return this.http.patch(this.apiUrl + '/answer/accept?questionId=' + questionId + '&answerId=' + answerId, {}, {headers});
   }
 
-  calculatePostedAt(postedAt: any){
+  navbarReputation(): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    this.http.get(this.apiUrl + '/user/navbar-reputation', {headers}).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.navbarRep.next({username: res.username, rep: res.reputationValueDTO});
+      },
+      error: () => {
+        console.log("User is unauthorised");
+      }
+    });
+
+    return this.navbarRep.asObservable();
+  }
+
+
+  calculatePostedAt(postedAt: any) {
     const now = new Date();
     const tempPostedAt = new Date(postedAt);
     let offset = tempPostedAt.getTimezoneOffset() * -1;
@@ -102,7 +120,6 @@ export class ApiService {
     const days = Math.floor(differenceInSeconds / 86400);
     return `${days} days ago`;
   };
-
 
 
 }

@@ -32,7 +32,9 @@ public class AnswerController {
     public ResponseEntity<AnswerDTO> createAnswer(@RequestBody NewAnswerDTO newAnswer, @RequestParam UUID questionId){
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         questionService.checkAndHandleExpiredBounties();
-        return ResponseEntity.status(HttpStatus.CREATED).body(answerService.createAnswer(newAnswer, questionId, username));
+        var res = answerService.createAnswer(newAnswer, questionId, username);
+        questionService.removeBountyIfNoLongerEligible(questionId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
     @PatchMapping("/vote")
@@ -46,7 +48,9 @@ public class AnswerController {
     @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#questionId, authentication.principal.username)")
     public ResponseEntity<AnswerDTO> acceptAnswer(@RequestParam UUID questionId, @RequestParam UUID answerId){
         questionService.checkAndHandleExpiredBounties();
-        return ResponseEntity.ok(answerService.accept(answerId));
+        var res = answerService.accept(answerId);
+        questionService.removeBountyIfNoLongerEligible(questionId);
+        return ResponseEntity.ok(res);
     }
 
     @PutMapping("/update")

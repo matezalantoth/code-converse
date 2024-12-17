@@ -17,29 +17,31 @@ export class BountyComponent {
   public question!: Question;
 
   bountyForm: FormGroup;
+  yourRep!: number;
 
-  constructor(private fb: FormBuilder,  private toast: ToastrService, private api: ApiService) {
+  constructor(private fb: FormBuilder, private toast: ToastrService, private api: ApiService) {
     this.showForm = false;
     this.bountyForm = this.fb.group(
       {
         value: ['', [Validators.min(10), Validators.max(1000)]]
       }
     )
+    this.api.navbarReputation().subscribe(val => this.yourRep = val.rep.reputation);
   }
 
-  onAddBountyClick(event: Event){
-    if(!this.showForm) {
+  onAddBountyClick() {
+    if (!this.showForm) {
       this.showForm = true;
       return;
     }
-    if(!this.bountyForm.valid){
+    if (!this.bountyForm.valid) {
       this.toast.error(this.bountyForm.value.value < 10 ? "Bounty must exceed 10 reputation" : "Bounty must subceed 1000 reputation", undefined, {
         positionClass: "toast-custom-top-center",
         timeOut: 1500
       });
       return;
     }
-    if(this.bountyForm.value.value <= this.question.posterRep){
+    if (this.bountyForm.value.value <= this.yourRep) {
       this.showForm = false;
       this.api.postBounty(this.question.id, this.bountyForm.value.value).subscribe({
         next: (res) => {
@@ -47,6 +49,7 @@ export class BountyComponent {
             positionClass: "toast-custom-top-center",
             timeOut: 1500
           })
+          this.question.bounty = res.bounty;
         },
         error: () => {
 
@@ -55,13 +58,13 @@ export class BountyComponent {
 
       return;
     }
-    this.toast.info("You (" + this.question.posterRep + ") cannot afford a " + this.bountyForm.value.value + "rep bounty", undefined, {
+    this.toast.info("You (" + this.yourRep + ") cannot afford a " + this.bountyForm.value.value + "rep bounty", undefined, {
       positionClass: "toast-custom-top-center",
       timeOut: 2000
-    } )
+    })
   }
 
-  hideForm(){
+  hideForm() {
     this.showForm = false;
   }
 }

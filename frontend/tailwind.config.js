@@ -4,6 +4,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        'xsm': '0.8rem',
+      },
       colors: {
         navy: '#155ba1',
       },
@@ -15,7 +18,9 @@ module.exports = {
       },
       width: {
         '78%': '78%',
-        '97%': '97%'
+        '97%': '97%',
+        '1/8': '12.5%',
+        '7/8': '87.5%'
       }
     },
   },
