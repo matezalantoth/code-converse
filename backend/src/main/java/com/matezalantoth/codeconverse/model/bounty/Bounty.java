@@ -36,4 +36,8 @@ public class Bounty {
     public BountyDTO dto(){
         return new BountyDTO(id, bountyValue, expiresAt);
     }
+
+    public boolean hasExpired(){
+        return expiresAt.before(new Date());
+    }
 }

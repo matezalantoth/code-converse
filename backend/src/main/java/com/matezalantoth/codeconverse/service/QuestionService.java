@@ -198,15 +198,21 @@ public class QuestionService {
         var questions = questionRepository.findAll();
         for(var q: questions) {
             var optBounty = q.getActiveBounty();
-            if(optBounty.isEmpty() || q.shouldBeCharged()){
+            if(optBounty.isEmpty()){
                 continue;
             }
             var bounty = optBounty.get();
+            if(!bounty.hasExpired()){
+                continue;
+            }
             var managedUser = userRepository.getUserEntityById(q.getPoster().getId()).orElseThrow(() -> new NotFoundException("User of id: " + q.getPoster().getId()));
             var managedBounty = bountyRepository.getBountyById(bounty.getId()).orElseThrow(() -> new NotFoundException("Bounty of id: " + bounty.getId()));
-            managedUser.getReputation().removeIf(r -> r.getRelatedDataId().equals(managedBounty.getId()));
             managedBounty.setActive(false);
+            if(q.shouldBeCharged()){
+                continue;
 
+            }
+            managedUser.getReputation().removeIf(r -> r.getRelatedDataId().equals(managedBounty.getId()));
         }
     }
 

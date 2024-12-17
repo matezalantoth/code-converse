@@ -16,6 +16,7 @@ import { AnswerComponent } from './pages/answer/answer.component';
 import { BountyComponent } from './components/bounty/bounty.component';
 import {provideToastr, ToastrModule, ToastrService} from "ngx-toastr";
 import {BrowserAnimationsModule, NoopAnimationsModule} from "@angular/platform-browser/animations";
+import { BountyAwarenessComponent } from './components/bounty-awareness/bounty-awareness.component';
 
 
 @NgModule({ declarations: [
@@ -28,7 +29,8 @@ import {BrowserAnimationsModule, NoopAnimationsModule} from "@angular/platform-b
     QuestionPageComponent,
     SidebarComponent,
     AnswerComponent,
-    BountyComponent
+    BountyComponent,
+    BountyAwarenessComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

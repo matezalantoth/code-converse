@@ -97,7 +97,12 @@ public class Question{
     }
 
     public FullQuestionDTO fullDto(){
-        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()), poster.calcTrueRep(), poster.calcTotalRep());
+        var optBounty = getActiveBounty();
+        BountyDTO finalBounty = null;
+        if (optBounty.isPresent()){
+            finalBounty = optBounty.get().dto();
+        }
+        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()), poster.calcTrueRep(), poster.calcTotalRep(), finalBounty);
     }
 
     public QuestionDTO dto(){

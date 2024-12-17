@@ -4,6 +4,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        navy: '#155ba1',
+      },
       fontFamily: {
         "lato": ['Lato', 'sans-serif']
       },
