@@ -3,12 +3,11 @@ package com.matezalantoth.codeconverse.service;
 import com.matezalantoth.codeconverse.exception.NotFoundException;
 import com.matezalantoth.codeconverse.model.question.Question;
 import com.matezalantoth.codeconverse.model.question.dtos.PaginationDTO;
-import com.matezalantoth.codeconverse.model.question.dtos.QuestionsResponseDTO;
+import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import com.matezalantoth.codeconverse.model.tag.dtos.*;
 import com.matezalantoth.codeconverse.model.tag.Tag;
 import com.matezalantoth.codeconverse.repository.TagRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,14 +32,58 @@ public class TagService {
         return tag.dto();
     }
 
-    public TagWithoutQuestionDTO getTag(UUID id) {
-        return tagRepository.getTagById(id).orElseThrow(() -> new NotFoundException("tag of id: " + id)).dtoNoQuestions();
+    public TagPageDTO getTagWithNewestQuestions(UUID id) {
+        var tag = tagRepository.getTagById(id).orElseThrow(() -> new NotFoundException("tag of id: " + id));
+
+        var questions = tag.getQuestionTags()
+                .stream()
+                .map(QuestionTag::getQuestion)
+                .sorted(Comparator.comparing(Question::getPostedAt))
+                .limit(10)
+                .collect(Collectors.toSet());
+
+        long bountyCount = tag.getQuestionTags()
+                .stream()
+                .filter(qt -> qt.getQuestion().hasActiveBounty())
+                .count();
+
+        return tag.pageDto(questions, questions.size(), bountyCount);
     }
 
-    public TagPageDTO getTags(int startIndex) {
+    public TagPageDTO getTagWithBountiedQuestions(UUID id) {
+        var tag = tagRepository.getTagById(id).orElseThrow(() -> new NotFoundException("tag of id: " + id));
+
+        var questions = tag.getQuestionTags()
+                .stream()
+                .map(QuestionTag::getQuestion)
+                .filter(Question::hasActiveBounty)
+                .collect(Collectors.toSet());
+
+        return tag.pageDto(questions, questions.size(), questions.size());
+
+    }
+
+    public TagPageDTO getTagWithUnansweredQuestions(UUID id) {
+        var tag = tagRepository.getTagById(id).orElseThrow(() -> new NotFoundException("tag of id: " + id));
+
+        var questions = tag.getQuestionTags()
+                .stream()
+                .map(QuestionTag::getQuestion)
+                .filter(q -> q.getAnswers().isEmpty())
+                .collect(Collectors.toSet());
+
+        long bountyCount = tag.getQuestionTags()
+                .stream()
+                .filter(qt -> qt.getQuestion().hasActiveBounty())
+                .count();
+
+        return tag.pageDto(questions, questions.size(), bountyCount);
+    }
+
+    public TagsPageDTO getTags(int startIndex) {
         var tags = tagRepository.findAll();
         if (tags.isEmpty()) {
-            return new TagPageDTO(new PaginationDTO(startIndex, 1, 1), new HashSet<>());
+            return new TagsPageDTO(new PaginationDTO(startIndex, 1, 1), new HashSet<>());
         }
         var sorted = tags.stream().sorted(Comparator.comparingInt(t -> t.getQuestionTags().size())).limit(24).toList();
         var currentStartIndex = Math.max((startIndex - 1) * 10, 0);
@@ -48,14 +91,14 @@ public class TagService {
         var endIndex = Math.min(currentStartIndex + 24, tags.size());
 
         if (currentStartIndex >= tags.size()) {
-            return new TagPageDTO(new PaginationDTO(startIndex, 1, totalPages), new HashSet<>());
+            return new TagsPageDTO(new PaginationDTO(startIndex, 1, totalPages), new HashSet<>());
         }
 
         var pagination = new PaginationDTO(startIndex,
                 1,
                 totalPages);
 
-        return new TagPageDTO(pagination,
+        return new TagsPageDTO(pagination,
                 sorted.subList(currentStartIndex, endIndex).stream()
                         .map(Tag::statsDto)
                         .collect(Collectors.toSet())
@@ -99,7 +142,7 @@ public class TagService {
                         }
                     }
                     var valueAdded = substring.length() == t.getName().length() ? 100 : 0;
-                    return new AutocompleteResult(t.dtoNoQuestions(),
+                    return new AutocompleteResult(t.dto(),
                             value.values()
                                     .stream()
                                     .mapToInt(i -> i).sum() + valueAdded);

@@ -27,58 +27,58 @@ public class QuestionController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<QuestionDTO> createQuestion(@RequestBody NewQuestionDTO newQuestion){
+    public ResponseEntity<QuestionDTO> createQuestion(@RequestBody NewQuestionDTO newQuestion) {
         var userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         var username = userDetails.getUsername();
         return ResponseEntity.status(HttpStatus.CREATED).body(questionService.createQuestion(newQuestion, username));
     }
 
     @GetMapping
-    public ResponseEntity<FullQuestionDTO> getQuestionById(@RequestParam UUID id){
-       return ResponseEntity.ok(questionService.getQuestionById(id));
+    public ResponseEntity<FullQuestionDTO> getQuestionById(@RequestParam UUID id) {
+        return ResponseEntity.ok(questionService.getQuestionById(id));
     }
 
     @GetMapping("/isOwner")
     @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#questionId, authentication.principal.username)")
-    public ResponseEntity<Boolean> isOwner(@RequestParam UUID questionId){
+    public ResponseEntity<Boolean> isOwner(@RequestParam UUID questionId) {
         return ResponseEntity.ok(true);
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
-    public ResponseEntity<QuestionDTO> updateQuestionById(@RequestParam UUID id, @RequestBody QuestionUpdatesDTO updates){
+    public ResponseEntity<QuestionDTO> updateQuestionById(@RequestParam UUID id, @RequestBody QuestionUpdatesDTO updates) {
         return ResponseEntity.ok(questionService.updateQuestion(updates, id));
     }
 
     @PatchMapping("/add-tags")
     @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
-    public ResponseEntity<QuestionDTO> addTagToQuestion(@RequestParam UUID id, @RequestBody Set<TagOfQuestionDTO> tags){
+    public ResponseEntity<QuestionDTO> addTagToQuestion(@RequestParam UUID id, @RequestBody Set<TagOfQuestionDTO> tags) {
         return ResponseEntity.ok(questionService.addTags(id, tags));
     }
 
     @PatchMapping("/viewed")
-    public ResponseEntity<Void> logView(@RequestParam UUID id){
+    public ResponseEntity<Void> logView(@RequestParam UUID id) {
         questionService.logViewById(id);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
-    public ResponseEntity<Void> deleteQuestion(@RequestParam UUID id){
-        questionService.deleteQuestion(id, ((UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
+    public ResponseEntity<Void> deleteQuestion(@RequestParam UUID id) {
+        questionService.deleteQuestion(id, ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/vote")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<QuestionDTO> voteOnAnswer(@RequestBody NewVoteDTO newVote, @RequestParam UUID questionId){
+    public ResponseEntity<QuestionDTO> voteOnAnswer(@RequestBody NewVoteDTO newVote, @RequestParam UUID questionId) {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         return ResponseEntity.ok(questionService.addVote(questionId, username, newVote));
     }
 
     @PostMapping("/questions")
     public ResponseEntity<QuestionsResponseDTO> getQuestions(@RequestBody QuestionsRequestDTO req) throws BadRequestException {
-        switch (req.filter()){
+        switch (req.filter()) {
             case NEWEST -> {
                 return ResponseEntity.ok(questionService.getMainPageQuestions(req));
             }
@@ -91,5 +91,4 @@ public class QuestionController {
             default -> throw new BadRequestException("Your request is misconfigured");
         }
     }
-
 }

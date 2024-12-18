@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Entity
-public class Question{
+public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -65,56 +65,56 @@ public class Question{
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     private Set<QuestionVote> votes;
 
-    public int calculateVoteValue(){
+    public int calculateVoteValue() {
         return votes.stream().mapToInt(v -> v.getType().equals(VoteType.UPVOTE) ? 1 : -1).sum();
     }
 
-    public int calculateImpressions(){
+    public int calculateImpressions() {
         return answers.stream().mapToInt(Answer::calculateVoteValue).sum() + (answers.size() * 10);
     }
 
-    public boolean hasActiveBounty(){
+    public boolean hasActiveBounty() {
         return getActiveBounty().isPresent();
     }
 
-    public Optional<Bounty> getActiveBounty(){
+    public Optional<Bounty> getActiveBounty() {
         return bounties.stream().filter(Bounty::isActive).findFirst();
     }
 
-    public boolean shouldBeCharged(){
-        if(!hasActiveBounty()){
+    public boolean shouldBeCharged() {
+        if (!hasActiveBounty()) {
             return false;
         }
-        if(hasAccepted()){
+        if (hasAccepted()) {
             return true;
         }
         var bounty = getActiveBounty().get();
         return answers.stream().filter(a -> a.getPostedAt().after(bounty.getSetAt())).count() >= 8;
     }
 
-    public boolean hasAccepted(){
+    public boolean hasAccepted() {
         return answers.stream().anyMatch(Answer::isAccepted);
     }
 
-    public FullQuestionDTO fullDto(){
+    public FullQuestionDTO fullDto() {
         var optBounty = getActiveBounty();
         BountyDTO finalBounty = null;
-        if (optBounty.isPresent()){
+        if (optBounty.isPresent()) {
             finalBounty = optBounty.get().dto();
         }
-        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()), poster.calcTrueRep(), poster.calcTotalRep(), finalBounty);
+        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), hasAccepted(), questionTags.stream().map(t -> t.getTag().dto()).collect(Collectors.toSet()), poster.calcTrueRep(), poster.calcTotalRep(), finalBounty);
     }
 
-    public QuestionDTO dto(){
+    public QuestionDTO dto() {
         var optBounty = getActiveBounty();
         BountyDTO finalBounty = null;
-        if (optBounty.isPresent()){
+        if (optBounty.isPresent()) {
             finalBounty = optBounty.get().dto();
         }
-        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue() ,answers.size(), hasAccepted(), questionTags.stream().map(t -> t.getTag().dtoNoQuestions()).collect(Collectors.toSet()), finalBounty, views);
+        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.size(), hasAccepted(), questionTags.stream().map(t -> t.getTag().dto()).collect(Collectors.toSet()), finalBounty, views);
     }
 
-    public QuestionWithoutTagsDTO dtoNoTags(){
+    public QuestionWithoutTagsDTO dtoNoTags() {
         return new QuestionWithoutTagsDTO(id, title, content, poster.getUsername(), postedAt, hasAccepted(), answers.stream().map(Answer::dto).collect(Collectors.toSet()));
     }
 }

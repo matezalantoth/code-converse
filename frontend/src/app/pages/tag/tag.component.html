@@ -1,9 +1,10 @@
-<div class="relative ml-64 p-2 pt-8 mt-8 w-3/5">
+<div class="ml-64 p-2 mt-8 w-3/5">
+  <h2 class="ml-8 text-2xl font-extrabold mt-8">[{{ tag.name }}] </h2>
+  <p class="ml-8 mt-2 w-2/3">{{ tag.description }}</p>
   <div class="block w-full">
     <div class="max-w-screen-md">
       <div>
-        <h2 class="text-2xl ml-8">Newest Questions</h2>
-        <div class="flex justify-between items-center mt-4 mb-4 ml-8 mr-8">
+        <div class="flex justify-between items-center mt-4 mb-4 mr-8 ml-8">
           <span class="text-lg mt-2">
             {{ questionsCount }} question{{ questionsCount == 1 ? '' : 's' }}
             <span *ngIf="(selected | async)===QuestionFilter.Bountied"> with bounties</span>

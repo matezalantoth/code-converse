@@ -28,6 +28,10 @@ export class NavigationService {
     this.router.navigate(['/tags'])
   }
 
+  redirectToTag(tagId: string) {
+    this.router.navigate(['/tag'], {queryParams: {tagId: tagId}})
+  }
+
   redirectToQuestionPage(questionId: string) {
     this.router.navigate(['/question'], {queryParams: {questionId: questionId}})
   }

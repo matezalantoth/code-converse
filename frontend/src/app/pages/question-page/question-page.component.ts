@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {NavigationService} from "../../services/nav/nav.service";
 import {ApiService} from "../../services/data/api.service";
@@ -15,7 +15,7 @@ import {ToastrService} from "ngx-toastr";
   styleUrl: './question-page.component.css'
 })
 
-export class QuestionPageComponent {
+export class QuestionPageComponent implements OnInit {
 
   @Input()
   protected question!: Question;

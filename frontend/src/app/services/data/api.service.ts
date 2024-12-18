@@ -98,6 +98,10 @@ export class ApiService {
     return this.http.patch(this.apiUrl + '/answer/accept?questionId=' + questionId + '&answerId=' + answerId, {}, {headers});
   }
 
+  getTag(tagId: string, filter: QuestionFilter): Observable<any> {
+    return this.http.get(this.apiUrl + '/tag?id=' + tagId + "&filter=" + filter);
+  }
+
   navbarReputation(): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
     this.http.get(this.apiUrl + '/user/navbar-reputation', {headers}).subscribe({

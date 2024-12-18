@@ -1,9 +1,12 @@
 package com.matezalantoth.codeconverse.model.tag;
 
+import com.matezalantoth.codeconverse.model.question.Question;
+import com.matezalantoth.codeconverse.model.question.dtos.PaginationDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionsResponseDTO;
 import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.TagPageDTO;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagStatsDTO;
-import com.matezalantoth.codeconverse.model.tag.dtos.TagWithoutQuestionDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,11 +42,15 @@ public class Tag {
     private Set<QuestionTag> questionTags;
 
     public TagDTO dto() {
-        return new TagDTO(id, name, description, questionTags.stream().map(q -> q.getQuestion().dto()).collect(Collectors.toSet()));
+        return new TagDTO(id, name, description);
     }
 
-    public TagWithoutQuestionDTO dtoNoQuestions() {
-        return new TagWithoutQuestionDTO(id, name, description);
+    public TagPageDTO pageDto(Set<Question> questions, long count, long bountyCount) {
+        return new TagPageDTO(id, name, description, new QuestionsResponseDTO(
+                new PaginationDTO(1, 1, questions.size() / 10),
+                questions.stream().map(Question::dto).collect(Collectors.toSet()),
+                count, bountyCount)
+        );
     }
 
     public TagStatsDTO statsDto() {

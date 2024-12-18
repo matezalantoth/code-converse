@@ -21,6 +21,7 @@ import {NgOptimizedImage} from "@angular/common";
 import {QuestionsComponent} from "./components/questions/questions.component";
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
 import { TagsComponent } from './pages/tags/tags.component';
+import { TagComponent } from './pages/tag/tag.component';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { TagsComponent } from './pages/tags/tags.component';
     BountyAwarenessComponent,
     QuestionsComponent,
     QuestionsPageComponent,
-    TagsComponent
+    TagsComponent,
+    TagComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

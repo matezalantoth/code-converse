@@ -1,7 +1,9 @@
 package com.matezalantoth.codeconverse.controller;
 
+import com.matezalantoth.codeconverse.model.question.QuestionFilter;
 import com.matezalantoth.codeconverse.model.tag.dtos.*;
 import com.matezalantoth.codeconverse.service.TagService;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,12 +30,24 @@ public class TagController {
     }
 
     @GetMapping
-    public ResponseEntity<TagWithoutQuestionDTO> getTag(@RequestParam UUID id) {
-        return ResponseEntity.ok(tagService.getTag(id));
+    public ResponseEntity<TagPageDTO> getTag(@RequestParam UUID id, @RequestParam QuestionFilter filter) throws BadRequestException {
+        switch (filter) {
+            case NEWEST -> {
+                return ResponseEntity.ok(tagService.getTagWithNewestQuestions(id));
+            }
+            case BOUNTIED -> {
+                return ResponseEntity.ok(tagService.getTagWithBountiedQuestions(id));
+            }
+            case UNANSWERED -> {
+                return ResponseEntity.ok(tagService.getTagWithUnansweredQuestions(id));
+            }
+            default -> throw new BadRequestException("Your request is misconfigured");
+
+        }
     }
 
     @GetMapping("/all")
-    public ResponseEntity<TagPageDTO> getTags(@RequestParam int startIndex) {
+    public ResponseEntity<TagsPageDTO> getTags(@RequestParam int startIndex) {
         return ResponseEntity.ok(tagService.getTags(startIndex));
     }
 

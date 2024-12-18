@@ -9,6 +9,7 @@ import {AuthGuardService} from "./services/auth/auth-guard.service";
 import {QuestionPageComponent} from "./pages/question-page/question-page.component";
 import {QuestionsPageComponent} from "./pages/questions-page/questions-page.component";
 import {TagsComponent} from "./pages/tags/tags.component";
+import {TagComponent} from "./pages/tag/tag.component";
 
 const routes: Routes = [
   {path: '', component: DashboardComponent},
@@ -16,6 +17,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent, canActivate: [ProfileGuardService]},
   {path: 'signup', component: SignupComponent, canActivate: [ProfileGuardService]},
   {path: 'question', component: QuestionPageComponent},
+  {path: 'tag', component: TagComponent},
   {path: 'questions', component: QuestionsPageComponent},
   {path: 'tags', component: TagsComponent}
 ];
