@@ -23,6 +23,7 @@ import {QuestionsPageComponent} from './pages/questions-page/questions-page.comp
 import {TagsComponent} from './pages/tags/tags.component';
 import {TagComponent} from './pages/tag/tag.component';
 import {MarkdownPreviewComponent} from './components/markdown-preview/markdown-preview.component';
+import { InfiniteScrollComponent } from './components/infinite-scroll/infinite-scroll.component';
 
 
 @NgModule({
@@ -42,7 +43,8 @@ import {MarkdownPreviewComponent} from './components/markdown-preview/markdown-p
     QuestionsPageComponent,
     TagsComponent,
     TagComponent,
-    MarkdownPreviewComponent
+    MarkdownPreviewComponent,
+    InfiniteScrollComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

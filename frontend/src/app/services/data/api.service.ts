@@ -28,16 +28,25 @@ export class ApiService {
     return this.http.post(this.apiUrl + '/user/register', data)
   }
 
-  getDashQuestions(): Observable<any> {
-    return this.http.post(this.apiUrl + '/question/questions', {"startIndex": 1, "filter": QuestionFilter.Newest})
+  getDashQuestions(startIndex: number): Observable<any> {
+    return this.http.post(this.apiUrl + '/question/questions', {
+      "startIndex": startIndex,
+      "filter": QuestionFilter.Newest
+    })
   }
 
-  getBountiedQuestions(): Observable<any> {
-    return this.http.post(this.apiUrl + '/question/questions', {"startIndex": 1, "filter": QuestionFilter.Bountied})
+  getBountiedQuestions(startIndex: number): Observable<any> {
+    return this.http.post(this.apiUrl + '/question/questions', {
+      "startIndex": startIndex,
+      "filter": QuestionFilter.Bountied
+    })
   }
 
-  getUnansweredQuestions(): Observable<any> {
-    return this.http.post(this.apiUrl + '/question/questions', {"startIndex": 1, "filter": QuestionFilter.Unanswered})
+  getUnansweredQuestions(startIndex: number): Observable<any> {
+    return this.http.post(this.apiUrl + '/question/questions', {
+      "startIndex": startIndex,
+      "filter": QuestionFilter.Unanswered
+    })
   }
 
   getTags(startIndex: number): Observable<any> {

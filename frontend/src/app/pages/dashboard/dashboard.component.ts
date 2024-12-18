@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {ApiService} from "../../services/data/api.service";
 import {MainPageQuestion} from "../../shared/models/mainPageQuestion";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'app-dashboard',
@@ -9,16 +9,24 @@ import {BehaviorSubject} from "rxjs";
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
-  nextPage: number = 0;
-  maxPage: number = 0;
+  nextPage: number = 1;
+  maxPage: number = 1;
   private _questions: BehaviorSubject<MainPageQuestion[]> = new BehaviorSubject<MainPageQuestion[]>([]);
   public questions = this._questions.asObservable();
 
   constructor(public api: ApiService) {
-    api.getDashQuestions().subscribe(res => {
-      this.nextPage = res.pagination.currentPage + 1;
-      this.maxPage = res.pagination.maxPage;
-      this._questions.next(res.questions);
-    })
+    this.fetchItems();
   }
+
+  fetchItems = async (): Promise<boolean> => {
+    const res = await firstValueFrom(this.api.getDashQuestions(this.nextPage));
+    this.nextPage = res.pagination.currentPage + 1;
+    this.maxPage = res.pagination.maxPage;
+    const currentQuestions = this._questions.getValue();
+    const updatedQuestions = [...currentQuestions, ...res.questions];
+    this._questions.next(updatedQuestions);
+    return this.maxPage >= this.nextPage;
+
+  }
+
 }
