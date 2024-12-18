@@ -63,7 +63,7 @@ export class AnswerComponent implements OnChanges {
       next: (res) => {
         this.question.hasAccepted = !this.question.hasAccepted;
         this.answer.accepted = !this.answer.accepted;
-        this.api.navbarReputation();
+        this.api.navbarReputation().subscribe();
         if (this.answer.accepted) {
           this.question.bounty = null;
         }

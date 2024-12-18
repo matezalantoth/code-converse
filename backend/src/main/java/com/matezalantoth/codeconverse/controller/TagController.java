@@ -23,17 +23,22 @@ public class TagController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<TagDTO> createTag(@RequestBody NewTagDTO newTagDTO){
-       return ResponseEntity.status(HttpStatus.CREATED).body(tagService.createTag(newTagDTO));
+    public ResponseEntity<TagDTO> createTag(@RequestBody NewTagDTO newTagDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(tagService.createTag(newTagDTO));
     }
 
     @GetMapping
-    public ResponseEntity<TagWithoutQuestionDTO> getTag(@RequestParam UUID id){
+    public ResponseEntity<TagWithoutQuestionDTO> getTag(@RequestParam UUID id) {
         return ResponseEntity.ok(tagService.getTag(id));
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<TagPageDTO> getTags(@RequestParam int startIndex) {
+        return ResponseEntity.ok(tagService.getTags(startIndex));
+    }
+
     @PostMapping("/autocomplete")
-    public ResponseEntity<List<AutocompleteResult>> getMatchingTags(@RequestParam String substring, @RequestBody Set<AutocompleteResult> tags){
+    public ResponseEntity<List<AutocompleteResult>> getMatchingTags(@RequestParam String substring, @RequestBody Set<AutocompleteResult> tags) {
         return ResponseEntity.ok(tagService.getMatchingTags(substring.toLowerCase(), tags));
     }
 }

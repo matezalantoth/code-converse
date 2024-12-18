@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ApiService} from "../../services/data/api.service";
 import {AuthService} from "../../services/auth/auth.service";
@@ -33,8 +33,9 @@ export class SignupComponent {
     if (this.signupForm.valid) {
       const signupData: SignupData = {...this.signupForm.value};
       this.apiService.signup(signupData).subscribe((res) => {
-        if(res.jwt){
+        if (res.jwt) {
           this.authService.setToken(res.jwt);
+          this.apiService.navbarReputation().subscribe();
           this.nav.redirectToDashboard();
         }
       })

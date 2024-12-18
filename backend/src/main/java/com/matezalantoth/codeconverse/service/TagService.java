@@ -1,13 +1,14 @@
 package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
-import com.matezalantoth.codeconverse.model.tag.dtos.AutocompleteResult;
-import com.matezalantoth.codeconverse.model.tag.dtos.NewTagDTO;
+import com.matezalantoth.codeconverse.model.question.Question;
+import com.matezalantoth.codeconverse.model.question.dtos.PaginationDTO;
+import com.matezalantoth.codeconverse.model.question.dtos.QuestionsResponseDTO;
+import com.matezalantoth.codeconverse.model.tag.dtos.*;
 import com.matezalantoth.codeconverse.model.tag.Tag;
-import com.matezalantoth.codeconverse.model.tag.dtos.TagDTO;
-import com.matezalantoth.codeconverse.model.tag.dtos.TagWithoutQuestionDTO;
 import com.matezalantoth.codeconverse.repository.TagRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -36,9 +37,34 @@ public class TagService {
         return tagRepository.getTagById(id).orElseThrow(() -> new NotFoundException("tag of id: " + id)).dtoNoQuestions();
     }
 
-    //maybe filter first
+    public TagPageDTO getTags(int startIndex) {
+        var tags = tagRepository.findAll();
+        if (tags.isEmpty()) {
+            return new TagPageDTO(new PaginationDTO(startIndex, 1, 1), new HashSet<>());
+        }
+        var sorted = tags.stream().sorted(Comparator.comparingInt(t -> t.getQuestionTags().size())).limit(24).toList();
+        var currentStartIndex = Math.max((startIndex - 1) * 10, 0);
+        var totalPages = (int) Math.ceil((double) tags.size() / 24);
+        var endIndex = Math.min(currentStartIndex + 24, tags.size());
+
+        if (currentStartIndex >= tags.size()) {
+            return new TagPageDTO(new PaginationDTO(startIndex, 1, totalPages), new HashSet<>());
+        }
+
+        var pagination = new PaginationDTO(startIndex,
+                1,
+                totalPages);
+
+        return new TagPageDTO(pagination,
+                sorted.subList(currentStartIndex, endIndex).stream()
+                        .map(Tag::statsDto)
+                        .collect(Collectors.toSet())
+        );
+
+    }
+
     public List<AutocompleteResult> getMatchingTags(String substring, Set<AutocompleteResult> chosenTags) {
-        if(substring.isEmpty()) {
+        if (substring.isEmpty()) {
             return new ArrayList<>();
         }
 

@@ -40,6 +40,9 @@ export class ApiService {
     return this.http.post(this.apiUrl + '/question/questions', {"startIndex": 1, "filter": QuestionFilter.Unanswered})
   }
 
+  getTags(startIndex: number): Observable<any> {
+    return this.http.get(this.apiUrl + '/tag/all?startIndex=' + startIndex)
+  }
 
   getSeparateQuestion(questionId: string): Observable<any> {
     return this.http.get(this.apiUrl + '/question?id=' + questionId);
@@ -106,6 +109,12 @@ export class ApiService {
       }
     });
 
+    return this.navbarRep.asObservable();
+  }
+
+  resetReputation(): Observable<any> {
+    console.log('hi');
+    this.navbarRep.next({});
     return this.navbarRep.asObservable();
   }
 

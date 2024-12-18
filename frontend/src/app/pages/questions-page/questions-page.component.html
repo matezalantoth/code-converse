@@ -5,7 +5,9 @@
         <h2 class="text-2xl ml-8">Newest Questions</h2>
         <div class="flex justify-between items-center mt-4 mb-4 ml-8 mr-8">
           <span class="text-lg">
-      {{ questionsCount }} question{{ questionsCount == 1 ? '' : 's' }}
+            {{ questionsCount }} question{{ questionsCount == 1 ? '' : 's' }}
+            <span *ngIf="(selected | async)===QuestionFilter.Bountied"> with bounties</span>
+            <span *ngIf="(selected | async)===QuestionFilter.Unanswered"> with no answer</span>
     </span>
           <div class="flex border-1 p-1 text-xs rounded-md border-gray-300 text-slate-700">
             <span
@@ -21,7 +23,7 @@
               [ngClass]="{'bg-gray-200': (selected | async)===QuestionFilter.Bountied, 'hover:bg-gray-100': (selected | async)!==QuestionFilter.Bountied}"
               class="p-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
               <span [ngClass]="{'font-bold': (selected | async)===QuestionFilter.Bountied}">Bountied</span>
-              <span class="bg-navy text-white px-1.5 py-0.5 rounded-md ml-1">{{ bountyCount }}</span>
+              <span class="bg-navy text-white px-1 py-0.5 rounded-md ml-1">{{ bountyCount }}</span>
             </span>
           </div>
         </div>
