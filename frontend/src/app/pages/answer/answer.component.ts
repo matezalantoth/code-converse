@@ -1,16 +1,19 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Answer} from "../../shared/models/answer";
 import {VoteType} from "../../shared/models/voteType";
 import {Vote} from "../../shared/models/vote";
 import {ApiService} from "../../services/data/api.service";
 import {Question} from "../../shared/models/question";
+import {Marked} from "marked";
+import {markedHighlight} from "marked-highlight";
+import hljs from "highlight.js";
 
 @Component({
   selector: 'app-answer',
   templateUrl: './answer.component.html',
   styleUrls: ['./answer.component.css']
 })
-export class AnswerComponent implements OnChanges {
+export class AnswerComponent implements OnChanges, OnInit {
   private currentVote: VoteType = VoteType.NOVOTE;
 
   @Input() public answer!: Answer;
@@ -18,8 +21,30 @@ export class AnswerComponent implements OnChanges {
   @Input() public owner!: boolean;
   @Input() public question!: Question;
   @Output() questionChange = new EventEmitter<any>();
+  public content!: string | Promise<string>;
 
   constructor(private api: ApiService) {
+  }
+
+  private marked: Marked = new Marked(
+    markedHighlight({
+      emptyLangClass: 'hljs',
+      langPrefix: 'hljs language-',
+      highlight(code, lang, info) {
+
+        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+        return hljs.highlight(code, {language}).value;
+      }
+    }))
+
+  ngOnInit() {
+    this.markdownPreview();
+  }
+
+
+  markdownPreview() {
+    console.log(this.answer.content);
+    this.content = this.marked.parse(this.answer.content);
   }
 
   updateQuestion(): void {

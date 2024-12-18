@@ -4,7 +4,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {LoginComponent} from './pages/login/login.component';
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
 import {NavbarComponent} from './shared/navbar/navbar.component';
 import {DashboardComponent} from './pages/dashboard/dashboard.component';
@@ -19,9 +19,10 @@ import {BrowserAnimationsModule, NoopAnimationsModule} from "@angular/platform-b
 import {BountyAwarenessComponent} from './components/bounty-awareness/bounty-awareness.component';
 import {NgOptimizedImage} from "@angular/common";
 import {QuestionsComponent} from "./components/questions/questions.component";
-import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
-import { TagsComponent } from './pages/tags/tags.component';
-import { TagComponent } from './pages/tag/tag.component';
+import {QuestionsPageComponent} from './pages/questions-page/questions-page.component';
+import {TagsComponent} from './pages/tags/tags.component';
+import {TagComponent} from './pages/tag/tag.component';
+import {MarkdownPreviewComponent} from './components/markdown-preview/markdown-preview.component';
 
 
 @NgModule({
@@ -40,11 +41,12 @@ import { TagComponent } from './pages/tag/tag.component';
     QuestionsComponent,
     QuestionsPageComponent,
     TagsComponent,
-    TagComponent
+    TagComponent,
+    MarkdownPreviewComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,
-    ReactiveFormsModule, NoopAnimationsModule, BrowserAnimationsModule, NgOptimizedImage],
+    ReactiveFormsModule, NoopAnimationsModule, BrowserAnimationsModule, NgOptimizedImage, FormsModule],
   providers: [provideHttpClient(withInterceptorsFromDi()), provideToastr()]
 })
 export class AppModule {

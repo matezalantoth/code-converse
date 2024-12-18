@@ -7,7 +7,9 @@ import {AuthService} from "../../services/auth/auth.service";
 import {Question} from "../../shared/models/question";
 import {Vote} from "../../shared/models/vote";
 import {VoteType} from "../../shared/models/voteType";
-import {ToastrService} from "ngx-toastr";
+import {Marked} from "marked";
+import {markedHighlight} from "marked-highlight";
+import hljs from "highlight.js";
 
 @Component({
   selector: 'app-question-page',
@@ -29,6 +31,8 @@ export class QuestionPageComponent implements OnInit {
   protected owner!: boolean;
 
   protected answerForm: FormGroup;
+
+  public content!: any;
 
   constructor(private route: ActivatedRoute, public api: ApiService, private nav: NavigationService, private fb: FormBuilder, private auth: AuthService) {
     this.answerForm = this.fb.group({
@@ -120,7 +124,25 @@ export class QuestionPageComponent implements OnInit {
     })
   }
 
+  private marked: Marked = new Marked(
+    markedHighlight({
+      emptyLangClass: 'hljs',
+      langPrefix: 'hljs language-',
+      highlight(code, lang, info) {
+
+        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+        return hljs.highlight(code, {language}).value;
+      }
+    }))
+
+
+  markdownPreview() {
+
+    this.content = this.marked.parse(this.question.content);
+  }
+
   ngOnInit(): void {
+
     this.route.queryParams.subscribe(params => {
       if (params['questionId']) {
         this.api.logView(params['questionId']).subscribe();
@@ -128,6 +150,7 @@ export class QuestionPageComponent implements OnInit {
           next: (res) => {
             this.question = res;
             this.sortAnswers();
+            this.markdownPreview();
           },
           error: () => {
             this.nav.redirectToDashboard();

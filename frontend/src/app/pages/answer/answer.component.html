@@ -15,14 +15,19 @@
       class="text-green-500 text-2xl font-bold">
       <i class="fa-solid fa-check"></i>
     </div>
-    <button [ngClass]="{'bg-blue-500 text-white': isVote(VoteType.UPVOTE), 'hover:bg-orange-200': !isVote(VoteType.UPVOTE)}" (click)="upvote()" class="border rounded-3xl p-2 px-3.5 hover:bg-orange-200 cursor-pointer">
+    <button
+      [ngClass]="{'bg-blue-500 text-white': isVote(VoteType.UPVOTE), 'hover:bg-orange-200': !isVote(VoteType.UPVOTE)}"
+      (click)="upvote()" class="border rounded-3xl p-2 px-3.5 hover:bg-orange-200 cursor-pointer">
       <i class="fa-solid fa-arrow-up"></i>
     </button>
-    <p class="font-bold text-xl mt-2 mb-2">{{answer.votes}}<p>
-    <button [ngClass]="{'bg-blue-500 text-white': isVote(VoteType.DOWNVOTE), 'hover:bg-orange-200': !isVote(VoteType.DOWNVOTE)}" (click)="downvote()" class="border rounded-3xl p-2 px-3.5 mb-4 cursor-pointer">
-      <i class="fa-solid fa-arrow-down"></i>
-    </button>
+    <p class="font-bold text-xl mt-2 mb-2">{{ answer.votes }}
+    <p>
+      <button
+        [ngClass]="{'bg-blue-500 text-white': isVote(VoteType.DOWNVOTE), 'hover:bg-orange-200': !isVote(VoteType.DOWNVOTE)}"
+        (click)="downvote()" class="border rounded-3xl p-2 px-3.5 mb-4 cursor-pointer">
+        <i class="fa-solid fa-arrow-down"></i>
+      </button>
   </div>
-  <div class="ml-12">{{answer.content}}</div>
+  <div class="ml-12 w-full" [innerHTML]="content"></div>
 </div>
 <hr class="mt-2 w-97% m-auto">
