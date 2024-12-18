@@ -2,7 +2,7 @@ import {Component, OnInit, OnDestroy} from '@angular/core';
 import {MainPageQuestion} from "../../shared/models/mainPageQuestion";
 import {ApiService} from "../../services/data/api.service";
 import {QuestionFilter} from "../../shared/models/questionFilter";
-import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {BehaviorSubject, firstValueFrom, Observable, Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 
 interface QuestionResponse {
@@ -20,15 +20,14 @@ interface QuestionResponse {
   templateUrl: './questions-page.component.html',
   styleUrls: ['./questions-page.component.css']
 })
-export class QuestionsPageComponent implements OnInit, OnDestroy {
-  nextPage: number = 0;
-  maxPage: number = 0;
+export class QuestionsPageComponent implements OnInit {
+  nextPage: number = 1;
+  maxPage: number = 1;
   questionsCount: number = 0;
   bountyCount: number = 0;
   private _questions: BehaviorSubject<MainPageQuestion[]>;
   public questions: Observable<MainPageQuestion[]>;
-  selected: BehaviorSubject<QuestionFilter> = new BehaviorSubject<QuestionFilter>(QuestionFilter.Newest);
-  private destroy$ = new Subject<void>();
+  selected: BehaviorSubject<QuestionFilter> = new BehaviorSubject<QuestionFilter>(localStorage.getItem("selected") ? localStorage.getItem("selected") as QuestionFilter : QuestionFilter.Newest);
 
   constructor(public api: ApiService) {
     this._questions = new BehaviorSubject<MainPageQuestion[]>([]);
@@ -39,32 +38,36 @@ export class QuestionsPageComponent implements OnInit, OnDestroy {
     this.nextPage = res.pagination.currentPage + 1;
     this.maxPage = res.pagination.maxPage;
     this.questionsCount = res.count;
-    this._questions.next(res.questions);
+    const currentQuestions = this._questions.getValue();
+    const updatedQuestions = [...currentQuestions, ...res.questions];
+    this._questions.next(updatedQuestions);
     this.bountyCount = res.bountyCount;
+    return this.maxPage >= this.nextPage;
   }
 
   ngOnInit() {
-    this.selected
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((f) => {
-        switch (f) {
-          case QuestionFilter.Newest:
-            this.api.getDashQuestions().subscribe((res) => this.handleNewQuestions(res));
-            break;
-          case QuestionFilter.Bountied:
-            this.api.getBountiedQuestions().subscribe((res) => this.handleNewQuestions(res));
-            break;
-          case QuestionFilter.Unanswered:
-            this.api.getUnansweredQuestions().subscribe((res) => this.handleNewQuestions(res));
-            break;
-        }
-      });
+    this.selected.subscribe(async (f) => {
+      this.nextPage = 1;
+      this.maxPage = 1;
+      this._questions.next([]);
+      localStorage.setItem("selected", this.selected.getValue());
+      await this.fetchItems(f);
+    })
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+  fetchItems = async (f: QuestionFilter = this.selected.getValue()): Promise<boolean> => {
+    switch (f) {
+      case QuestionFilter.Newest:
+        let newest = await firstValueFrom(this.api.getDashQuestions(this.nextPage));
+        return this.handleNewQuestions(newest);
+      case QuestionFilter.Bountied:
+        let bountied = await firstValueFrom(this.api.getBountiedQuestions(this.nextPage));
+        return this.handleNewQuestions(bountied);
+      case QuestionFilter.Unanswered:
+        let unanswered = await firstValueFrom(this.api.getUnansweredQuestions(this.nextPage));
+        return this.handleNewQuestions(unanswered);
+    }
+  };
 
   protected readonly QuestionFilter = QuestionFilter;
 

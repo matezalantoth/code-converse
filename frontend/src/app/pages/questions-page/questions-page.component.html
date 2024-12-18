@@ -31,6 +31,7 @@
 
       <div class="border-b-1 border-t-1">
         <app-questions [_questions]="questions"></app-questions>
+        <app-infinite-scroll [fetchItems]="fetchItems" [select]="selected.asObservable()"></app-infinite-scroll>
       </div>
     </div>
   </div>

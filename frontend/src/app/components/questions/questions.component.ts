@@ -23,8 +23,14 @@ export class QuestionsComponent implements OnInit {
 
   ngOnInit() {
     this._questions.subscribe(q => {
-      this.questions = q;
+      this.questions = q.sort((q1, q2) => {
+        const date1 = new Date(q1.postedAt);
+        const date2 = new Date(q2.postedAt);
+        // @ts-ignore
+        return date2 - date1;
+      });
     });
+
   }
 
 
