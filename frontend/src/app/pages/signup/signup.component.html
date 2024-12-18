@@ -5,7 +5,7 @@
       <br/>
       <div class='flex flex-col gap-6'>
         <label for="username" class='block text-sm font-medium text-gray-900  -mb-4'>
-          Your Username:
+          Your Username
         </label>
         <input
           formControlName="username"
@@ -16,7 +16,7 @@
           class='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
         />
         <label for="email" class='block  text-sm font-medium text-gray-900  -mb-4'>
-          Your Email:
+          Your Email
         </label>
         <input
           formControlName="email"
@@ -27,7 +27,7 @@
           required
         />
         <label for="password" class='block text-sm font-medium text-gray-900  -mb-4'>
-          Password:
+          Password
         </label>
         <input
           formControlName="password"
@@ -46,10 +46,11 @@
       </button>
     </form>
     <div class='mt-2'>
-          <span class='text-center text-slate-500 font-normal'>
+          <span class='text-sm font-medium mt-2 text-gray-500 '>
               Already have an account?
           </span>
-      <p (click)="nav.redirectToLogin()" class='font-medium text-blue-700 cursor-pointer'>
+      <p (click)="nav.redirectToLogin()"
+         class='text-blue-700 text-sm hover:underline dark:text-blue-500 cursor-pointer'>
         Login!
       </p>
     </div>

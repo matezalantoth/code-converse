@@ -11,5 +11,4 @@ public class CodeConverseApplication {
     public static void main(String[] args) {
         SpringApplication.run(CodeConverseApplication.class, args);
     }
-
 }

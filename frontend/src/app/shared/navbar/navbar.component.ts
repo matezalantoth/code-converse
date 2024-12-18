@@ -22,6 +22,11 @@ export class NavbarComponent {
 
   logout() {
     this.auth.logout()
+    this.api.resetReputation().subscribe()
+    this.nav.redirectToLogin()
+  }
+
+  login() {
     this.nav.redirectToLogin()
   }
 

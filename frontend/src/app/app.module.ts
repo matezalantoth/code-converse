@@ -20,6 +20,8 @@ import {BountyAwarenessComponent} from './components/bounty-awareness/bounty-awa
 import {NgOptimizedImage} from "@angular/common";
 import {QuestionsComponent} from "./components/questions/questions.component";
 import { QuestionsPageComponent } from './pages/questions-page/questions-page.component';
+import { TagsComponent } from './pages/tags/tags.component';
+import { TagComponent } from './pages/tag/tag.component';
 
 
 @NgModule({
@@ -36,7 +38,9 @@ import { QuestionsPageComponent } from './pages/questions-page/questions-page.co
     BountyComponent,
     BountyAwarenessComponent,
     QuestionsComponent,
-    QuestionsPageComponent
+    QuestionsPageComponent,
+    TagsComponent,
+    TagComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

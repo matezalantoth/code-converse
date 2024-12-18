@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface QuestionRepository extends JpaRepository<Question, UUID>  {
+public interface QuestionRepository extends JpaRepository<Question, UUID> {
     Optional<Question> getQuestionsById(UUID id);
 
     List<Question> getQuestionsOrderByPostedAt(Date postedAt);
@@ -22,10 +22,10 @@ public interface QuestionRepository extends JpaRepository<Question, UUID>  {
     @Query("SELECT q FROM Question q LEFT JOIN Answer a ON q.id = a.question.id where a.id is null")
     List<Question> findQuestionsWithNoAnswers();
 
-    @Query("SELECT count(1) FROM Question q LEFT JOIN Bounty b ON q.id = b.question.id where b.id is not null")
+    @Query("SELECT count(1) FROM Question q LEFT JOIN Bounty b ON q.id = b.question.id where b.active is true")
     long findQuestionsWithBountiesCount();
 
-    @Query("SELECT q FROM Question q LEFT JOIN Bounty b ON q.id = b.question.id where b.id is not null")
+    @Query("SELECT q FROM Question q LEFT JOIN Bounty b ON q.id = b.question.id where b.active is true")
     List<Question> findQuestionsWithBounties();
 
 }

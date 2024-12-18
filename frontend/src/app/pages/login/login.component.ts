@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {LoginData} from "../../shared/models/loginData";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth/auth.service";
@@ -37,6 +37,7 @@ export class LoginComponent {
     this.api.login(userData).subscribe((res) => {
       this.responseData = res;
       this.authService.setToken(this.responseData.jwt);
+      this.api.navbarReputation().subscribe();
       this.nav.redirectToDashboard();
     })
   }

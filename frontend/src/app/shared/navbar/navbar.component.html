@@ -7,16 +7,16 @@
       alt="Logo"/>
   </div>
 
-  <div class="flex items-center h-full mr-4">
+  <div class="flex items-center h-full">
     <button
-      class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition duration-300 mr-4"
+      class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition duration-300"
       (click)="redirectToAskQuestion()">
       Ask Question
     </button>
 
     <div
-      *ngIf="navbarRep.username !== null"
-      class="flex items-center text-gray-700 text-sm mr-4">
+      *ngIf="navbarRep.username !== undefined"
+      class="flex items-center text-gray-700 text-sm ml-6 mr-4">
       <span class="mr-2">
         <span class="font-bold">{{ navbarRep.username }} {{ navbarRep.rep.trueReputation }}</span>
         <span class="ml-1 text-gray-500">({{ navbarRep.rep.reputation }})</span>
@@ -26,8 +26,14 @@
     <button
       *ngIf="isLoggedIn | async"
       (click)="logout()"
-      class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-md text-sm transition duration-300">
+      class="bg-red-500 mr-4 ml-2 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm transition duration-300">
       Logout
+    </button>
+    <button
+      *ngIf="!(isLoggedIn | async)"
+      (click)="login()"
+      class="bg-blue-600 ml-2 mr-6 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition duration-300">
+      Login
     </button>
   </div>
 </nav>

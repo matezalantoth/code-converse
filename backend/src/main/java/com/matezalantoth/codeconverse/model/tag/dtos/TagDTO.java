@@ -5,5 +5,5 @@ import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
 import java.util.Set;
 import java.util.UUID;
 
-public record TagDTO(UUID id, String name, String description, Set<QuestionDTO> questions) {
+public record TagDTO(UUID id, String name, String description) {
 }
