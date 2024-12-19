@@ -1,6 +1,7 @@
 package com.matezalantoth.codeconverse.service;
 
 import com.matezalantoth.codeconverse.exception.NotFoundException;
+import com.matezalantoth.codeconverse.model.bounty.Bounty;
 import com.matezalantoth.codeconverse.model.question.*;
 import com.matezalantoth.codeconverse.model.question.dtos.*;
 import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
@@ -14,6 +15,10 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -242,6 +247,25 @@ public class QuestionService {
             }
 
             managedUser.getReputation().removeIf(r -> r.getRelatedDataId().equals(managedBounty.getId()));
+        }
+    }
+
+    public void assignAndRenewBounties() {
+        var questions = questionRepository.findAll();
+        for (var q : questions) {
+            if (q.getAnswers().isEmpty() && q.getActiveBounty().isEmpty()) {
+                Date lastWeek = Date.from(LocalDateTime.now().minusWeeks(1).atZone(ZoneId.systemDefault()).toInstant());
+                if (q.getPostedAt().before(lastWeek)) {
+                    int weekDiff = (int) ChronoUnit.WEEKS.between(q.getPostedAt().toInstant(), new Date().toInstant());
+                    var bounty = new Bounty();
+                    bounty.setQuestion(q);
+                    bounty.setBountyValue(50 * weekDiff);
+                    bounty.setSetAt(new Date());
+                    bounty.setActive(true);
+                    bounty.setExpiresAt(Date.from(LocalDateTime.now().plusWeeks(1).atZone(ZoneId.systemDefault()).toInstant()));
+                    q.getBounties().add(bounty);
+                }
+            }
         }
     }
 
