@@ -25,4 +25,9 @@ public class ScheduledTasks {
     public void checkAndHandleExpiredBounties() {
         questionService.checkAndHandleExpiredBounties();
     }
+
+    @Scheduled(fixedRate = 6000000)
+    public void assignAndRenewBounties() {
+        questionService.assignAndRenewBounties():
+    }
 }
