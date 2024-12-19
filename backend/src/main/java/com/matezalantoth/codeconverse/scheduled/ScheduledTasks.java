@@ -28,6 +28,6 @@ public class ScheduledTasks {
 
     @Scheduled(fixedRate = 6000000)
     public void assignAndRenewBounties() {
-        questionService.assignAndRenewBounties():
+        questionService.assignAndRenewBounties();
     }
 }
