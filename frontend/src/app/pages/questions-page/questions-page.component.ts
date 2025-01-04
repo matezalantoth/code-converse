@@ -3,7 +3,6 @@ import {MainPageQuestion} from "../../shared/models/mainPageQuestion";
 import {ApiService} from "../../services/data/api.service";
 import {QuestionFilter} from "../../shared/models/questionFilter";
 import {BehaviorSubject, firstValueFrom, Observable, Subject} from "rxjs";
-import {takeUntil} from "rxjs/operators";
 
 interface QuestionResponse {
   pagination: {

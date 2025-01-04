@@ -14,7 +14,7 @@ module.exports = {
         "lato": ['Lato', 'sans-serif']
       },
       borderWidth: {
-        '1': '1px', // Define a border width of 1px
+        '1': '1px',
       },
       width: {
         '78%': '78%',

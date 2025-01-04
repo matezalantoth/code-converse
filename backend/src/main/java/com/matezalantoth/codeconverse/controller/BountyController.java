@@ -4,7 +4,6 @@ import com.matezalantoth.codeconverse.model.bounty.dtos.NewBountyDTO;
 import com.matezalantoth.codeconverse.model.question.dtos.QuestionDTO;
 import com.matezalantoth.codeconverse.service.BountyService;
 import com.matezalantoth.codeconverse.service.QuestionService;
-import com.matezalantoth.codeconverse.service.ReputationService;
 import com.matezalantoth.codeconverse.service.UserService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -34,14 +33,15 @@ public class BountyController {
     @PostMapping("/create")
     @PreAuthorize("@questionService.isOwner(#questionId, authentication.principal.username)")
     public ResponseEntity<QuestionDTO> addBountyToQuestion(@RequestParam UUID questionId, @RequestBody NewBountyDTO newBountyDTO) throws BadRequestException {
-        if(questionService.hasAccepted(questionId)){
+        if (questionService.hasAccepted(questionId)) {
             throw new BadRequestException("You cannot create a bounty when you have already accepted an answer!");
         }
         questionService.checkAndHandleExpiredBounties();
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(userService.canUserAffordBountyByUsername(userDetails.getUsername(), newBountyDTO.value())){
+        if (userService.canUserAffordBountyByUsername(userDetails.getUsername(), newBountyDTO.value())) {
             return ResponseEntity.status(HttpStatus.CREATED).body(bountyService.addBountyToQuestion(newBountyDTO, questionId));
-        };
+        }
+        ;
         throw new BadRequestException("You cannot afford this bounty!");
     }
 

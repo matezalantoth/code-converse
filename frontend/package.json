@@ -18,7 +18,7 @@
     "@angular/platform-browser": "^17.3.0",
     "@angular/platform-browser-dynamic": "^17.3.0",
     "@angular/router": "^17.3.0",
-    "@fortawesome/fontawesome-free": "^6.7.1",
+    "@fortawesome/fontawesome-free": "^6.7.2",
     "highlight.js": "^11.11.0",
     "marked": "^15.0.4",
     "marked-highlight": "^2.2.1",
