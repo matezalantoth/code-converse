@@ -12,7 +12,7 @@ import {QuestionFilter} from "../../shared/models/questionFilter";
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl: string = '/api'
+  private apiUrl: string = 'http://codeconverse-api.eu-west-2.elasticbeanstalk.com'
 
   navbarRep: BehaviorSubject<object> = new BehaviorSubject<object>({});
 

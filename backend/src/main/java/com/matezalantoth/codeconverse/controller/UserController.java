@@ -29,6 +29,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/health")
+    public ResponseEntity<Void> healthCheck() {
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> registerAndLogin(@RequestBody RegisterRequestDTO newUser) throws BadRequestException {
         userService.createUser(newUser);
@@ -38,21 +43,21 @@ public class UserController {
 
     @GetMapping("/profile")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserDTO> getProfileInfo(){
+    public ResponseEntity<UserDTO> getProfileInfo() {
         var user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok().body(userService.getUserByUsername(user.getUsername()));
     }
 
     @GetMapping("/rep-val")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<ReputationValueDTO> getReputationValue(){
+    public ResponseEntity<ReputationValueDTO> getReputationValue() {
         var user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok().body(userService.getReputationValueByUsername(user.getUsername()));
     }
 
     @GetMapping("/rep")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Set<ReputationDTO>> getReputation(){
+    public ResponseEntity<Set<ReputationDTO>> getReputation() {
         var user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok().body(userService.getReputationByUsername(user.getUsername()));
     }
@@ -64,7 +69,7 @@ public class UserController {
     }
 
     @PatchMapping("/make-admin")
-    public ResponseEntity<Void> makeAdmin(){
+    public ResponseEntity<Void> makeAdmin() {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         userService.makeAdmin(username);
         return ResponseEntity.ok().build();
@@ -72,14 +77,14 @@ public class UserController {
 
     @GetMapping("/votes")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<UserVotesDTO> getVotes(){
+    public ResponseEntity<UserVotesDTO> getVotes() {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         return ResponseEntity.ok().body(userService.getVotesByUsername(username));
     }
 
     @GetMapping("/navbar-reputation")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<NavbarReputationDTO> getReputationForNavbar(){
+    public ResponseEntity<NavbarReputationDTO> getReputationForNavbar() {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         return ResponseEntity.ok().body(userService.getUserReputationForNavbarByUsername(username));
     }

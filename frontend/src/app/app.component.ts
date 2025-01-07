@@ -1,7 +1,4 @@
 import {Component} from '@angular/core';
-import '@fortawesome/fontawesome-free/css/all.css';
-import {BehaviorSubject, Observable} from "rxjs";
-import {QuestionFilter} from "./shared/models/questionFilter";
 
 @Component({
   selector: 'app-root',

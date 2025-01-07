@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://backend-server:8080",
+    "target": "https://api.codeconverse.net",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
