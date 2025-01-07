@@ -12,7 +12,7 @@ import {QuestionFilter} from "../../shared/models/questionFilter";
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl: string = 'http://codeconverse-api.eu-west-2.elasticbeanstalk.com'
+  private apiUrl: string = 'https://api.codeconverse.net'
 
   navbarRep: BehaviorSubject<object> = new BehaviorSubject<object>({});
 
@@ -21,7 +21,7 @@ export class ApiService {
 
 
   login(data: LoginData): Observable<any> {
-    return this.http.post<any>(this.apiUrl + '/user/login', data)
+    return this.http.post<any>('https://api.codeconverse.net/user/login', data)
   }
 
   signup(data: SignupData): Observable<any> {
@@ -29,6 +29,7 @@ export class ApiService {
   }
 
   getDashQuestions(startIndex: number): Observable<any> {
+    console.log(this.apiUrl);
     return this.http.post(this.apiUrl + '/question/questions', {
       "startIndex": startIndex,
       "filter": QuestionFilter.Newest
