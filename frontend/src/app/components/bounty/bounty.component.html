@@ -4,7 +4,9 @@
     <label>How much reputation do you wish to bounty (10 rep per hour)</label><br>
     <input formControlName="value" type="number" class="border-1 rounded-md" placeholder="bounty"/>
   </form>
-  <button (click)="onAddBountyClick()" class="bg-blue-600 p-1 px-2 rounded-md mt-2 text-white">Add Bounty</button>
+  <button (click)="onAddBountyClick()"
+          class="bg-blue-500 hover:bg-blue-600 transition p-1 px-2 rounded-md mt-2 text-white">Add Bounty
+  </button>
   <button (click)="hideForm()" *ngIf="showForm" class="ml-2 hover:bg-gray-300 px-1.5 rounded-sm"><i
     class="fa-solid fa-xmark"></i></button>
 </div>

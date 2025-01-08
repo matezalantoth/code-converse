@@ -1,4 +1,4 @@
-<div class="relative ml-64 p-4 pt-16 mt-4 w-3/5">
+<div *ngIf="question != null" class="relative ml-64 p-4 pt-16 mt-4 w-3/5">
   <h2 class="ml-8 text-2xl">{{ question.title }}</h2>
   <div class="text-sm ml-8 mt-2">
     <span class="text-blue-500 hover:underline cursor-pointer">{{ question.posterName }} </span><span
@@ -11,15 +11,15 @@
   <div class="flex mt-8 ml-8">
     <div class="w-12 flex flex-col items-center">
       <button
-        [ngClass]="{'bg-blue-500 text-white': isVote(VoteType.UPVOTE), 'hover:bg-orange-200': !isVote(VoteType.UPVOTE)}"
-        (click)="upvote()" class="border rounded-3xl p-2 px-3.5 hover:bg-orange-200 cursor-pointer">
+        [ngClass]="{'bg-blue-500 hover:bg-blue-600 text-white': isVote(VoteType.UPVOTE), 'hover:bg-orange-200': !isVote(VoteType.UPVOTE)}"
+        (click)="upvote()" class="border transition rounded-3xl p-2 px-3.5  cursor-pointer">
         <i class="fa-solid fa-arrow-up"></i>
       </button>
       <p class="font-bold text-xl mt-2 mb-2">{{ question.votes }}
       <p>
         <button
-          [ngClass]="{'bg-blue-500 text-white': isVote(VoteType.DOWNVOTE), 'hover:bg-orange-200': !isVote(VoteType.DOWNVOTE)}"
-          (click)="downvote()" class="border rounded-3xl p-2 px-3.5 mb-4 cursor-pointer">
+          [ngClass]="{'bg-blue-500 hover:bg-blue-600 text-white': isVote(VoteType.DOWNVOTE), 'hover:bg-orange-200': !isVote(VoteType.DOWNVOTE)}"
+          (click)="downvote()" class="border transition rounded-3xl p-2 px-3.5 mb-4 cursor-pointer">
           <i class="fa-solid fa-arrow-down"></i>
         </button>
     </div>
@@ -51,7 +51,9 @@
         class='bg-gray-50 mt-4 border min-h-48 border-gray-300  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 placeholder-gray-400 '
         required
       ></textarea>
-      <button (submit)="onSubmit($event)" type="submit">Post</button>
+      <button class="bg-blue-500 hover:bg-blue-600 transition p-1 px-2 rounded-md text-white mt-2"
+              (submit)="onSubmit($event)" type="submit">Post
+      </button>
       <p *ngIf="showRequired" class="text-xs text-red-500">You cannot submit an empty answer.</p>
     </form>
   </div>

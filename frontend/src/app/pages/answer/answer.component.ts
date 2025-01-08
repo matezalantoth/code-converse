@@ -43,7 +43,7 @@ export class AnswerComponent implements OnChanges, OnInit {
 
 
   markdownPreview() {
-    console.log(this.answer.content);
+    console.log(this.answer);
     this.content = this.marked.parse(this.answer.content);
   }
 
