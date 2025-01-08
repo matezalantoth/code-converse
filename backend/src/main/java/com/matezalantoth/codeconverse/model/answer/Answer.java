@@ -22,6 +22,7 @@ public class Answer {
     private UUID id;
 
     @Setter
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Setter
@@ -47,11 +48,11 @@ public class Answer {
     private Set<Vote> votes;
 
 
-    public int calculateVoteValue(){
+    public int calculateVoteValue() {
         return votes.stream().mapToInt(v -> v.getType().equals(VoteType.UPVOTE) ? 1 : -1).sum();
     }
 
-    public AnswerDTO dto(){
+    public AnswerDTO dto() {
         return new AnswerDTO(id, content, poster.getUsername(), question.getId(), accepted, calculateVoteValue());
     }
 

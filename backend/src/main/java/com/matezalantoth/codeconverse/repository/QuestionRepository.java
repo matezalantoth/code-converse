@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
-    Optional<Question> getQuestionsById(UUID id);
+    Optional<Question> getQuestionById(UUID id);
 
     List<Question> getQuestionsOrderByPostedAt(Date postedAt);
 

@@ -1,6 +1,8 @@
 package com.matezalantoth.codeconverse.controller;
 
 import com.matezalantoth.codeconverse.model.jwt.JwtResponse;
+import com.matezalantoth.codeconverse.model.notification.Notification;
+import com.matezalantoth.codeconverse.model.notification.dtos.NotificationDTO;
 import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.LoginRequestDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.NavbarReputationDTO;
@@ -39,6 +41,13 @@ public class UserController {
         userService.createUser(newUser);
         var jwt = userService.loginUser(newUser.toLoginRequest());
         return ResponseEntity.status(HttpStatus.CREATED).body(new JwtResponse(jwt));
+    }
+
+    @GetMapping("/inbox")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Set<NotificationDTO>> getInbox() {
+        var user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.ok().body(userService.getInboxByUsername(user.getUsername()));
     }
 
     @GetMapping("/profile")

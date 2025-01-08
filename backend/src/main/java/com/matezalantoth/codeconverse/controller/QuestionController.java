@@ -3,6 +3,7 @@ package com.matezalantoth.codeconverse.controller;
 import com.matezalantoth.codeconverse.model.question.dtos.*;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
 import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
+import com.matezalantoth.codeconverse.service.NotificationService;
 import com.matezalantoth.codeconverse.service.QuestionService;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -20,9 +21,11 @@ import java.util.UUID;
 public class QuestionController {
 
     private final QuestionService questionService;
+    private final NotificationService notificationService;
 
-    public QuestionController(QuestionService questionService) {
+    public QuestionController(QuestionService questionService, NotificationService notificationService) {
         this.questionService = questionService;
+        this.notificationService = notificationService;
     }
 
     @PostMapping("/create")
@@ -70,9 +73,10 @@ public class QuestionController {
     }
 
     @PatchMapping("/vote")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') and not @questionService.isOwner(#questionId, authentication.principal.username)")
     public ResponseEntity<QuestionDTO> voteOnAnswer(@RequestBody NewVoteDTO newVote, @RequestParam UUID questionId) {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        notificationService.notifyQuestionOwnerOnVote(questionId, newVote.type());
         return ResponseEntity.ok(questionService.addVote(questionId, username, newVote));
     }
 

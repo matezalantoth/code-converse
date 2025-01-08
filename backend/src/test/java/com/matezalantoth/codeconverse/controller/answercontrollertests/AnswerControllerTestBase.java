@@ -28,28 +28,26 @@ public abstract class AnswerControllerTestBase {
 
     protected final TestRestTemplate restTemplate;
 
-    public AnswerControllerTestBase(TestRestTemplate testTemplate){
+    public AnswerControllerTestBase(TestRestTemplate testTemplate) {
         this.restTemplate = testTemplate;
     }
 
-    protected UUID createQuestion(){
-        var res = restTemplate.postForEntity("http://localhost:" + port + "/user/register", new RegisterRequestDTO(UUID.randomUUID().toString(),  UUID.randomUUID() + "@gmail.com", "admin123!!"), JwtResponse.class);
-        assert res.getStatusCode().is2xxSuccessful();
-        String jwt = res.getBody().jwt();
-        setJwt(jwt);
-        var postQuestionRes = restTemplate.postForEntity("http://localhost:" + port + "/question/create", new NewQuestionDTO((UUID.randomUUID().toString()),  UUID.randomUUID().toString(), new HashSet<>()), QuestionDTO.class);
+    protected UUID createQuestion() {
+        register();
+        var postQuestionRes = restTemplate.postForEntity("http://localhost:" + port + "/question/create", new NewQuestionDTO((UUID.randomUUID().toString()), UUID.randomUUID().toString(), new HashSet<>()), QuestionDTO.class);
         assert postQuestionRes.getStatusCode().is2xxSuccessful();
         return postQuestionRes.getBody().id();
     }
 
-    protected void createAndVote(VoteType type,int changeInOriginal, int timesToVote, boolean resetJwt){
+    protected void createAndVote(VoteType type, int changeInOriginal, int timesToVote, boolean resetJwt) {
         var questionId = createQuestion();
         var postAnswerRes = restTemplate.postForEntity("http://localhost:" + port + "/answer/create?questionId=" + questionId, new NewAnswerDTO("test content"), AnswerDTO.class);
         assert postAnswerRes.getStatusCode().is2xxSuccessful();
         var originalVotes = postAnswerRes.getBody().votes();
-        for (int i = 1; i <= timesToVote; i++){
+        register();
+        for (int i = 1; i <= timesToVote; i++) {
             var voteAnswerRes = restTemplate.patchForObject("http://localhost:" + port + "/answer/vote?answerId=" + postAnswerRes.getBody().id(), new NewVoteDTO(type), AnswerDTO.class);
-            if(i % 2 == 0) {
+            if (i % 2 == 0) {
                 assert voteAnswerRes.votes() == 0;
                 continue;
             }
@@ -57,7 +55,14 @@ public abstract class AnswerControllerTestBase {
         }
     }
 
-    protected void setJwt(String jwt){
+    protected void register() {
+        var res = restTemplate.postForEntity("http://localhost:" + port + "/user/register", new RegisterRequestDTO(UUID.randomUUID().toString(), UUID.randomUUID() + "@gmail.com", "admin123!!"), JwtResponse.class);
+        assert res.getStatusCode().is2xxSuccessful();
+        String jwt = res.getBody().jwt();
+        setJwt(jwt);
+    }
+
+    protected void setJwt(String jwt) {
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()
