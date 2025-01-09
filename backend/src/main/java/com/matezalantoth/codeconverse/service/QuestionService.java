@@ -34,8 +34,9 @@ public class QuestionService {
     private final QuestionVoteRepository questionVoteRepository;
     private final BountyService bountyService;
     private final BountyRepository bountyRepository;
+    private final NotificationService notificationService;
 
-    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository, VoteRepository voteRepository, QuestionVoteRepository questionVoteRepository, BountyService bountyService, BountyRepository bountyRepository) {
+    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository, VoteRepository voteRepository, QuestionVoteRepository questionVoteRepository, BountyService bountyService, BountyRepository bountyRepository, NotificationService notificationService) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
@@ -44,10 +45,11 @@ public class QuestionService {
         this.questionVoteRepository = questionVoteRepository;
         this.bountyService = bountyService;
         this.bountyRepository = bountyRepository;
+        this.notificationService = notificationService;
     }
 
     public FullQuestionDTO getQuestionById(UUID id) {
-        return questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id)).fullDto();
+        return questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("question of id: " + id)).fullDto();
     }
 
     public QuestionDTO createQuestion(NewQuestionDTO newQuestion, String posterUsername) {
@@ -78,7 +80,7 @@ public class QuestionService {
     }
 
     public QuestionDTO updateQuestion(QuestionUpdatesDTO updates, UUID id) {
-        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id));
+        var question = questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("question of id: " + id));
         question.setTitle(updates.title());
         question.setContent(updates.content());
         questionRepository.save(question);
@@ -86,13 +88,13 @@ public class QuestionService {
     }
 
     public boolean isOwner(UUID id, String username) {
-        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
+        var question = questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
         return question.getPoster().getUsername().equalsIgnoreCase(username);
     }
 
     public QuestionDTO addVote(UUID questionId, String voterUsername, NewVoteDTO newVote) {
 
-        var question = questionRepository.getQuestionsById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
+        var question = questionRepository.getQuestionById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
         var voter = userRepository.getUserEntityByUsername(voterUsername).orElseThrow(() -> new NotFoundException("User of username: " + voterUsername));
 
         var existingSameTypeVote = voter
@@ -133,16 +135,16 @@ public class QuestionService {
         existingVote.getQuestion().getVotes().remove(existingVote);
         existingVote.getVoter().getQuestionVotes().remove(existingVote);
         questionVoteRepository.removeQuestionVoteByVoteId(existingVote.getVoteId());
-        return questionRepository.getQuestionsById(relevantQuestionId).orElseThrow(() -> new NotFoundException("Question of id: " + relevantQuestionId)).dto();
+        return questionRepository.getQuestionById(relevantQuestionId).orElseThrow(() -> new NotFoundException("Question of id: " + relevantQuestionId)).dto();
     }
 
     private QuestionDTO changeVoteType(QuestionVote vote, UUID relevantQuestionId) {
         vote.setType(vote.getType().equals(VoteType.UPVOTE) ? VoteType.DOWNVOTE : VoteType.UPVOTE);
-        return questionRepository.getQuestionsById(relevantQuestionId).orElseThrow(() -> new NotFoundException("Question of id: " + relevantQuestionId)).dto();
+        return questionRepository.getQuestionById(relevantQuestionId).orElseThrow(() -> new NotFoundException("Question of id: " + relevantQuestionId)).dto();
     }
 
     public QuestionDTO addTags(UUID id, Set<TagOfQuestionDTO> tagIds) {
-        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("question of id: " + id));
+        var question = questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("question of id: " + id));
         var tags = tagIds.stream().map(t -> tagRepository.getTagById(t.id()).orElseThrow(() -> new NotFoundException("tag of id: " + t.id()))).collect(Collectors.toSet());
         tags.forEach(t -> {
                     QuestionTag qt = new QuestionTag();
@@ -158,13 +160,13 @@ public class QuestionService {
 
     public void deleteQuestion(UUID id, String username) {
         var user = userRepository.getUserEntityWithRolesAndQuestionsByUsername(username).orElseThrow(() -> new NotFoundException("User of username: " + username));
-        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
+        var question = questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
         user.getQuestions().remove(question);
         questionRepository.delete(question);
     }
 
     public boolean hasAccepted(UUID id) {
-        return (questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id))).hasAccepted();
+        return (questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id))).hasAccepted();
     }
 
     public QuestionsResponseDTO getMainPageQuestions(QuestionsRequestDTO req) {
@@ -208,12 +210,12 @@ public class QuestionService {
     }
 
     public void logViewById(UUID id) {
-        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
+        var question = questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
         question.setViews(question.getViews() + 1);
     }
 
     public void removeBountyIfNoLongerEligible(UUID id) {
-        var question = questionRepository.getQuestionsById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
+        var question = questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
         var optBounty = question.getActiveBounty();
         if (optBounty.isPresent() && question.shouldBeCharged()) {
             var bounty = optBounty.get();
@@ -242,6 +244,7 @@ public class QuestionService {
                             new NotFoundException("Bounty of id: " + bounty.getId()));
 
             managedBounty.setActive(false);
+            notificationService.notifyQuestionOwnerOfBountyExpiry(q.getId(), !q.shouldBeCharged());
             if (q.shouldBeCharged()) {
                 continue;
             }

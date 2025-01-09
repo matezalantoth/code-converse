@@ -1,41 +1,54 @@
-<nav class="fixed z-10 h-12 top-0 w-screen bg-white flex justify-between items-center">
+<nav class="fixed z-10 h-12 top-0 w-screen border-gray-300 border-b-1 bg-white flex justify-between items-center">
   <div class="flex items-center h-full">
     <img
       src="assets/logo.png"
-      class="h-10 ml-4 cursor-pointer"
+      class="h-8 ml-26 cursor-pointer"
       (click)="redirectToDashboard()"
       alt="Logo"/>
   </div>
 
   <div class="flex items-center h-full">
-    <button
-      class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition duration-300"
-      (click)="redirectToAskQuestion()">
-      Ask Question
-    </button>
+
 
     <div
+      (click)="redirectToProfile()"
       *ngIf="navbarRep.username !== undefined"
-      class="flex items-center text-gray-700 text-sm ml-6 mr-4">
+      class="flex items-center cursor-pointer text-gray-700 hover:text-black  text-sm hover:bg-gray-200 h-12 rounded-md px-3">
       <span class="mr-2">
-        <span class="font-bold">{{ navbarRep.username }} {{ navbarRep.rep.trueReputation }}</span>
+        <span class="font-bold">{{ navbarRep.username }}</span>
+        <span class="text-gray-700 font-bold"> {{ navbarRep.rep.trueReputation }}</span>
         <span class="ml-1 text-gray-500">({{ navbarRep.rep.reputation }})</span>
       </span>
     </div>
 
-    <button
-      *ngIf="isLoggedIn | async"
-      (click)="logout()"
-      class="bg-red-500 mr-4 ml-2 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm transition duration-300">
-      Logout
-    </button>
+
+    <div class="relative inline-block mr-26 inbox" (mouseenter)="hover = true" (mouseleave)="hover = false">
+      <div
+        *ngIf="navbarRep.username !== undefined"
+        (click)="getInbox()"
+        [ngClass]="{
+      'bg-gray-200 text-black': showInbox,
+      'hover:bg-gray-200 text-gray-600 bg-transparent': !showInbox
+    }"
+        class="cursor-pointer py-3 h-12 inbox hover:text-black rounded-md px-4">
+
+        <div
+          *ngIf="inbox !== undefined && getUnreadCount() > 0"
+          [ngClass]="{'bg-gray-200': hover || showInbox, 'bg-white': !hover && !showInbox}"
+          class="absolute cursor-pointer right-0 mr-2.5  w-4 h-4 top-2.5 text-xs text-white rounded-xl">
+          <div class="h-3 w-3 mx-auto mt-0.5 bg-blue-500 rounded-xl"></div>
+        </div>
+
+        <i class="fa-solid fa-inbox inbox text-xl"></i>
+      </div>
+      <app-inbox [inbox]="inbox" class="absolute inbox" [hidden]="!showInbox"></app-inbox>
+    </div>
+
     <button
       *ngIf="!(isLoggedIn | async)"
       (click)="login()"
-      class="bg-blue-600 ml-2 mr-6 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition duration-300">
+      class="bg-blue-500 mr-26 hover:bg-blue-600  text-white px-4 py-2 rounded-md text-sm transition duration-300">
       Login
     </button>
   </div>
 </nav>
-
-<hr class="border-t border-gray-300 fixed top-12 w-full">

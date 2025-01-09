@@ -5,6 +5,7 @@ import com.matezalantoth.codeconverse.model.answer.dtos.AnswerUpdatesDTO;
 import com.matezalantoth.codeconverse.model.answer.dtos.NewAnswerDTO;
 import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
 import com.matezalantoth.codeconverse.service.AnswerService;
+import com.matezalantoth.codeconverse.service.NotificationService;
 import com.matezalantoth.codeconverse.service.QuestionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +22,17 @@ public class AnswerController {
 
     private final AnswerService answerService;
     private final QuestionService questionService;
+    private final NotificationService notificationService;
 
-    public AnswerController(AnswerService answerService, QuestionService questionService) {
+    public AnswerController(AnswerService answerService, QuestionService questionService, NotificationService notificationService) {
         this.answerService = answerService;
         this.questionService = questionService;
+        this.notificationService = notificationService;
     }
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<AnswerDTO> createAnswer(@RequestBody NewAnswerDTO newAnswer, @RequestParam UUID questionId){
+    public ResponseEntity<AnswerDTO> createAnswer(@RequestBody NewAnswerDTO newAnswer, @RequestParam UUID questionId) {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         questionService.checkAndHandleExpiredBounties();
         var res = answerService.createAnswer(newAnswer, questionId, username);
@@ -38,30 +41,33 @@ public class AnswerController {
     }
 
     @PatchMapping("/vote")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<AnswerDTO> voteOnAnswer(@RequestBody NewVoteDTO newVote, @RequestParam UUID answerId){
+    @PreAuthorize("hasRole('USER') and !@answerService.isOwner(#answerId, authentication.principal.username)")
+    public ResponseEntity<AnswerDTO> voteOnAnswer(@RequestBody NewVoteDTO newVote, @RequestParam UUID answerId) {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        return ResponseEntity.ok(answerService.addVote(answerId, username, newVote));
+        var answer = answerService.addVote(answerId, username, newVote);
+        notificationService.notifyAnswerOwnerOfVote(answerId, answer.questionId(), newVote.type());
+        return ResponseEntity.ok(answer);
     }
 
     @PatchMapping("/accept")
-    @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#questionId, authentication.principal.username)")
-    public ResponseEntity<AnswerDTO> acceptAnswer(@RequestParam UUID questionId, @RequestParam UUID answerId){
+    @PreAuthorize("hasRole('ADMIN') or (@questionService.isOwner(#questionId, authentication.principal.username) and !@answerService.isOwner(#answerId, authentication.principal.username))")
+    public ResponseEntity<AnswerDTO> acceptAnswer(@RequestParam UUID questionId, @RequestParam UUID answerId) {
         questionService.checkAndHandleExpiredBounties();
         var res = answerService.accept(answerId);
         questionService.removeBountyIfNoLongerEligible(questionId);
+        notificationService.notifyAnswerOwnerOfAccept(answerId, questionId);
         return ResponseEntity.ok(res);
     }
 
     @PutMapping("/update")
     @PreAuthorize("hasRole('ADMIN') or @answerService.isOwner(#answerId, authentication.principal.username)")
     public ResponseEntity<AnswerDTO> updateAnswer(@RequestParam UUID answerId, AnswerUpdatesDTO updates) {
-       return ResponseEntity.ok(answerService.updateAnswer(answerId, updates));
+        return ResponseEntity.ok(answerService.updateAnswer(answerId, updates));
     }
 
     @DeleteMapping("/delete")
     @PreAuthorize("hasRole('ADMIN') or @answerService.isOwner(#answerId, authentication.principal.username)")
-    public ResponseEntity<Void> deleteAnswer(@RequestParam UUID answerId){
+    public ResponseEntity<Void> deleteAnswer(@RequestParam UUID answerId) {
         answerService.deleteAnswer(answerId, ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
         return ResponseEntity.noContent().build();
     }

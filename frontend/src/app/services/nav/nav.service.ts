@@ -16,8 +16,16 @@ export class NavigationService {
     this.router.navigate(['/signup']);
   }
 
+  redirectToLink(link: string) {
+    window.location.href = "http://localhost:4200" + link;
+  }
+
   redirectToLogin() {
     this.router.navigate(['/login']);
+  }
+
+  redirectToProfile() {
+    this.router.navigate(['/profile']);
   }
 
   redirectToDashboard() {

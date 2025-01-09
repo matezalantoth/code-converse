@@ -24,6 +24,8 @@ import {TagsComponent} from './pages/tags/tags.component';
 import {TagComponent} from './pages/tag/tag.component';
 import {MarkdownPreviewComponent} from './components/markdown-preview/markdown-preview.component';
 import { InfiniteScrollComponent } from './components/infinite-scroll/infinite-scroll.component';
+import { InboxComponent } from './components/inbox/inbox.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 
 
 @NgModule({
@@ -44,7 +46,9 @@ import { InfiniteScrollComponent } from './components/infinite-scroll/infinite-s
     TagsComponent,
     TagComponent,
     MarkdownPreviewComponent,
-    InfiniteScrollComponent
+    InfiniteScrollComponent,
+    InboxComponent,
+    ProfileComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

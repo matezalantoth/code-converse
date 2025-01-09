@@ -29,8 +29,8 @@ public class BountyService {
     }
 
     public QuestionDTO addBountyToQuestion(NewBountyDTO newBounty, UUID questionId) throws BadRequestException {
-        var question = questionRepository.getQuestionsById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
-        if (question.hasActiveBounty()){
+        var question = questionRepository.getQuestionById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
+        if (question.hasActiveBounty()) {
             throw new BadRequestException("This question already has an active bounty!");
         }
         var bounty = new Bounty();

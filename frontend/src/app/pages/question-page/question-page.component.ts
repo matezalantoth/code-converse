@@ -10,6 +10,7 @@ import {VoteType} from "../../shared/models/voteType";
 import {Marked} from "marked";
 import {markedHighlight} from "marked-highlight";
 import hljs from "highlight.js";
+import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-question-page',
@@ -34,7 +35,7 @@ export class QuestionPageComponent implements OnInit {
 
   public content!: any;
 
-  constructor(private route: ActivatedRoute, public api: ApiService, private nav: NavigationService, private fb: FormBuilder, private auth: AuthService) {
+  constructor(private route: ActivatedRoute, public api: ApiService, private toast: ToastrService, private nav: NavigationService, private fb: FormBuilder, private auth: AuthService) {
     this.answerForm = this.fb.group({
       content: ['']
     });
@@ -82,11 +83,20 @@ export class QuestionPageComponent implements OnInit {
     this.currentVote = voteType;
 
     this.api.voteQuestion(voteType, this.question.id).subscribe({
-      next: () => console.log(`${voteType} successful`),
+      next: () => {
+
+      },
       error: (err) => {
-        console.error("Error applying vote:", err);
-        this.question.votes -= adjustment;
-        this.currentVote = VoteType.NOVOTE;
+        if (this.owner) {
+          this.toast.error("you can't vote on your own question", undefined, {
+            positionClass: "toast-custom-top-center",
+            timeOut: 1500
+          })
+          this.question.votes -= adjustment;
+          this.currentVote = VoteType.NOVOTE;
+          return;
+        }
+        this.nav.redirectToLogin();
       }
     });
   }
@@ -97,7 +107,6 @@ export class QuestionPageComponent implements OnInit {
     this.api.voteQuestion(this.currentVote, this.question.id).subscribe({
       next: () => {
         this.currentVote = VoteType.NOVOTE;
-        console.log("Vote reset successful");
       },
       error: (err) => {
         console.error("Error resetting vote:", err);
@@ -179,8 +188,6 @@ export class QuestionPageComponent implements OnInit {
   private checkAlreadyVoted(id: string): void {
     const existingVote = this.userVotes.find(v => v.id === id);
     this.currentVote = existingVote ? existingVote.voteType : VoteType.NOVOTE;
-    console.log(this.currentVote)
-    console.log(this.question.votes)
   }
 
   protected readonly VoteType = VoteType;

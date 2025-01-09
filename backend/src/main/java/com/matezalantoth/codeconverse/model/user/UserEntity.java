@@ -1,6 +1,7 @@
 package com.matezalantoth.codeconverse.model.user;
 
 import com.matezalantoth.codeconverse.model.answer.Answer;
+import com.matezalantoth.codeconverse.model.notification.Notification;
 import com.matezalantoth.codeconverse.model.question.Question;
 import com.matezalantoth.codeconverse.model.reputation.Reputation;
 import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationDTO;
@@ -42,6 +43,10 @@ public class UserEntity {
     @OneToMany(mappedBy = "poster", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Question> questions;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    private Set<Notification> inbox;
+
     @Setter
     private Date createdAt;
 
@@ -62,24 +67,24 @@ public class UserEntity {
     @OneToMany(mappedBy = "voter", cascade = CascadeType.REMOVE)
     private Set<QuestionVote> questionVotes;
 
-    public int calcTrueRep(){
+    public int calcTrueRep() {
         return reputation.stream().filter(r -> !r.isPurchase()).mapToInt(Reputation::getReputationValue).sum();
     }
 
-    public int calcTotalRep(){
+    public int calcTotalRep() {
         return reputation.stream().mapToInt(Reputation::getReputationValue).sum();
     }
 
 
-    public UserDTO dto(){
+    public UserDTO dto() {
         return new UserDTO(id, username, questions.stream().map(Question::dto).collect(Collectors.toSet()), answers.stream().map(Answer::dto).collect(Collectors.toSet()), calcTotalRep(), calcTrueRep());
     }
 
-    public ReputationValueDTO repValDto(){
+    public ReputationValueDTO repValDto() {
         return new ReputationValueDTO(calcTotalRep(), calcTrueRep());
     }
 
-    public Set<ReputationDTO> repDto(){
+    public Set<ReputationDTO> repDto() {
         return reputation.stream().map(Reputation::dto).collect(Collectors.toSet());
     }
 }

@@ -38,7 +38,7 @@ public class AnswerService {
         this.reputationService = reputationService;
     }
 
-    public AnswerDTO createAnswer(NewAnswerDTO newAnswer, UUID questionId, String posterUsername){
+    public AnswerDTO createAnswer(NewAnswerDTO newAnswer, UUID questionId, String posterUsername) {
         Answer answer = new Answer();
         answer.setContent(newAnswer.content());
         answer.setPostedAt(new Date());
@@ -47,7 +47,7 @@ public class AnswerService {
         answer.setHasBeenAcceptedBefore(false);
 
 
-        var question = questionRepository.getQuestionsById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
+        var question = questionRepository.getQuestionById(questionId).orElseThrow(() -> new NotFoundException("Question of id: " + questionId));
         answer.setQuestion(question);
         var poster = userRepository.getUserEntityByUsername(posterUsername).orElseThrow(() -> new NotFoundException("User of username: " + posterUsername));
         answer.setPoster(poster);
@@ -59,13 +59,13 @@ public class AnswerService {
         return answer.dto();
     }
 
-    public AnswerDTO updateAnswer(UUID answerId, AnswerUpdatesDTO updates){
+    public AnswerDTO updateAnswer(UUID answerId, AnswerUpdatesDTO updates) {
         var answer = answerRepository.getAnswerById(answerId).orElseThrow(() -> new NotFoundException("Answer of id: " + answerId));
         answer.setContent(updates.content());
         return answer.dto();
     }
 
-    public void deleteAnswer(UUID answerId, String username){
+    public void deleteAnswer(UUID answerId, String username) {
         var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("User of username: " + username));
         var answer = answerRepository.getAnswerById(answerId).orElseThrow(() -> new NotFoundException("Answer of id: " + answerId));
         user.getAnswers().remove(answer);
@@ -73,7 +73,7 @@ public class AnswerService {
         answerRepository.delete(answer);
     }
 
-    public AnswerDTO addVote(UUID answerId, String voterUsername, NewVoteDTO newVote){
+    public AnswerDTO addVote(UUID answerId, String voterUsername, NewVoteDTO newVote) {
 
         var answer = answerRepository.getAnswerById(answerId).orElseThrow(() -> new NotFoundException("Answer of id: " + answerId));
         var voter = userRepository.getUserEntityByUsername(voterUsername).orElseThrow(() -> new NotFoundException("User of username: " + voterUsername));
@@ -85,7 +85,7 @@ public class AnswerService {
                         v.getType().equals(newVote.type()) &&
                                 v.getAnswer().getId().equals(answer.getId()))
                 .findFirst();
-        if(existingSameTypeVote.isPresent()) {
+        if (existingSameTypeVote.isPresent()) {
             return removeVote(existingSameTypeVote.get(), answerId);
         }
 
@@ -95,7 +95,7 @@ public class AnswerService {
                 .filter(v ->
                         v.getAnswer().getId().equals(answerId))
                 .findFirst();
-        if(existingDiffTypeVote.isPresent()) {
+        if (existingDiffTypeVote.isPresent()) {
             return changeVoteType(existingDiffTypeVote.get(), answerId);
         }
 
@@ -110,29 +110,29 @@ public class AnswerService {
         return answer.dto();
     }
 
-    private AnswerDTO removeVote(Vote existingVote, UUID relevantAnswerId){
+    private AnswerDTO removeVote(Vote existingVote, UUID relevantAnswerId) {
         existingVote.getAnswer().getVotes().remove(existingVote);
         existingVote.getVoter().getVotes().remove(existingVote);
         voteRepository.removeVoteByVoteId(existingVote.getVoteId());
         return answerRepository.getAnswerById(relevantAnswerId).orElseThrow(() -> new NotFoundException("Answer of id: " + relevantAnswerId)).dto();
     }
 
-    private AnswerDTO changeVoteType(Vote vote, UUID relevantAnswerId){
+    private AnswerDTO changeVoteType(Vote vote, UUID relevantAnswerId) {
         vote.setType(vote.getType().equals(VoteType.UPVOTE) ? VoteType.DOWNVOTE : VoteType.UPVOTE);
         return answerRepository.getAnswerById(relevantAnswerId).orElseThrow(() -> new NotFoundException("Answer of id: " + relevantAnswerId)).dto();
     }
 
-    public AnswerDTO accept(UUID answerId){
+    public AnswerDTO accept(UUID answerId) {
         var answer = answerRepository.getAnswerById(answerId).orElseThrow(() -> new NotFoundException("Answer of id: " + answerId));
         answer.setAccepted(!answer.isAccepted());
-        if(answer.isAccepted() && !answer.isHasBeenAcceptedBefore()) {
+        if (answer.isAccepted() && !answer.isHasBeenAcceptedBefore()) {
             reputationService.handleAnswerAccept(answer.getPoster(), answer.getQuestion());
             answer.setHasBeenAcceptedBefore(true);
         }
         return answer.dto();
     }
 
-    public boolean isOwner(UUID id, String username){
+    public boolean isOwner(UUID id, String username) {
         var answer = answerRepository.getAnswerById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
         return answer.getPoster().getUsername().equalsIgnoreCase(username);
     }

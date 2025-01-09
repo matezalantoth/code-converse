@@ -1,0 +1,30 @@
+<div class="fixed right-0 w-1/5 mr-26 border h-1/2 bg-white text-sm inbox overflow-y-scroll">
+  <div
+    class="text-xsm cursor-pointer text-blue-500 pl-1 mt-1 py-1 border-b-1 border-gray-300">
+    <p (click)="markAllAsRead()"
+       class=" w-fit cursor-pointer text-blue-500">Mark all as
+      read</p>
+  </div>
+  <ul>
+    <li
+      (click)="redirectToLink(n, n.link)"
+      *ngFor="let n of inbox"
+      [ngClass]="{'bg-gray-100': n.read}"
+      class=" px-2 py-2 block border-b-1 transition cursor-pointer hover:bg-gray-100 text-gray-600 border-gray-300">
+      <div>
+
+        <div class="text-xs text-right mb-1">
+          {{ formatDateTime(n.sentAt) }}
+          <i *ngIf="n.read" (click)="markAsUnread(n, $event)"
+             title="mark as unread"
+             class="mx-2 hover:text-black text-gray-600 text-xsm fas fa-envelope-open"></i>
+          <i *ngIf="!n.read" (click)="markAsRead(n, $event)"
+             title="mark as read"
+             class="mx-2 text-blue-500 text-sm hover:text-blue-600 fa-solid fa-envelope"></i>
+        </div>
+        <div class="text-xsm w-full" [ngClass]="{'font-bold text-blue-500' : !n.read}">{{ n.content }}</div>
+      </div>
+    </li>
+  </ul>
+
+</div>

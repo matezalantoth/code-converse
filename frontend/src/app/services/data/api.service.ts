@@ -21,7 +21,7 @@ export class ApiService {
 
 
   login(data: LoginData): Observable<any> {
-    return this.http.post<any>('https://api.codeconverse.net/user/login', data)
+    return this.http.post<any>(this.apiUrl + '/user/login', data)
   }
 
   signup(data: SignupData): Observable<any> {
@@ -29,7 +29,6 @@ export class ApiService {
   }
 
   getDashQuestions(startIndex: number): Observable<any> {
-    console.log(this.apiUrl);
     return this.http.post(this.apiUrl + '/question/questions', {
       "startIndex": startIndex,
       "filter": QuestionFilter.Newest
@@ -49,6 +48,23 @@ export class ApiService {
       "filter": QuestionFilter.Unanswered
     })
   }
+
+  getInbox(): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.get(this.apiUrl + '/user/inbox', {headers});
+  }
+
+  markNotificationAs(id: string, read: boolean): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.patch(this.apiUrl + '/notification?notificationId=' + id, read, {headers})
+  }
+
+  markAllAsRead() {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.patch(this.apiUrl + '/notification/markAll', {}, {headers})
+
+  }
+
 
   getTags(startIndex: number): Observable<any> {
     return this.http.get(this.apiUrl + '/tag/all?startIndex=' + startIndex)
@@ -127,7 +143,6 @@ export class ApiService {
   }
 
   resetReputation(): Observable<any> {
-    console.log('hi');
     this.navbarRep.next({});
     return this.navbarRep.asObservable();
   }
