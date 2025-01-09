@@ -44,6 +44,7 @@ public class UserEntity {
     private Set<Question> questions;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
     private Set<Notification> inbox;
 
     @Setter

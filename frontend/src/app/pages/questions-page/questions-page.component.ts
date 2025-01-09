@@ -3,6 +3,7 @@ import {MainPageQuestion} from "../../shared/models/mainPageQuestion";
 import {ApiService} from "../../services/data/api.service";
 import {QuestionFilter} from "../../shared/models/questionFilter";
 import {BehaviorSubject, firstValueFrom, Observable, Subject} from "rxjs";
+import {NavigationService} from "../../services/nav/nav.service";
 
 interface QuestionResponse {
   pagination: {
@@ -28,7 +29,7 @@ export class QuestionsPageComponent implements OnInit {
   public questions: Observable<MainPageQuestion[]>;
   selected: BehaviorSubject<QuestionFilter> = new BehaviorSubject<QuestionFilter>(localStorage.getItem("selected") ? localStorage.getItem("selected") as QuestionFilter : QuestionFilter.Newest);
 
-  constructor(public api: ApiService) {
+  constructor(public api: ApiService, private nav: NavigationService) {
     this._questions = new BehaviorSubject<MainPageQuestion[]>([]);
     this.questions = this._questions.asObservable();
   }
@@ -42,6 +43,10 @@ export class QuestionsPageComponent implements OnInit {
     this._questions.next(updatedQuestions);
     this.bountyCount = res.bountyCount;
     return this.maxPage >= this.nextPage;
+  }
+
+  redirectToAskQuestion() {
+    this.nav.redirectToAskQuestion();
   }
 
   ngOnInit() {

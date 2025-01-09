@@ -87,9 +87,16 @@ export class QuestionPageComponent implements OnInit {
 
       },
       error: (err) => {
-        console.error("Error applying vote:", err);
-        this.question.votes -= adjustment;
-        this.currentVote = VoteType.NOVOTE;
+        if (this.owner) {
+          this.toast.error("you can't vote on your own question", undefined, {
+            positionClass: "toast-custom-top-center",
+            timeOut: 1500
+          })
+          this.question.votes -= adjustment;
+          this.currentVote = VoteType.NOVOTE;
+          return;
+        }
+        this.nav.redirectToLogin();
       }
     });
   }

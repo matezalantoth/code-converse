@@ -7,6 +7,8 @@ import {Question} from "../../shared/models/question";
 import {Marked} from "marked";
 import {markedHighlight} from "marked-highlight";
 import hljs from "highlight.js";
+import {ToastrService} from "ngx-toastr";
+import {NavigationService} from "../../services/nav/nav.service";
 
 @Component({
   selector: 'app-answer',
@@ -22,8 +24,12 @@ export class AnswerComponent implements OnChanges, OnInit {
   @Input() public question!: Question;
   @Output() questionChange = new EventEmitter<any>();
   public content!: string | Promise<string>;
+  navbarRep: any;
 
-  constructor(private api: ApiService) {
+  constructor(private api: ApiService, private toast: ToastrService, private nav: NavigationService) {
+    this.api.navbarReputation().subscribe(res => {
+      this.navbarRep = res
+    });
   }
 
   private marked: Marked = new Marked(
@@ -43,7 +49,6 @@ export class AnswerComponent implements OnChanges, OnInit {
 
 
   markdownPreview() {
-    console.log(this.answer);
     this.content = this.marked.parse(this.answer.content);
   }
 
@@ -94,7 +99,17 @@ export class AnswerComponent implements OnChanges, OnInit {
         }
       },
       error: (err) => {
-        console.error("something went wrong accepting answer: " + err);
+        if (this.answer.posterUsername == this.navbarRep.username) {
+          this.toast.error("you can't accept your own answer", undefined, {
+            positionClass: "toast-custom-top-center",
+            timeOut: 1500
+          })
+          return;
+        }
+        this.toast.error("something went wrong accepting answer: " + err.message, undefined, {
+          positionClass: "toast-custom-top-center",
+          timeOut: 1500
+        });
       }
     });
   }
@@ -130,7 +145,14 @@ export class AnswerComponent implements OnChanges, OnInit {
     this.api.vote(voteType, this.answer.id).subscribe({
       next: () => console.log(`${voteType} successful`),
       error: (err) => {
-        console.error("Error applying vote:", err);
+        if (this.answer.posterUsername === this.navbarRep.username) {
+          this.toast.error("you can't vote on your own answer", undefined, {
+            positionClass: "toast-custom-top-center",
+            timeOut: 1500
+          })
+        } else {
+          this.nav.redirectToLogin();
+        }
         this.answer.votes -= adjustment;
         this.currentVote = VoteType.NOVOTE;
       }

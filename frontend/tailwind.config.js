@@ -4,6 +4,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      spacing: {
+        26: '6.5rem', // Example: 26 * 0.25rem = 6.5rem
+      },
       fontSize: {
         'xsm': '0.8rem',
       },

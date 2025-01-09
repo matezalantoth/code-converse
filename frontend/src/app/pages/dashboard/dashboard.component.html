@@ -1,9 +1,18 @@
 <div class="relative ml-64 p-2 pt-8 mt-8 w-3/5">
   <div class="block w-full">
     <div class="max-w-screen-lg">
-      <div>
-        <h2 class="font-bold text-2xl ml-6 mt-4">Interesting posts for you</h2>
+      <div class="mb-4">
+        <button
+          class="bg-blue-500 text-white float-right px-3 py-2 rounded-md text-sm hover:bg-blue-600 transition duration-300"
+          (click)="redirectToAskQuestion()">
+          Ask Question
+        </button>
+
+        <div>
+          <h2 class="font-bold text-2xl ml-6 mt-4">Interesting posts for you</h2>
+        </div>
       </div>
+
       <div class="border-1 rounded-md ml-6 mt-3">
         <app-questions [_questions]="questions"></app-questions>
         <app-infinite-scroll [fetchItems]="fetchItems"></app-infinite-scroll>

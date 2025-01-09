@@ -12,7 +12,7 @@ import {QuestionFilter} from "../../shared/models/questionFilter";
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl: string = 'http://localhost:8080'
+  private apiUrl: string = 'https://api.codeconverse.net'
 
   navbarRep: BehaviorSubject<object> = new BehaviorSubject<object>({});
 
@@ -48,6 +48,23 @@ export class ApiService {
       "filter": QuestionFilter.Unanswered
     })
   }
+
+  getInbox(): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.get(this.apiUrl + '/user/inbox', {headers});
+  }
+
+  markNotificationAs(id: string, read: boolean): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.patch(this.apiUrl + '/notification?notificationId=' + id, read, {headers})
+  }
+
+  markAllAsRead() {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.patch(this.apiUrl + '/notification/markAll', {}, {headers})
+
+  }
+
 
   getTags(startIndex: number): Observable<any> {
     return this.http.get(this.apiUrl + '/tag/all?startIndex=' + startIndex)
