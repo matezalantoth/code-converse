@@ -5,6 +5,7 @@ export interface MainPageQuestion {
   title: string,
   content: string,
   posterName: string,
+  posterRep: number,
   postedAt: string,
   votes: number,
   answerCount: number

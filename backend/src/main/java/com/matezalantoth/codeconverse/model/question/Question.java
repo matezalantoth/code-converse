@@ -113,7 +113,7 @@ public class Question {
         if (optBounty.isPresent()) {
             finalBounty = optBounty.get().dto();
         }
-        return new QuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.size(), hasAccepted(), questionTags.stream().map(t -> t.getTag().dto()).collect(Collectors.toSet()), finalBounty, views.size());
+        return new QuestionDTO(id, title, content, poster.getUsername(), poster.getTrueReputation(), postedAt, calculateVoteValue(), answers.size(), hasAccepted(), questionTags.stream().map(t -> t.getTag().dto()).collect(Collectors.toSet()), finalBounty, views.size());
     }
 
     public QuestionWithoutTagsDTO dtoNoTags() {

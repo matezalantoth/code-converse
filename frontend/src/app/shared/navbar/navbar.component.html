@@ -1,42 +1,47 @@
-<nav class="fixed z-10 h-12 top-0 w-screen border-gray-300 border-b-1 bg-white flex justify-between items-center">
+<nav
+  class="fixed z-10 h-12 top-0 w-screen border-gray-300 dark:border-gray-600 border-b-1 bg-white flex justify-between items-center dark:bg-gray-900">
   <div class="flex items-center h-full">
-    <img
-      src="assets/logo.png"
-      class="h-8 ml-26 cursor-pointer"
-      (click)="redirectToDashboard()"
-      alt="Logo"/>
+    <img *ngIf="!this.theme.isDarkModeEnabled()"
+         src="assets/codeconverse-light.png"
+         class="h-8 ml-28 cursor-pointer"
+         (click)="redirectToDashboard()"
+         alt="Logo"/>
+    <img *ngIf="this.theme.isDarkModeEnabled()"
+         src="assets/codeconverse-dark.png"
+         class="h-8 ml-28 cursor-pointer"
+         (click)="redirectToDashboard()"
+         alt="Logo"/>
   </div>
 
   <div class="flex items-center h-full">
 
-
     <div
       (click)="redirectToProfile()"
       *ngIf="navbarRep.username !== undefined"
-      class="flex items-center cursor-pointer text-gray-700 hover:text-black  text-sm hover:bg-gray-200 h-12 rounded-md px-3">
+      class="flex items-center h-12 px-2 text-sm text-gray-700 hover:text-black hover:bg-gray-200 rounded-md cursor-pointer dark:text-gray-300 hover:dark:text-gray-100 hover:dark:bg-gray-700">
       <span class="mr-2">
         <span class="font-bold">{{ navbarRep.username }}</span>
-        <span class="text-gray-700 font-bold"> {{ navbarRep.rep.trueReputation }}</span>
+        <span class="font-bold"> {{ navbarRep.rep.trueReputation }}</span>
         <span class="ml-1 text-gray-500">({{ navbarRep.rep.reputation }})</span>
       </span>
     </div>
 
 
-    <div class="relative inline-block mr-26 inbox" (mouseenter)="hover = true" (mouseleave)="hover = false">
+    <div class="relative inline-block inbox" (mouseenter)="hover = true" (mouseleave)="hover = false">
       <div
         *ngIf="navbarRep.username !== undefined"
         (click)="getInbox()"
         [ngClass]="{
-      'bg-gray-200 text-black': showInbox,
-      'hover:bg-gray-200 text-gray-600 bg-transparent': !showInbox
+      'bg-gray-200 text-black dark:text-gray-100 dark:bg-gray-700 ': showInbox,
+      'hover:bg-gray-200 text-gray-600 bg-transparent dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-100': !showInbox
     }"
         class="cursor-pointer py-3 h-12 inbox hover:text-black rounded-md px-4">
 
         <div
           *ngIf="inbox !== undefined && getUnreadCount() > 0"
-          [ngClass]="{'bg-gray-200': hover || showInbox, 'bg-white': !hover && !showInbox}"
-          class="absolute cursor-pointer right-0 mr-2.5  w-4 h-4 top-2.5 text-xs text-white rounded-xl">
-          <div class="h-3 w-3 mx-auto mt-0.5 bg-blue-500 rounded-xl"></div>
+          [ngClass]="{'bg-gray-200 dark:bg-gray-700': hover || showInbox, 'bg-white dark:bg-gray-900': !hover && !showInbox}"
+          class="absolute cursor-pointer right-0 mr-2.5  w-4 h-4 top-2.5 rounded-xl">
+          <div class="h-3 w-3 mx-auto mt-0.5 bg-orange-600 rounded-xl"></div>
         </div>
 
         <i class="fa-solid fa-inbox inbox text-xl"></i>
@@ -47,8 +52,16 @@
     <button
       *ngIf="!(isLoggedIn | async)"
       (click)="login()"
-      class="bg-blue-500 mr-26 hover:bg-blue-600  text-white px-4 py-2 rounded-md text-sm transition duration-300">
+      class=" h-12   text-blue-500 px-4 py-2 rounded-md text-sm transition duration-300 hover:text-gray-900 hover:bg-gray-200 cursor-pointer dark:text-blue-400 hover:dark:text-gray-100 hover:dark:bg-gray-700">
       Login
     </button>
+    <div
+      class="mr-28 py-3 px-4 rounded-md h-12 text-gray-600 hover:text-black hover:bg-gray-200 cursor-pointer dark:text-gray-400 hover:dark:text-gray-100 hover:dark:bg-gray-700"
+      (click)="this.theme.toggleDarkMode()">
+      <div *ngIf="!this.theme.isDarkModeEnabled()"><i
+        class="fa-solid fa-moon m-auto text-xl"></i></div>
+      <div *ngIf="this.theme.isDarkModeEnabled()"><i
+        class="fa-solid fa-sun m-auto text-xl"></i></div>
+    </div>
   </div>
 </nav>

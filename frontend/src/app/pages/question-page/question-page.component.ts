@@ -158,6 +158,7 @@ export class QuestionPageComponent implements OnInit {
         this.api.getSeparateQuestion(params['questionId']).subscribe({
           next: (res) => {
             this.question = res;
+            console.log(this.question)
             this.sortAnswers();
             this.markdownPreview();
           },

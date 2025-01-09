@@ -1,11 +1,12 @@
 <div class='relative flex justify-center ml-64 p-2 pt-8 mt-8 top-32'>
-  <div class='relative  p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-6 md:p-8'>
-    <form class='w-80 max-w-screen-lg sm:w-96 m-auto' [formGroup]="signupForm" (ngSubmit)="onSubmit($event)">
-      <h5 class='text-xl font-medium text-gray-900'>Registration</h5>
+  <div
+    class='relative  p-4 bg-white dark:bg-gray-900 dark:border-gray-600 border border-gray-200 rounded-lg shadow sm:p-6 md:p-8'>
+    <form class='w-full max-w-sm m-auto' [formGroup]="signupForm" (ngSubmit)="onSubmit($event)">
+      <h5 class='text-xl font-medium text-gray-900 dark:text-gray-100'>Register today to join our community!</h5>
       <br/>
       <div class='flex flex-col gap-6'>
-        <label for="username" class='block text-sm font-medium text-gray-900  -mb-4'>
-          Your Username
+        <label for="username" class='block text-sm font-medium text-gray-900 dark:text-gray-100  -mb-4'>
+          Your username
         </label>
         <input
           formControlName="username"
@@ -15,19 +16,19 @@
           placeholder='username'
           class='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
         />
-        <label for="email" class='block  text-sm font-medium text-gray-900  -mb-4'>
-          Your Email
+        <label for="email" class='block  text-sm font-medium dark:text-gray-100  text-gray-900  -mb-4'>
+          Your email
         </label>
         <input
           formControlName="email"
           id="email"
-          placeholder='name@mail.com'
+          placeholder='name@company.com'
           class='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white'
           type='email'
           required
         />
-        <label for="password" class='block text-sm font-medium text-gray-900  -mb-4'>
-          Password
+        <label for="password" class='block text-sm font-medium dark:text-gray-100  text-gray-900  -mb-4'>
+          Your password
         </label>
         <input
           formControlName="password"

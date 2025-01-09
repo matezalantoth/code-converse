@@ -9,11 +9,11 @@
         </button>
 
         <div>
-          <h2 class="font-bold text-2xl ml-6 mt-4">Interesting posts for you</h2>
+          <h2 class="font-bold text-2xl ml-6 mt-4 dark:text-gray-100">Interesting posts for you</h2>
         </div>
       </div>
 
-      <div class="border-1 rounded-md ml-6 mt-3">
+      <div class="border-1 rounded-md ml-6 mt-3 dark:border-gray-600">
         <app-questions [_questions]="questions"></app-questions>
         <app-infinite-scroll [fetchItems]="fetchItems"></app-infinite-scroll>
       </div>

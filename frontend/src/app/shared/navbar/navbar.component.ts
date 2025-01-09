@@ -3,6 +3,7 @@ import {Observable} from "rxjs";
 import {AuthService} from "../../services/auth/auth.service";
 import {NavigationService} from "../../services/nav/nav.service";
 import {ApiService} from "../../services/data/api.service";
+import {ThemeService} from "../../services/theme.service";
 
 @Component({
   selector: 'app-navbar',
@@ -18,7 +19,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private intervalId: any;
   private documentClickListener!: () => void;
 
-  constructor(private nav: NavigationService, private api: ApiService, private auth: AuthService, private renderer: Renderer2) {
+  constructor(private nav: NavigationService, private api: ApiService, private auth: AuthService, private renderer: Renderer2, public theme: ThemeService) {
     this.isLoggedIn = this.auth.isUserLoggedIn();
     this.isLoggedIn.subscribe(() => {
       this.getInboxContents()
@@ -75,7 +76,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   orderInboxByDate() {
     // @ts-ignore
-    this.inbox.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
+    this.inbox.sort((a, b) => new Date(b.sentAt) - new Date(a.sentAt));
   }
 
 

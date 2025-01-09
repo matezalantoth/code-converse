@@ -1,18 +1,22 @@
-<div class="fixed ml-2 w-64 mt-4 float-left mr-4 h-screen border-gray-300 border-r-1">
+<div
+  class="fixed ml-2 w-64 mt-4 float-left bg-white z-0 dark:bg-gray-900 mr-4 h-screen border-gray-300 text-gray-600 dark:text-gray-300 dark:border-gray-600 border-r-1">
   <div class="mt-4">
     <div class="float-right w-7/12">
-      <div (click)="goHome()" [ngClass]="{'bg-gray-200': onPage('/'), 'hover:bg-gray-100': !onPage('/')}"
+      <div (click)="goHome()"
+           [ngClass]="{'bg-gray-200 dark:bg-gray-700': onPage('/'), 'hover:bg-gray-100 hover:dark:bg-gray-700': !onPage('/')}"
            class="bg-gray-200 rounded-l-md p-1 mt-4 hover:bg-gray-100 cursor-pointer">
-        <i class="fa-solid fa-house text-sm mr-1"></i><span class="text-sm text-gray-600">Home</span>
+        <i class="fa-solid fa-house dark:text-gray-100 text-sm mr-1"></i><span
+        class="text-sm ">Home</span>
       </div>
       <div (click)="goQuestions()"
-           [ngClass]="{'bg-gray-200': onPage('question'), 'hover:bg-gray-100': !onPage('question')}"
+           [ngClass]="{'bg-gray-200 dark:bg-gray-700': onPage('question'), 'hover:bg-gray-100 hover:dark:bg-gray-700': !onPage('question')}"
            class=" rounded-l-md p-1 hover:bg-gray-100 cursor-pointer">
-        <i class="fa-solid fa-magnifying-glass mr-1"></i><span class="text-sm text-gray-600">Questions</span>
+        <i class="fa-solid fa-magnifying-glass mr-1"></i><span class="text-sm ">Questions</span>
       </div>
-      <div (click)="goTags()" [ngClass]="{'bg-gray-200': onPage('tags'), 'hover:bg-gray-100': !onPage('tags')}"
+      <div (click)="goTags()"
+           [ngClass]="{'bg-gray-200 dark:bg-gray-700': onPage('tags') || onPage('tag'), 'hover:bg-gray-100 hover:dark:bg-gray-700': !onPage('tags') && !onPage('tag')}"
            class=" rounded-l-md p-1 cursor-pointer">
-        <i class="fa-solid fa-tag mr-1"></i><span class="text-sm text-gray-600">Tags</span>
+        <i class="fa-solid fa-tag mr-1"></i><span class="text-sm ">Tags</span>
       </div>
     </div>
   </div>
