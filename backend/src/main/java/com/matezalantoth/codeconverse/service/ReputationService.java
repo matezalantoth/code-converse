@@ -25,11 +25,11 @@ public class ReputationService {
         this.bountyRepository = bountyRepository;
     }
 
-    public void handleAnswerAccept(UserEntity user, Question question){
+    public void handleAnswerAccept(UserEntity user, Question question) {
         var message = "Your answer was accepted!";
         var repGained = 25;
         var bounty = question.getActiveBounty();
-        if(bounty.isPresent()) {
+        if (bounty.isPresent()) {
             message = "Your answer was accepted on a bountied question!";
             repGained = bounty.get().getBountyValue();
             var managedBounty = bountyRepository.getBountyById(bounty.get().getId()).orElseThrow(() -> new NotFoundException("Bounty of id: " + bounty.get().getId()));
@@ -38,14 +38,14 @@ public class ReputationService {
         buildAndSaveNewReputation(message, repGained, false, user, question.getId());
     }
 
-    public void handleNewAnswer(UserEntity user, Question question){
+    public void handleNewAnswer(UserEntity user, Question question) {
         var message = "You posted an answer!";
         var repGained = 10;
         var bounty = question.getActiveBounty();
-        if(bounty.isPresent()) {
+        if (bounty.isPresent()) {
             message = "You posted an answer to a bountied question!";
-            repGained +=  bounty.get().getBountyValue() / 8;
-            if(question.shouldBeCharged()) {
+            repGained += bounty.get().getBountyValue() / 8;
+            if (question.shouldBeCharged()) {
                 var managedBounty = bountyRepository.getBountyById(bounty.get().getId()).orElseThrow(() -> new NotFoundException("Bounty of id: " + bounty.get().getId()));
                 managedBounty.setActive(false);
             }
@@ -53,11 +53,11 @@ public class ReputationService {
         buildAndSaveNewReputation(message, repGained, false, user, question.getId());
     }
 
-    public void chargeUserForBounty(UserEntity user, Bounty bounty){
+    public void chargeUserForBounty(UserEntity user, Bounty bounty) {
         buildAndSaveNewReputation("You posted a bounty!", bounty.getBountyValue() * -1, true, user, bounty.getId());
     }
 
-    private void buildAndSaveNewReputation(String message, int value, boolean purchase, UserEntity user, UUID relatedDataId){
+    private void buildAndSaveNewReputation(String message, int value, boolean purchase, UserEntity user, UUID relatedDataId) {
         var rep = new Reputation();
         rep.setMessage(message);
         rep.setReputationValue(value);
@@ -67,5 +67,7 @@ public class ReputationService {
         rep.setRelatedDataId(relatedDataId);
         reputationRepository.save(rep);
         user.getReputation().add(rep);
+        user.calcTrueRep();
+        user.calcTotalRep();
     }
 }

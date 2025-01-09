@@ -56,7 +56,7 @@ public class UserService {
 
     public boolean canUserAffordBountyByUsername(String username, int bountyValue) {
         var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("User of username: " + username));
-        return user.calcTotalRep() >= bountyValue;
+        return user.getTotalReputation() >= bountyValue;
     }
 
     public void createUser(RegisterRequestDTO newUser) throws BadRequestException {
@@ -73,6 +73,7 @@ public class UserService {
         user.setQuestionVotes(new HashSet<>());
         user.setAnswers(new HashSet<>());
         user.setReputation(new HashSet<>());
+        user.setViews(new HashSet<>());
         userRepository.save(user);
         addRoleFor(user, Role.ROLE_USER);
     }
@@ -131,6 +132,7 @@ public class UserService {
 
     public NavbarReputationDTO getUserReputationForNavbarByUsername(String username) {
         var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("user of username: " + username));
+
         return new NavbarReputationDTO(user.getUsername(), user.repValDto());
     }
 }

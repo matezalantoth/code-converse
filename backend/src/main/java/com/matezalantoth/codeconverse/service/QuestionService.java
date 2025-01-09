@@ -7,12 +7,14 @@ import com.matezalantoth.codeconverse.model.question.dtos.*;
 import com.matezalantoth.codeconverse.model.questiontag.QuestionTag;
 import com.matezalantoth.codeconverse.model.tag.Tag;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
+import com.matezalantoth.codeconverse.model.view.View;
 import com.matezalantoth.codeconverse.model.vote.QuestionVote;
 import com.matezalantoth.codeconverse.model.vote.VoteType;
 import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
 import com.matezalantoth.codeconverse.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -61,7 +63,7 @@ public class QuestionService {
         question.setQuestionTags(new HashSet<>());
         question.setVotes(new HashSet<>());
         question.setBounties(new HashSet<>());
-        question.setViews(0);
+        question.setViews(new HashSet<>());
         var poster = userRepository.getUserEntityByUsername(posterUsername).orElseThrow(() -> new NotFoundException("user of username: " + posterUsername));
         question.setPoster(poster);
         questionRepository.save(question);
@@ -88,8 +90,9 @@ public class QuestionService {
     }
 
     public boolean isOwner(UUID id, String username) {
+        var user = userRepository.getUserEntityByUsername(username).orElseThrow(() -> new NotFoundException("User of username: " + id));
         var question = questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
-        return question.getPoster().getUsername().equalsIgnoreCase(username);
+        return question.getPoster().getUsername().equalsIgnoreCase(user.getUsername());
     }
 
     public QuestionDTO addVote(UUID questionId, String voterUsername, NewVoteDTO newVote) {
@@ -209,9 +212,18 @@ public class QuestionService {
         );
     }
 
-    public void logViewById(UUID id) {
+    public void logViewById(UUID id, UserDetails user) {
         var question = questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id));
-        question.setViews(question.getViews() + 1);
+        View view = new View();
+        if (user == null) {
+            view.setViewer(null);
+        } else {
+            var managedUser = userRepository.getUserEntityByUsername(user.getUsername()).orElseThrow(() -> new NotFoundException("User of username: " + user.getUsername()));
+            view.setViewer(managedUser);
+            managedUser.getViews().add(view);
+        }
+        view.setQuestion(question);
+        question.getViews().add(view);
     }
 
     public void removeBountyIfNoLongerEligible(UUID id) {
@@ -250,6 +262,8 @@ public class QuestionService {
             }
 
             managedUser.getReputation().removeIf(r -> r.getRelatedDataId().equals(managedBounty.getId()));
+            managedUser.calcTotalRep();
+            managedUser.calcTrueRep();
         }
     }
 
