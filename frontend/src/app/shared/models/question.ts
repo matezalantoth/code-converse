@@ -14,4 +14,5 @@ export interface Question {
   posterRep: number,
   posterTrueRep: number
   bounty: Bounty | null
+  
 }
