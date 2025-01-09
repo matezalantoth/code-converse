@@ -41,7 +41,7 @@ public class AnswerController {
     }
 
     @PatchMapping("/vote")
-    @PreAuthorize("hasRole('USER') and !@answerService.isOwner(#answerId, authentication.principal.username)")
+    @PreAuthorize("hasRole('USER') and (!@answerService.isOwner(#answerId, authentication.principal.username) and authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails))")
     public ResponseEntity<AnswerDTO> voteOnAnswer(@RequestBody NewVoteDTO newVote, @RequestParam UUID answerId) {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         var answer = answerService.addVote(answerId, username, newVote);
@@ -50,7 +50,7 @@ public class AnswerController {
     }
 
     @PatchMapping("/accept")
-    @PreAuthorize("hasRole('ADMIN') or (@questionService.isOwner(#questionId, authentication.principal.username) and !@answerService.isOwner(#answerId, authentication.principal.username))")
+    @PreAuthorize("hasRole('ADMIN') or ((@questionService.isOwner(#questionId, authentication.principal.username) and !@answerService.isOwner(#answerId, authentication.principal.username)) and (authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails)))")
     public ResponseEntity<AnswerDTO> acceptAnswer(@RequestParam UUID questionId, @RequestParam UUID answerId) {
         questionService.checkAndHandleExpiredBounties();
         var res = answerService.accept(answerId);
@@ -60,13 +60,13 @@ public class AnswerController {
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('ADMIN') or @answerService.isOwner(#answerId, authentication.principal.username)")
+    @PreAuthorize("hasRole('ADMIN') or (@answerService.isOwner(#answerId, authentication.principal.username) and authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails))")
     public ResponseEntity<AnswerDTO> updateAnswer(@RequestParam UUID answerId, AnswerUpdatesDTO updates) {
         return ResponseEntity.ok(answerService.updateAnswer(answerId, updates));
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('ADMIN') or @answerService.isOwner(#answerId, authentication.principal.username)")
+    @PreAuthorize("hasRole('ADMIN') or (@answerService.isOwner(#answerId, authentication.principal.username) and authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails))")
     public ResponseEntity<Void> deleteAnswer(@RequestParam UUID answerId) {
         answerService.deleteAnswer(answerId, ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
         return ResponseEntity.noContent().build();

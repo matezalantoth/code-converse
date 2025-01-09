@@ -7,6 +7,7 @@ import com.matezalantoth.codeconverse.model.reputation.Reputation;
 import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationDTO;
 import com.matezalantoth.codeconverse.model.reputation.dtos.ReputationValueDTO;
 import com.matezalantoth.codeconverse.model.user.dtos.UserDTO;
+import com.matezalantoth.codeconverse.model.view.View;
 import com.matezalantoth.codeconverse.model.vote.QuestionVote;
 import com.matezalantoth.codeconverse.model.vote.Vote;
 import jakarta.persistence.*;
@@ -40,6 +41,12 @@ public class UserEntity {
     private Set<Reputation> reputation;
 
     @Setter
+    private int trueReputation;
+
+    @Setter
+    private int totalReputation;
+
+    @Setter
     @OneToMany(mappedBy = "poster", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Question> questions;
 
@@ -50,6 +57,9 @@ public class UserEntity {
     @Setter
     private Date createdAt;
 
+    @OneToMany(mappedBy = "viewer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Setter
+    private Set<View> views;
 
     @Setter
     @OneToMany(mappedBy = "poster", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -68,20 +78,22 @@ public class UserEntity {
     private Set<QuestionVote> questionVotes;
 
     public int calcTrueRep() {
-        return reputation.stream().filter(r -> !r.isPurchase()).mapToInt(Reputation::getReputationValue).sum();
+        trueReputation = reputation.stream().filter(r -> !r.isPurchase()).mapToInt(Reputation::getReputationValue).sum();
+        return trueReputation;
     }
 
     public int calcTotalRep() {
-        return reputation.stream().mapToInt(Reputation::getReputationValue).sum();
+        totalReputation = reputation.stream().mapToInt(Reputation::getReputationValue).sum();
+        return totalReputation;
     }
 
 
     public UserDTO dto() {
-        return new UserDTO(id, username, questions.stream().map(Question::dto).collect(Collectors.toSet()), answers.stream().map(Answer::dto).collect(Collectors.toSet()), calcTotalRep(), calcTrueRep());
+        return new UserDTO(id, username, questions.stream().map(Question::dto).collect(Collectors.toSet()), answers.stream().map(Answer::dto).collect(Collectors.toSet()), totalReputation, trueReputation, views.stream().map(View::dto).collect(Collectors.toSet()));
     }
 
     public ReputationValueDTO repValDto() {
-        return new ReputationValueDTO(calcTotalRep(), calcTrueRep());
+        return new ReputationValueDTO(totalReputation, trueReputation);
     }
 
     public Set<ReputationDTO> repDto() {

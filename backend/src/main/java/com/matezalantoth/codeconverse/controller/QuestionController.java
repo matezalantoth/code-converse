@@ -9,7 +9,9 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,38 +44,43 @@ public class QuestionController {
     }
 
     @GetMapping("/isOwner")
-    @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#questionId, authentication.principal.username)")
+    @PreAuthorize("hasRole('ADMIN') or (authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails) and @questionService.isOwner(#questionId, authentication.principal.username))")
     public ResponseEntity<Boolean> isOwner(@RequestParam UUID questionId) {
         return ResponseEntity.ok(true);
     }
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
+    @PreAuthorize("hasRole('ADMIN') or (authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails) and @questionService.isOwner(#id, authentication.principal.username))")
     public ResponseEntity<QuestionDTO> updateQuestionById(@RequestParam UUID id, @RequestBody QuestionUpdatesDTO updates) {
         return ResponseEntity.ok(questionService.updateQuestion(updates, id));
     }
 
     @PatchMapping("/add-tags")
-    @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
+    @PreAuthorize("hasRole('ADMIN') or (authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails) and @questionService.isOwner(#id, authentication.principal.username))")
     public ResponseEntity<QuestionDTO> addTagToQuestion(@RequestParam UUID id, @RequestBody Set<TagOfQuestionDTO> tags) {
         return ResponseEntity.ok(questionService.addTags(id, tags));
     }
 
     @PatchMapping("/viewed")
     public ResponseEntity<Void> logView(@RequestParam UUID id) {
-        questionService.logViewById(id);
+        UserDetails user = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.getPrincipal() != "anonymousUser") {
+            user = (UserDetails) authentication.getPrincipal();
+        }
+        questionService.logViewById(id, user);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasRole('ADMIN') or @questionService.isOwner(#id, authentication.principal.username)")
+    @PreAuthorize("hasRole('ADMIN') or (authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails) and @questionService.isOwner(#id, authentication.principal.username))")
     public ResponseEntity<Void> deleteQuestion(@RequestParam UUID id) {
         questionService.deleteQuestion(id, ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/vote")
-    @PreAuthorize("hasRole('USER') and not @questionService.isOwner(#questionId, authentication.principal.username)")
+    @PreAuthorize("hasRole('USER') and not @questionService.isOwner(#questionId, authentication.principal.username) and authentication.principal instanceof T(org.springframework.security.core.userdetails.UserDetails)")
     public ResponseEntity<QuestionDTO> voteOnAnswer(@RequestBody NewVoteDTO newVote, @RequestParam UUID questionId) {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         notificationService.notifyQuestionOwnerOnVote(questionId, newVote.type());
