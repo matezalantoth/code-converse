@@ -12,7 +12,7 @@ import {QuestionFilter} from "../../shared/models/questionFilter";
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl: string = 'http://localhost:8080'
+  private apiUrl: string = 'https://api.codeconverse.net'
 
   navbarRep: BehaviorSubject<object> = new BehaviorSubject<object>({});
 
