@@ -26,7 +26,7 @@ export class AnswerComponent implements OnChanges, OnInit {
   public content!: string | Promise<string>;
   navbarRep: any;
 
-  constructor(private api: ApiService, private toast: ToastrService, private nav: NavigationService) {
+  constructor(public api: ApiService, private toast: ToastrService, private nav: NavigationService) {
     this.api.navbarReputation().subscribe(res => {
       this.navbarRep = res
     });

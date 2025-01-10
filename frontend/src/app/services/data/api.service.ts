@@ -165,7 +165,7 @@ export class ApiService {
       return `${hours} hour${hours === 1 ? '' : 's'} ago`;
     }
     const days = Math.floor(differenceInSeconds / 86400);
-    return `${days} days ago`;
+    return `${days} day{days === 1 ? '' : 's'} ago`;
   };
 
 

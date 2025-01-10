@@ -1,11 +1,12 @@
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/**/*.{html,ts}",
   ],
   theme: {
     extend: {
       spacing: {
-        26: '6.5rem', // Example: 26 * 0.25rem = 6.5rem
+        26: '6.5rem',
       },
       fontSize: {
         'xsm': '0.8rem',
