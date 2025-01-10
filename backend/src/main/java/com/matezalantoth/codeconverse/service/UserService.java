@@ -39,12 +39,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final NotificationService notificationService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtUtils jwtUtils, NotificationService notificationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
+        this.notificationService = notificationService;
     }
 
     public void addRoleFor(UserEntity user, Role role) {
@@ -74,8 +76,11 @@ public class UserService {
         user.setAnswers(new HashSet<>());
         user.setReputation(new HashSet<>());
         user.setViews(new HashSet<>());
+        user.setInbox(new HashSet<>());
         userRepository.save(user);
         addRoleFor(user, Role.ROLE_USER);
+
+        notificationService.createAndAddNotificationToUserAndTriggerMailgun("Welcome to codeconverse!", "We at codeconverse would like to welcome you to our forum, we hope its everything you wished it would be!", "/", user.getId());
     }
 
     public ReputationValueDTO getReputationValueByUsername(String username) {

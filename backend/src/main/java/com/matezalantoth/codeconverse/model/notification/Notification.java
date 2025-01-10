@@ -20,22 +20,25 @@ public class Notification {
     @ManyToOne
     @Setter
     @JoinColumn(name = "user_id", nullable = false)
-    public UserEntity user;
+    private UserEntity user;
 
     @Setter
-    public String content;
+    private String title;
 
     @Setter
-    public String link;
+    private String content;
 
     @Setter
-    public boolean hasBeenRead;
+    private String link;
 
     @Setter
-    public Date sentAt;
+    private boolean hasBeenRead;
+
+    @Setter
+    private Date sentAt;
 
     public NotificationDTO dto() {
-        return new NotificationDTO(id, user.getId(), content, link, hasBeenRead, sentAt);
+        return new NotificationDTO(id, user.getId(), title, content, link, hasBeenRead, sentAt);
     }
 
 
