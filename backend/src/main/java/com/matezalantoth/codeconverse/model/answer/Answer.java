@@ -53,7 +53,7 @@ public class Answer {
     }
 
     public AnswerDTO dto() {
-        return new AnswerDTO(id, content, poster.getUsername(), poster.getTotalReputation(), question.getId(), accepted, calculateVoteValue(), postedAt);
+        return new AnswerDTO(id, content, poster.getUsername(), poster.getTrueReputation(), question.getId(), accepted, calculateVoteValue(), postedAt);
     }
 
 }

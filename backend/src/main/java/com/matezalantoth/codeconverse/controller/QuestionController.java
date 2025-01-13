@@ -1,10 +1,12 @@
 package com.matezalantoth.codeconverse.controller;
 
+import com.matezalantoth.codeconverse.model.question.QuestionFilter;
 import com.matezalantoth.codeconverse.model.question.dtos.*;
 import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
 import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
 import com.matezalantoth.codeconverse.service.NotificationService;
 import com.matezalantoth.codeconverse.service.QuestionService;
+import jakarta.annotation.Nullable;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,12 +65,7 @@ public class QuestionController {
 
     @PatchMapping("/viewed")
     public ResponseEntity<Void> logView(@RequestParam UUID id) {
-        UserDetails user = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() != "anonymousUser") {
-            user = (UserDetails) authentication.getPrincipal();
-        }
-        questionService.logViewById(id, user);
+        questionService.logViewById(id, getUserDetailsIfAvailable());
         return ResponseEntity.ok().build();
     }
 
@@ -87,19 +84,32 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.addVote(questionId, username, newVote));
     }
 
-    @PostMapping("/questions")
-    public ResponseEntity<QuestionsResponseDTO> getQuestions(@RequestBody QuestionsRequestDTO req) throws BadRequestException {
-        switch (req.filter()) {
+    @GetMapping("/questions")
+    public ResponseEntity<QuestionsResponseDTO> getQuestions(@RequestParam QuestionFilter filter, @RequestParam int startIndex) throws BadRequestException {
+        switch (filter) {
+            case PERSONALISED -> {
+                return ResponseEntity.ok(questionService.getPersonalisedQuestions(new QuestionsRequestDTO(startIndex, filter), getUserDetailsIfAvailable()));
+            }
             case NEWEST -> {
-                return ResponseEntity.ok(questionService.getMainPageQuestions(req));
+                return ResponseEntity.ok(questionService.getNewestQuestions(new QuestionsRequestDTO(startIndex, filter)));
             }
             case UNANSWERED -> {
-                return ResponseEntity.ok(questionService.getUnansweredQuestions(req));
+                return ResponseEntity.ok(questionService.getUnansweredQuestions(new QuestionsRequestDTO(startIndex, filter)));
             }
             case BOUNTIED -> {
-                return ResponseEntity.ok(questionService.getBountiedQuestions(req));
+                return ResponseEntity.ok(questionService.getBountiedQuestions(new QuestionsRequestDTO(startIndex, filter)));
             }
             default -> throw new BadRequestException("Your request is misconfigured");
         }
+    }
+
+    private UserDetails getUserDetailsIfAvailable() {
+        UserDetails user = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication.getPrincipal());
+        if (authentication.getPrincipal() != "anonymousUser") {
+            user = (UserDetails) authentication.getPrincipal();
+        }
+        return user;
     }
 }

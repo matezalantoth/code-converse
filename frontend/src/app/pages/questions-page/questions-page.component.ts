@@ -40,6 +40,12 @@ export class QuestionsPageComponent implements OnInit {
     this.questionsCount = res.count;
     const currentQuestions = this._questions.getValue();
     const updatedQuestions = [...currentQuestions, ...res.questions];
+    updatedQuestions.sort((q1, q2) => {
+      const date1 = new Date(q1.postedAt);
+      const date2 = new Date(q2.postedAt);
+      // @ts-ignore
+      return date2 - date1;
+    })
     this._questions.next(updatedQuestions);
     this.bountyCount = res.bountyCount;
     return this.maxPage >= this.nextPage;
@@ -62,7 +68,7 @@ export class QuestionsPageComponent implements OnInit {
   fetchItems = async (f: QuestionFilter = this.selected.getValue()): Promise<boolean> => {
     switch (f) {
       case QuestionFilter.Newest:
-        let newest = await firstValueFrom(this.api.getDashQuestions(this.nextPage));
+        let newest = await firstValueFrom(this.api.getNewestQuestions(this.nextPage));
         return this.handleNewQuestions(newest);
       case QuestionFilter.Bountied:
         let bountied = await firstValueFrom(this.api.getBountiedQuestions(this.nextPage));
@@ -70,6 +76,8 @@ export class QuestionsPageComponent implements OnInit {
       case QuestionFilter.Unanswered:
         let unanswered = await firstValueFrom(this.api.getUnansweredQuestions(this.nextPage));
         return this.handleNewQuestions(unanswered);
+      default:
+        return false;
     }
   };
 

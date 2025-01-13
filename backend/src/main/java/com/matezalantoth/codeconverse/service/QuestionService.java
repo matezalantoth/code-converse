@@ -172,7 +172,17 @@ public class QuestionService {
         return (questionRepository.getQuestionById(id).orElseThrow(() -> new NotFoundException("Question of id: " + id))).hasAccepted();
     }
 
-    public QuestionsResponseDTO getMainPageQuestions(QuestionsRequestDTO req) {
+    public QuestionsResponseDTO getPersonalisedQuestions(QuestionsRequestDTO req, UserDetails user) {
+        Map<Tag, Long> preferredTags = new HashMap<>();
+        if (user != null) {
+            var managedUser = userRepository.getUserEntityByUsername(user.getUsername()).orElseThrow(() -> new NotFoundException("User of username: " + user.getUsername()));
+            preferredTags = managedUser.getPreferredTags();
+        }
+        var questions = questionRepository.findAll(Sort.by(Sort.Direction.DESC, "postedAt"));
+        return makeMainPageResponse(req, sortQuestionsByTagMatches(preferredTags, questions), questionRepository.count());
+    }
+
+    public QuestionsResponseDTO getNewestQuestions(QuestionsRequestDTO req) {
         var questions = questionRepository.findAll(Sort.by(Sort.Direction.DESC, "postedAt"));
         return makeMainPageResponse(req, questions, questionRepository.count());
     }
@@ -189,7 +199,7 @@ public class QuestionService {
 
     public QuestionsResponseDTO makeMainPageResponse(QuestionsRequestDTO req, List<Question> questions, long count) {
         if (questions.isEmpty()) {
-            return new QuestionsResponseDTO(new PaginationDTO(req.startIndex(), 1, 1), new HashSet<>(), 0, 0);
+            return new QuestionsResponseDTO(new PaginationDTO(req.startIndex(), 1, 1), new HashSet<>(), 0, questionRepository.findQuestionsWithBountiesCount());
         }
         var bountyCount = questionRepository.findQuestionsWithBountiesCount();
         var startIndex = Math.max((req.startIndex() - 1) * 10, 0);
@@ -285,5 +295,27 @@ public class QuestionService {
             }
         }
     }
+
+    private List<Question> sortQuestionsByTagMatches(Map<Tag, Long> tags, List<Question> questions) {
+        if (!tags.isEmpty()) {
+            return new HashSet<>(questions.stream().collect(Collectors.toMap(q -> q, q -> {
+                var score = 10;
+                var matchingTags = 0;
+                var questionTags = q.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toSet());
+                for (var entry : tags.entrySet()) {
+                    if (questionTags.contains(entry.getKey())) {
+                        score += (int) (entry.getValue() * 100);
+
+                        matchingTags++;
+                    }
+                }
+                return score * matchingTags;
+            })).entrySet()).stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .map(Map.Entry::getKey).toList();
+        }
+        return questions;
+    }
+
 
 }
