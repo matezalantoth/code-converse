@@ -26,6 +26,8 @@ import {MarkdownPreviewComponent} from './components/markdown-preview/markdown-p
 import { InfiniteScrollComponent } from './components/infinite-scroll/infinite-scroll.component';
 import { InboxComponent } from './components/inbox/inbox.component';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
+import { SearchResultsComponent } from './pages/search-results/search-results.component';
 
 
 @NgModule({
@@ -48,7 +50,9 @@ import { ProfileComponent } from './pages/profile/profile.component';
     MarkdownPreviewComponent,
     InfiniteScrollComponent,
     InboxComponent,
-    ProfileComponent
+    ProfileComponent,
+    SearchBarComponent,
+    SearchResultsComponent
   ],
   bootstrap: [AppComponent], imports: [BrowserModule,
     AppRoutingModule,

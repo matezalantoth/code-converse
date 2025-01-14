@@ -11,6 +11,7 @@ import {QuestionsPageComponent} from "./pages/questions-page/questions-page.comp
 import {TagsComponent} from "./pages/tags/tags.component";
 import {TagComponent} from "./pages/tag/tag.component";
 import {ProfileComponent} from "./pages/profile/profile.component";
+import {SearchResultsComponent} from "./pages/search-results/search-results.component";
 
 const routes: Routes = [
   {path: '', component: DashboardComponent},
@@ -21,7 +22,8 @@ const routes: Routes = [
   {path: 'tag', component: TagComponent},
   {path: 'questions', component: QuestionsPageComponent},
   {path: 'tags', component: TagsComponent},
-  {path: 'profile', component: ProfileComponent}
+  {path: 'profile', component: ProfileComponent},
+  {path: 'search-results', component: SearchResultsComponent}
 ];
 
 @NgModule({

@@ -67,6 +67,10 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     public Set<QuestionVote> votes;
 
+    @Setter
+    @Transient
+    public int resultsScore = 0;
+
     public int calculateVoteValue() {
         return votes.stream().mapToInt(v -> v.getType().equals(VoteType.UPVOTE) ? 1 : -1).sum();
     }
@@ -104,7 +108,7 @@ public class Question {
         if (optBounty.isPresent()) {
             finalBounty = optBounty.get().dto();
         }
-        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), hasAccepted(), questionTags.stream().map(t -> t.getTag().dto()).collect(Collectors.toSet()), poster.getTrueReputation(), poster.getTotalReputation(), finalBounty);
+        return new FullQuestionDTO(id, title, content, poster.getUsername(), postedAt, calculateVoteValue(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), hasAccepted(), questionTags.stream().map(t -> t.getTag().dto()).collect(Collectors.toSet()), poster.getTrueReputation(), poster.getTotalReputation(), finalBounty, resultsScore);
     }
 
     public QuestionDTO dto() {
@@ -113,10 +117,10 @@ public class Question {
         if (optBounty.isPresent()) {
             finalBounty = optBounty.get().dto();
         }
-        return new QuestionDTO(id, title, content, poster.getUsername(), poster.getTrueReputation(), postedAt, calculateVoteValue(), answers.size(), hasAccepted(), questionTags.stream().map(t -> t.getTag().dto()).collect(Collectors.toSet()), finalBounty, views.size());
+        return new QuestionDTO(id, title, content, poster.getUsername(), poster.getTrueReputation(), postedAt, calculateVoteValue(), answers.size(), hasAccepted(), questionTags.stream().map(t -> t.getTag().dto()).collect(Collectors.toSet()), finalBounty, views.size(), resultsScore);
     }
 
     public QuestionWithoutTagsDTO dtoNoTags() {
-        return new QuestionWithoutTagsDTO(id, title, content, poster.getUsername(), postedAt, hasAccepted(), answers.stream().map(Answer::dto).collect(Collectors.toSet()));
+        return new QuestionWithoutTagsDTO(id, title, content, poster.getUsername(), postedAt, hasAccepted(), answers.stream().map(Answer::dto).collect(Collectors.toSet()), resultsScore);
     }
 }

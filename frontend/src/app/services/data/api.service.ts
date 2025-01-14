@@ -64,6 +64,10 @@ export class ApiService {
 
   }
 
+  search(tags: string, searchTerm: string, startIndex: number): Observable<any> {
+    return this.http.get(this.apiUrl + '/question/search?tagNames=' + tags + "&search=" + searchTerm + "&startIndex=" + startIndex);
+  }
+
 
   getTags(startIndex: number): Observable<any> {
     return this.http.get(this.apiUrl + '/tag/all?startIndex=' + startIndex)

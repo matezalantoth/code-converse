@@ -17,11 +17,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -32,20 +32,16 @@ public class QuestionService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final QuestionTagRepository questionTagRepository;
-    private final VoteRepository voteRepository;
     private final QuestionVoteRepository questionVoteRepository;
-    private final BountyService bountyService;
     private final BountyRepository bountyRepository;
     private final NotificationService notificationService;
 
-    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository, VoteRepository voteRepository, QuestionVoteRepository questionVoteRepository, BountyService bountyService, BountyRepository bountyRepository, NotificationService notificationService) {
+    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository, QuestionTagRepository questionTagRepository, QuestionVoteRepository questionVoteRepository, BountyRepository bountyRepository, NotificationService notificationService) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.questionTagRepository = questionTagRepository;
-        this.voteRepository = voteRepository;
         this.questionVoteRepository = questionVoteRepository;
-        this.bountyService = bountyService;
         this.bountyRepository = bountyRepository;
         this.notificationService = notificationService;
     }
@@ -134,6 +130,10 @@ public class QuestionService {
         return question.dto();
     }
 
+    public void getSearchResults() {
+
+    }
+
     private QuestionDTO removeVote(QuestionVote existingVote, UUID relevantQuestionId) {
         existingVote.getQuestion().getVotes().remove(existingVote);
         existingVote.getVoter().getQuestionVotes().remove(existingVote);
@@ -179,7 +179,7 @@ public class QuestionService {
             preferredTags = managedUser.getPreferredTags();
         }
         var questions = questionRepository.findAll(Sort.by(Sort.Direction.DESC, "postedAt"));
-        return makeMainPageResponse(req, sortQuestionsByTagMatches(preferredTags, questions), questionRepository.count());
+        return makeMainPageResponse(req, scoreBasedOnTags(preferredTags, questions), questionRepository.count());
     }
 
     public QuestionsResponseDTO getNewestQuestions(QuestionsRequestDTO req) {
@@ -214,7 +214,7 @@ public class QuestionService {
                 totalPages);
 
         return new QuestionsResponseDTO(pagination,
-                questions.subList(startIndex, endIndex).stream()
+                questions.stream().sorted(Comparator.comparingInt(Question::getResultsScore).reversed()).toList().subList(startIndex, endIndex).stream()
                         .map(Question::dto)
                         .collect(Collectors.toSet()),
                 count,
@@ -296,9 +296,9 @@ public class QuestionService {
         }
     }
 
-    private List<Question> sortQuestionsByTagMatches(Map<Tag, Long> tags, List<Question> questions) {
+    private List<Question> scoreBasedOnTags(Map<Tag, Long> tags, List<Question> questions) {
         if (!tags.isEmpty()) {
-            return new HashSet<>(questions.stream().collect(Collectors.toMap(q -> q, q -> {
+            questions.forEach(q -> {
                 var score = 10;
                 var matchingTags = 0;
                 var questionTags = q.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toSet());
@@ -309,12 +309,70 @@ public class QuestionService {
                         matchingTags++;
                     }
                 }
-                return score * matchingTags;
-            })).entrySet()).stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .map(Map.Entry::getKey).toList();
+                var total = score * matchingTags;
+                q.setResultsScore(total);
+            });
         }
         return questions;
+    }
+
+    public QuestionsResponseDTO fuzzySearchQuestionsByTagsAndSubstring(QuestionsRequestDTO req, Collection<Tag> tags, String substring) {
+        System.out.println(req.startIndex());
+        var questions = questionRepository.findAll();
+        questions.forEach(q ->
+        {
+            var total = fuzzySearch(q, q.title, substring, tags) + fuzzySearch(q, q.content, substring, tags);
+            q.setResultsScore(total);
+        });
+        return makeMainPageResponse(req, questions, questions.size());
+    }
+
+    private int fuzzySearch(Question question, String content, String substring, Collection<Tag> tags) {
+        var substringCharArray = substring.toCharArray();
+        AtomicInteger total = new AtomicInteger(0);
+        var contentCharArray = content.toCharArray();
+        for (int i = 0; i < substringCharArray.length; i++) {
+            var startPoint = substringCharArray[i];
+            var startPoints = getStartPoints(contentCharArray, startPoint);
+            int finalI = i;
+            total.updateAndGet(v -> v + startPoints.stream().mapToInt(p -> {
+                var currentIndex = finalI;
+                var score = 10;
+                var chaining = 2;
+                for (int j = p + 1; j < contentCharArray.length && currentIndex < substringCharArray.length; j++) {
+                    if (contentCharArray[j] == substringCharArray[currentIndex]) {
+                        score += chaining;
+                        currentIndex++;
+                        chaining++;
+                        continue;
+                    }
+                    chaining = 1;
+                }
+                return score;
+            }).sum());
+        }
+        var questionTags = question.questionTags.stream().map(QuestionTag::getTag).collect(Collectors.toSet());
+        tags.forEach(t -> {
+            if (questionTags.contains(t)) {
+                total.updateAndGet(v -> v * 2);
+            }
+        });
+        if (content.equalsIgnoreCase(substring)) {
+            total.updateAndGet(t -> t * 10000);
+        } else if (content.toLowerCase().contains(substring.toLowerCase()) || substring.toLowerCase().contains(content.toLowerCase())) {
+            total.updateAndGet(t -> t * 2000);
+        }
+        return total.get();
+    }
+
+    private List<Integer> getStartPoints(char[] contentCharArray, char startPoint) {
+        List<Integer> validStartPoints = new ArrayList<>();
+        for (int i = 0; i < contentCharArray.length; i++) {
+            if (contentCharArray[i] == startPoint) {
+                validStartPoints.add(i);
+            }
+        }
+        return validStartPoints;
     }
 
 

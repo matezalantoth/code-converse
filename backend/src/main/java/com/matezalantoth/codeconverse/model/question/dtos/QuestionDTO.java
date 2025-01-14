@@ -9,5 +9,6 @@ import java.util.UUID;
 
 public record QuestionDTO(UUID id, String title, String content, String posterName, int posterRep, Date postedAt,
                           int votes,
-                          int answerCount, boolean hasAccepted, Set<TagDTO> tags, BountyDTO bounty, int views) {
+                          int answerCount, boolean hasAccepted, Set<TagDTO> tags, BountyDTO bounty, int views,
+                          int resultsScore) {
 }

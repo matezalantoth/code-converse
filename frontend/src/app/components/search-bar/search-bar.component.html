@@ -1,0 +1,47 @@
+<div class="max-w-4xl searchbar ml-3">
+  <div class="searchbar relative">
+    <input
+      (input)="registerInput($event)"
+      (beforeinput)="handleInput($event)"
+      (keyup.enter)="search()"
+      value="{{inputted}}"
+      type="text"
+      placeholder="Search..."
+
+      class="searchbar w-full px-10 py-1.5 border h-8 border-gray-300 placeholder-gray-500 text-xsm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-700"
+    />
+    <span class="searchbar absolute inset-y-0 left-3 flex text-xl items-center text-gray-400">
+        <i class="searchbar fas fa-search"></i>
+      </span>
+  </div>
+  <div *ngIf="showDropdown"
+       class="searchbar absolute bg-white mt-2 border-1 rounded-md shadow-md min-h-20 max-w-4xl w-full text-sm">
+    <div class="searchbar mt-2">
+      <span class="searchbar ml-3 font-mono">[tag]</span><span class="text-gray-500"> search within a tag, if you wish to input square brackets press <span
+      class="searchbar font-mono font-bold text-black">\</span> after inputting them</span>
+      <div class="searchbar ml-4 searchbar mt-2">
+          <span *ngIf="tags.length > 0">
+            <p
+              class="searchbar bg-gray-100 searchbar pl-2 pr-1 inline-block mr-2 max-w-fit text-xs py-1 mb-2 dark:bg-gray-800 dark:text-gray-100 font-bold rounded-md"
+              *ngFor="let tag of tags">{{ tag.tag.name }}
+              <button (click)="removeTag(tag)"
+                      class="searchbar font-bold searchbar ml-0.5 rounded-md text-md py-0.5 px-1.5 hover:bg-gray-900 hover:text-gray-100 dark:hover:text-gray-900 dark:hover:bg-gray-100 transition"><i
+                class="searchbar fa-solid fa-xmark"></i></button>
+            </p>
+          </span>
+      </div>
+      <div *ngIf="tagResults.length > 0"
+           class="searchbar flex flex-wrap max-h-[calc(2*theme(spacing.40))] overflow-hidden rounded-md">
+          <span (click)="handleTagSelect(tag)" *ngFor="let tag of tagResults"
+                class="searchbar w-1/4 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer p-2 min-h-24 border  dark:border-gray-600">
+            <p
+              class="searchbar bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100 text-xs px-2 py-1 font-bold rounded-md max-w-fit">{{ tag.tag.name }}</p>
+              <p class="searchbar text-xs dark:text-gray-100 line-clamp-4">{{ tag.tag.description }}</p>
+          </span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+

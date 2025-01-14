@@ -10,5 +10,5 @@ import java.util.UUID;
 
 public record FullQuestionDTO(UUID id, String title, String content, String posterName, Date postedAt, int votes,
                               Set<AnswerDTO> answers, boolean hasAccepted, Set<TagDTO> tags, int posterTrueRep,
-                              int posterRep, BountyDTO bounty) {
+                              int posterRep, BountyDTO bounty, int resultsScore) {
 }
