@@ -49,7 +49,6 @@ export class QuestionPageComponent implements OnInit {
 
   onQuestionChange(updatedQuestion: any): void {
     this.question = updatedQuestion;
-    this.sortAnswers();
   }
 
   sortAnswers(): void {

@@ -20,6 +20,10 @@ export class NavigationService {
     window.location.href = "https://codeconverse.net" + link;
   }
 
+  redirectToSearchResults() {
+    this.router.navigate(['/search-results'])
+  }
+
   redirectToLogin() {
     this.router.navigate(['/login']);
   }

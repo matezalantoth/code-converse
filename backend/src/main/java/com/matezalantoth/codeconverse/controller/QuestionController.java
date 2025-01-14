@@ -6,6 +6,7 @@ import com.matezalantoth.codeconverse.model.tag.dtos.TagOfQuestionDTO;
 import com.matezalantoth.codeconverse.model.vote.dtos.NewVoteDTO;
 import com.matezalantoth.codeconverse.service.NotificationService;
 import com.matezalantoth.codeconverse.service.QuestionService;
+import com.matezalantoth.codeconverse.service.TagService;
 import jakarta.annotation.Nullable;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,10 +28,12 @@ public class QuestionController {
 
     private final QuestionService questionService;
     private final NotificationService notificationService;
+    private final TagService tagService;
 
-    public QuestionController(QuestionService questionService, NotificationService notificationService) {
+    public QuestionController(QuestionService questionService, NotificationService notificationService, TagService tagService) {
         this.questionService = questionService;
         this.notificationService = notificationService;
+        this.tagService = tagService;
     }
 
     @PostMapping("/create")
@@ -82,6 +86,12 @@ public class QuestionController {
         var username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         notificationService.notifyQuestionOwnerOnVote(questionId, newVote.type());
         return ResponseEntity.ok(questionService.addVote(questionId, username, newVote));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<QuestionsResponseDTO> getSearchResults(@RequestParam ArrayList<String> tagNames, @RequestParam String search, @RequestParam int startIndex) {
+        var tags = tagService.getTagsByName(tagNames);
+        return ResponseEntity.ok(questionService.fuzzySearchQuestionsByTagsAndSubstring(new QuestionsRequestDTO(startIndex, QuestionFilter.SEARCH), tags, search));
     }
 
     @GetMapping("/questions")

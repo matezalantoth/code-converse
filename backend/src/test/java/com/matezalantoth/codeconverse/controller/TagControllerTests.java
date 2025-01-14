@@ -26,17 +26,17 @@ public class TagControllerTests {
 
 
     @Test
-    void createTag(){
+    void createTag() {
         var res = restTemplate.postForEntity("http://localhost:" + port + "/user/register", new RegisterRequestDTO("tagController", "tagController@gmail.com", "admin123!!"), JwtResponse.class);
         assert res.getStatusCode().is2xxSuccessful();
         String jwt = res.getBody().jwt();
         setJwt(jwt);
         restTemplate.patchForObject("http://localhost:" + port + "/user/make-admin", null, Void.class);
-        var tagRes = restTemplate.postForEntity("http://localhost:" + port + "/tag/create", new NewTagDTO("test", "test desc"), TagDTO.class);
+        var tagRes = restTemplate.postForEntity("http://localhost:" + port + "/tag/create", new NewTagDTO("tstter", "test desc"), TagDTO.class);
         assert tagRes.getStatusCode().is2xxSuccessful();
     }
 
-    void setJwt(String jwt){
+    void setJwt(String jwt) {
         restTemplate.getRestTemplate().setInterceptors(
                 Collections.singletonList((request, body, execution) -> {
                     request.getHeaders()

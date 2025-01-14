@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {Router} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {NavigationEnd, Router} from "@angular/router";
 import {NavigationService} from "../../services/nav/nav.service";
 
 @Component({
@@ -9,7 +9,14 @@ import {NavigationService} from "../../services/nav/nav.service";
 })
 export class SidebarComponent {
 
+  show: boolean = false;
+
   constructor(private router: Router, private nav: NavigationService) {
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.show = (event as NavigationEnd).url !== '/login' && (event as NavigationEnd).url !== '/signup';
+      }
+    })
   }
 
 

@@ -12,5 +12,6 @@ export interface MainPageQuestion {
   hasAccepted: boolean,
   tags: any[],
   views: number,
+  resultsScore: number,
   bounty: Bounty | null
 }

@@ -8,6 +8,7 @@ import com.matezalantoth.codeconverse.model.tag.dtos.*;
 import com.matezalantoth.codeconverse.model.tag.Tag;
 import com.matezalantoth.codeconverse.repository.TagRepository;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,13 +24,20 @@ public class TagService {
         this.tagRepository = tagRepository;
     }
 
-    public TagDTO createTag(NewTagDTO newTag) {
+    public TagDTO createTag(NewTagDTO newTag) throws BadRequestException {
+        if (getTagByName(newTag.name()).isPresent()) {
+            throw new BadRequestException("This tag already exists!");
+        }
         Tag tag = new Tag();
         tag.setName(newTag.name());
         tag.setDescription(newTag.description());
         tag.setQuestionTags(new HashSet<>());
         tagRepository.save(tag);
         return tag.dto();
+    }
+
+    private Optional<Tag> getTagByName(String tagName) {
+        return tagRepository.getTagByName(tagName);
     }
 
     public TagPageDTO getTagWithNewestQuestions(UUID id) {
@@ -78,6 +86,14 @@ public class TagService {
                 .count();
 
         return tag.pageDto(questions, questions.size(), bountyCount);
+    }
+
+    public Set<Tag> getTagsByName(Collection<String> tagNames) {
+        return tagNames.stream()
+                .map(this::getTagByName)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toSet());
     }
 
     public TagsPageDTO getTags(int startIndex) {

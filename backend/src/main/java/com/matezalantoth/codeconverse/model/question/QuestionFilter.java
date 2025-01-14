@@ -1,5 +1,5 @@
 package com.matezalantoth.codeconverse.model.question;
 
 public enum QuestionFilter {
-    PERSONALISED, NEWEST, UNANSWERED, BOUNTIED
+    PERSONALISED, NEWEST, SEARCH, UNANSWERED, BOUNTIED
 }

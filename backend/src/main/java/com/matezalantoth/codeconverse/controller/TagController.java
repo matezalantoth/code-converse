@@ -25,7 +25,7 @@ public class TagController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<TagDTO> createTag(@RequestBody NewTagDTO newTagDTO) {
+    public ResponseEntity<TagDTO> createTag(@RequestBody NewTagDTO newTagDTO) throws BadRequestException {
         return ResponseEntity.status(HttpStatus.CREATED).body(tagService.createTag(newTagDTO));
     }
 

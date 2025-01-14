@@ -27,7 +27,6 @@ export class InfiniteScrollComponent implements OnInit, AfterViewInit {
       if (this.enabled) {
         this.fetchItems().then(res => this.enabled = res);
       }
-      console.log(this.enabled);
     })
     if (this.select !== null) {
       this.select.subscribe(() => {

@@ -33,6 +33,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.nav.redirectToLogin()
   }
 
+  signup() {
+    this.nav.redirectToSignup()
+  }
+
   redirectToProfile() {
     this.nav.redirectToProfile();
   }

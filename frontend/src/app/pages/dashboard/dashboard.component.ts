@@ -16,7 +16,7 @@ export class DashboardComponent {
   public questions = this._questions.asObservable();
 
   constructor(public api: ApiService, private nav: NavigationService) {
-    this.fetchItems();
+    this.fetchItems(true);
   }
 
   redirectToAskQuestion() {
@@ -24,12 +24,17 @@ export class DashboardComponent {
   }
 
 
-  fetchItems = async (): Promise<boolean> => {
+  fetchItems = async (sort: boolean = false): Promise<boolean> => {
     const res = await firstValueFrom(this.api.getDashQuestions(this.nextPage));
     this.nextPage = res.pagination.currentPage + 1;
     this.maxPage = res.pagination.maxPage;
     const currentQuestions = this._questions.getValue();
-    const updatedQuestions = [...currentQuestions, ...res.questions];
+    let updatedQuestions = [...currentQuestions, ...res.questions];
+    if (sort) {
+      console.log("sorting");
+      updatedQuestions = updatedQuestions.sort((a, b) => b.resultsScore - a.resultsScore);
+      console.log(updatedQuestions);
+    }
     this._questions.next(updatedQuestions);
     return this.maxPage >= this.nextPage;
 

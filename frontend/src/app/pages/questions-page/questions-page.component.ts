@@ -1,8 +1,8 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MainPageQuestion} from "../../shared/models/mainPageQuestion";
 import {ApiService} from "../../services/data/api.service";
 import {QuestionFilter} from "../../shared/models/questionFilter";
-import {BehaviorSubject, firstValueFrom, Observable, Subject} from "rxjs";
+import {BehaviorSubject, firstValueFrom, Observable} from "rxjs";
 import {NavigationService} from "../../services/nav/nav.service";
 
 interface QuestionResponse {
