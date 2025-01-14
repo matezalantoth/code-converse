@@ -39,7 +39,12 @@ export class QuestionPageComponent implements OnInit {
     this.answerForm = this.fb.group({
       content: ['']
     });
+
     this.showRequired = false;
+  }
+
+  redirectToTag(id: string) {
+    this.nav.redirectToTag(id);
   }
 
   onQuestionChange(updatedQuestion: any): void {
@@ -158,7 +163,6 @@ export class QuestionPageComponent implements OnInit {
         this.api.getSeparateQuestion(params['questionId']).subscribe({
           next: (res) => {
             this.question = res;
-            console.log(this.question)
             this.sortAnswers();
             this.markdownPreview();
           },

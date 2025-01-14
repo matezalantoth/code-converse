@@ -17,7 +17,7 @@ export class NavigationService {
   }
 
   redirectToLink(link: string) {
-    window.location.href = "http://localhost:4200" + link;
+    window.location.href = "https://codeconverse.net" + link;
   }
 
   redirectToLogin() {

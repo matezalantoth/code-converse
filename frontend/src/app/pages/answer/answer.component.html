@@ -33,7 +33,7 @@
 </div>
 <div class="text-sm mt-2 ml-32 mb-4">
   <span
-    class="text-blue-500 dark:text-blue-400 hover:underline cursor-pointer">{{ question.posterName }}</span>
-  <span class="font-bold dark:text-gray-100"> {{ question.posterTrueRep }}</span>
+    class="text-blue-500 dark:text-blue-400 hover:underline cursor-pointer">{{ answer.posterUsername }}</span>
+  <span class="font-bold dark:text-gray-100"> {{ answer.posterReputation }}</span>
   <span class="dark:text-gray-100"> asked {{ this.api.calculatePostedAt(question.postedAt) }}</span>
 </div>

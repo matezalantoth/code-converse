@@ -29,24 +29,23 @@ export class ApiService {
   }
 
   getDashQuestions(startIndex: number): Observable<any> {
-    return this.http.post(this.apiUrl + '/question/questions', {
-      "startIndex": startIndex,
-      "filter": QuestionFilter.Newest
-    })
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.get(this.apiUrl + '/question/questions?startIndex=' + startIndex + "&filter=" + QuestionFilter.Personalised, {headers});
+  }
+
+  getNewestQuestions(startIndex: number): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.get(this.apiUrl + '/question/questions?startIndex=' + startIndex + "&filter=" + QuestionFilter.Newest, {headers});
   }
 
   getBountiedQuestions(startIndex: number): Observable<any> {
-    return this.http.post(this.apiUrl + '/question/questions', {
-      "startIndex": startIndex,
-      "filter": QuestionFilter.Bountied
-    })
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.get(this.apiUrl + '/question/questions?startIndex=' + startIndex + "&filter=" + QuestionFilter.Bountied, {headers});
   }
 
   getUnansweredQuestions(startIndex: number): Observable<any> {
-    return this.http.post(this.apiUrl + '/question/questions', {
-      "startIndex": startIndex,
-      "filter": QuestionFilter.Unanswered
-    })
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.get(this.apiUrl + '/question/questions?startIndex=' + startIndex + "&filter=" + QuestionFilter.Unanswered, {headers});
   }
 
   getInbox(): Observable<any> {
@@ -106,7 +105,8 @@ export class ApiService {
   }
 
   logView(questionId: string): Observable<any> {
-    return this.http.patch(this.apiUrl + '/question/viewed?id=' + questionId, {});
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.authService.getToken()}`);
+    return this.http.patch(this.apiUrl + '/question/viewed?id=' + questionId, {}, {headers});
   }
 
   isOwner(questionId: string): Observable<any> {
@@ -165,7 +165,7 @@ export class ApiService {
       return `${hours} hour${hours === 1 ? '' : 's'} ago`;
     }
     const days = Math.floor(differenceInSeconds / 86400);
-    return `${days} day{days === 1 ? '' : 's'} ago`;
+    return `${days} day${days === 1 ? '' : 's'} ago`;
   };
 
 

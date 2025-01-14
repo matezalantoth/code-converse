@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,11 +31,14 @@ public class View {
     @Setter
     public Question question;
 
+    @Setter
+    public Date viewedAt;
+
     public Set<Tag> getTags() {
         return question.getQuestionTags().stream().map(QuestionTag::getTag).collect(Collectors.toSet());
     }
 
     public ViewDTO dto() {
-        return new ViewDTO(viewer != null ? viewer.dto() : null, question.dto());
+        return new ViewDTO(viewer != null ? viewer.dto() : null, question.dto(), viewedAt);
     }
 }
