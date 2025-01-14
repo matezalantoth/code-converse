@@ -29,6 +29,7 @@ export class QuestionsComponent implements OnInit {
     this._questions.subscribe(res => {
       this.questions = res;
     });
+
   }
 
 
